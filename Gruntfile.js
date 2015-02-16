@@ -95,11 +95,11 @@ module.exports = function (grunt) {
         },
         coveralls: {
             options: {
-                debug: true,
-                coverageDir: 'coverage/',
-                dryRun: true,
-                force: true,
-                recursive: true
+                // dont fail if coveralls fails
+                force: true
+            },
+            main_target: {
+                src: "coverage/lcovonly.info"
             }
         }
     });
@@ -109,7 +109,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-sloc');
     grunt.loadNpmTasks('grunt-karma');
-    grunt.loadNpmTasks('grunt-karma-coveralls');
+    grunt.loadNpmTasks("grunt-coveralls");
 
     // Default task.
     grunt.registerTask('default', ['concat', 'uglify', 'less', 'sloc']);

@@ -52,8 +52,10 @@ module.exports = function (config) {
         reporters: ['coverage'],
 
         coverageReporter: {
-            type: "lcov",
-            dir: "coverage/"
+            dir: "coverage/",
+            reporters: [
+                { type: 'lcovonly', subdir: '.', file: 'lcovonly.info' }
+            ]
         },
 
         // web server port
