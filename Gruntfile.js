@@ -92,6 +92,15 @@ module.exports = function (grunt) {
                 configFile: 'karma.conf.js',
                 singleRun: true
             }
+        },
+        coveralls: {
+            options: {
+                debug: true,
+                coverageDir: 'coverage/',
+                dryRun: true,
+                force: true,
+                recursive: true
+            }
         }
     });
     grunt.loadNpmTasks('grunt-contrib-less');
@@ -100,6 +109,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-sloc');
     grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks('grunt-karma-coveralls');
 
     // Default task.
     grunt.registerTask('default', ['concat', 'uglify', 'less', 'sloc']);
