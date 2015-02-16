@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/justinwp/croplands-web.svg)](https://travis-ci.org/justinwp/croplands-web)
+[![Build Status](https://travis-ci.org/justinwp/croplands-web.svg)](https://travis-ci.org/justinwp/croplands-web) [![Coverage Status](https://coveralls.io/repos/justinwp/croplands-web/badge.svg)](https://coveralls.io/r/justinwp/croplands-web)
 ##Global Food Security-Support Analysis Data##
 
 ###About###
