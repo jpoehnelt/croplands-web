@@ -15,19 +15,19 @@ module.exports = function (config) {
 
         // list of files / patterns to load in the browser
         files: [
-            'app/js/lib/local/jquery.js',
-            'app/js/lib/local/angular.js',
-            'app/js/lib/local/angular-route.js',
-            'app/js/lib/local/angular-strap.js',
-            'app/js/lib/local/angular-strap-tpl.js',
-            'app/js/lib/local/angular-animate.js',
-            'app/js/lib/local/bootstrap.js',
-            'app/js/lib/local/crossfilter.js',
-            'app/js/lib/local/lodash.js',
-            'app/js/lib/local/zxcvbn.js',
-            'app/js/lib/local/leaflet.js',
-            'app/js/lib/local/google-maps.js',
-            'app/js/app.js',
+            'app/scripts/lib/local/jquery.js',
+            'app/scripts/lib/local/angular.js',
+            'app/scripts/lib/local/angular-route.js',
+            'app/scripts/lib/local/angular-strap.js',
+            'app/scripts/lib/local/angular-strap-tpl.js',
+            'app/scripts/lib/local/angular-animate.js',
+            'app/scripts/lib/local/bootstrap.js',
+            'app/scripts/lib/local/crossfilter.js',
+            'app/scripts/lib/local/lodash.js',
+            'app/scripts/lib/local/zxcvbn.js',
+            'app/scripts/lib/local/leaflet.js',
+            'app/scripts/lib/local/google-maps.js',
+            'app/scripts/app.0.2.1.js',
             'tests/*.js'
         ],
 
@@ -39,7 +39,7 @@ module.exports = function (config) {
         // preprocess matching files before serving them to the browser
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
-            'app/js/app.js': ['coverage']
+            'app/scripts/app.0.2.1.js': ['coverage']
         },
 
 

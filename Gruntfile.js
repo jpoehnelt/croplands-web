@@ -1,4 +1,3 @@
-/*global module:false*/
 module.exports = function (grunt) {
 
     // Project configuration.
@@ -16,8 +15,8 @@ module.exports = function (grunt) {
                 separator: ';\n'
             },
             dist: {
-                src: ['app/js/lib/*.js', 'app/js/utilities/*.js', 'app/js/app/config.js', 'app/js/services/*.js', 'app/js/filters/*.js', 'app/js/controllers/*.js', 'app/js/directives/*.js'  ],
-                dest: 'app/js/app.js'
+                src: ['app/scripts/lib/*.js', 'app/scripts/utilities/*.js', 'app/scripts/app/config.js', 'app/scripts/services/*.js', 'app/scripts/filters/*.js', 'app/scripts/controllers/*.js', 'app/scripts/directives/*.js', 'app/scripts/templates/*.js'  ],
+                dest: 'app/scripts/app.<%= pkg.version %>.js'
             }
         },
         uglify: {
@@ -27,7 +26,7 @@ module.exports = function (grunt) {
             },
             dist: {
                 src: '<%= concat.dist.dest %>',
-                dest: 'app/js/app.min.js'
+                dest: 'app/scripts/app.<%= pkg.version %>.min.js'
             }
         },
         less: {
@@ -36,7 +35,7 @@ module.exports = function (grunt) {
                 },
                 files: {
                     // target.css file: source.less file
-                    "app/css/main.<%= pkg.version %>.css": "app/css/less/bootstrap.less"
+                    "app/styles/main.<%= pkg.version %>.css": "app/styles/less/bootstrap.less"
                 }
             },
             production: {
@@ -48,37 +47,48 @@ module.exports = function (grunt) {
                 },
                 files: {
                     // target.css file: source.less file
-                    "app/css/main.<%= pkg.version %>.min.css": "app/css/less/bootstrap.less"
+                    "app/styles/main.<%= pkg.version %>.min.css": "app/styles/less/bootstrap.less"
                 }
             }
         },
 
         watch: {
             js: {
-                files: ['<%= concat.dist.src %>', 'Gruntfile.js', 'package.json'],
-                tasks: ['concat', 'uglify']
+                files: ['app/scripts/lib/*.js', 'app/scripts/utilities/*.js', 'app/scripts/app/config.js', 'app/scripts/services/*.js', 'app/scripts/filters/*.js', 'app/scripts/controllers/*.js', 'app/scripts/directives/*.js'],
+                tasks: ['concat', 'uglify', 'copy']
             },
             less: {
-                files: ['app/css/less/*', 'app/css/less/mixins/*', 'Gruntfile.js', 'package.json'],
-                tasks: ['less']
+                files: ['app/styles/less/*', 'app/styles/less/mixins/*'],
+                tasks: ['less', 'copy']
             },
-            //run unit tests with karma (server needs to be already running)
+            all: {
+                files: ['Gruntfile.js', 'package.json'],
+                tasks: ['replace', 'concat', 'uglify', 'less', 'copy']
+            },
+            index: {
+                files: ['app/index.html'],
+                tasks: ['replace']
+            },
             karma: {
-                files: ['app/js/*', 'tests/*.js'],
-                tasks: ['karma:unit:run'] //NOTE the :run flag
+                files: ['app/scripts/*', 'tests/*.js'],
+                tasks: ['karma:unit:continuous']
+            },
+            upload: {
+                files: ['dist/**'],
+                tasks: ['s3:dev']
             }
         },
         sloc: {
             'source': {
                 files: {
-                    './': ['app/js/app/*.js',
-                        'app/js/controllers/*.js',
-                        'app/js/directives/*.js',
-                        'app/js/filters/*.js',
-                        'app/js/services/*.js',
+                    './': ['app/scripts/app/*.js',
+                        'app/scripts/controllers/*.js',
+                        'app/scripts/directives/*.js',
+                        'app/scripts/filters/*.js',
+                        'app/scripts/services/*.js',
                         'app/partials/*.html',
-                        'gfsad/templates/*.html',
-                        'app/css/app_v2.css']
+                        'gfsad/views/*.html',
+                        'app/styles/app_v2.css']
                 }
             }
         },
@@ -86,7 +96,7 @@ module.exports = function (grunt) {
             unit: {
                 configFile: 'karma.conf.js',
                 background: true,
-                singleRun: false
+                singleRun: true
             },
             continuous: {
                 configFile: 'karma.conf.js',
@@ -101,17 +111,67 @@ module.exports = function (grunt) {
             main_target: {
                 src: "coverage/lcovonly.info"
             }
+        },
+        replace: {
+            index: {
+                options: {
+                    patterns: [
+                        {
+                            match: 'version',
+                            replacement: '<%= pkg.version %>'
+                        }
+                    ]
+                },
+                files: [
+                    {expand: true, cwd: 'app/', src: ['index.html'], dest: 'dist/'}
+                ]
+            }
+        },
+        copy: {
+            main: {
+                files: [
+                    // includes files within path
+                    {expand: true, cwd: 'app/styles/', src: ['*.css'], dest: 'dist/css/'},
+                    {expand: true, cwd: 'app/scripts/', src: ['*.js'], dest: 'dist/js/'},
+                    {expand: true, cwd: 'app/assets/', src: ['*'], dest: 'dist/images/', filter: 'isFile'},
+                    {expand: true, cwd: 'app/views/', src: ['**'], dest: 'dist/templates/'}
+                ]
+            }
+        },
+        aws: grunt.file.readJSON("secrets.json"),
+        s3: {
+            options: {
+                accessKeyId: "<%= aws.key %>",
+                secretAccessKey: "<%= aws.secret %>",
+                bucket: "<%= aws.bucket %>"
+            },
+            release: {
+                expand: true,
+                cwd: "dist/",
+                src: "**"
+            },
+            dev: {
+                options: {
+                    bucket: "<%= aws.bucketdev %>"
+                },
+                expand: true,
+                cwd: "dist/",
+                src: "index.html"
+            }
         }
     });
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-sloc');
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks("grunt-coveralls");
+    grunt.loadNpmTasks('grunt-replace');
+    grunt.loadNpmTasks('grunt-aws');
 
     // Default task.
-    grunt.registerTask('default', ['concat', 'uglify', 'less', 'sloc']);
+    grunt.registerTask('default', ['concat', 'uglify', 'less', 'sloc', 'copy', 'html2js', 'replace']);
 
 };
