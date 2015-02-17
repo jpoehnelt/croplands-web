@@ -153,12 +153,9 @@ module.exports = function (grunt) {
                     ]
                 }
             },
-            aws: grunt.file.readJSON("secrets.json"),
             s3: {
                 options: {
-                    accessKeyId: "<%= aws.key %>",
-                    secretAccessKey: "<%= aws.secret %>",
-                    bucket: "<%= aws.bucket %>"
+                    bucket: "croplands"
                 },
                 release: {
                     expand: true,
@@ -167,7 +164,7 @@ module.exports = function (grunt) {
                 },
                 dev: {
                     options: {
-                        bucket: "<%= aws.bucketdev %>"
+                        bucket: "croplands-dev"
                     },
                     expand: true,
                     cwd: "dist/",
