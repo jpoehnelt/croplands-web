@@ -8,5 +8,5 @@ before_script:
   - npm install -g grunt-cli
 
 script:
-  - grunt karma:continuous
-  - grunt coveralls
+  - grunt karma:continuous --force
+  - grunt coveralls --force
