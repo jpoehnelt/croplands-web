@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/justinwp/croplands-web.svg)](https://travis-ci.org/justinwp/croplands-web) [![Coverage Status](https://coveralls.io/repos/justinwp/croplands-web/badge.svg)](https://coveralls.io/r/justinwp/croplands-web)
 ##Global Food Security-Support Analysis Data##
 
 [![Build Status](https://travis-ci.org/justinwp/croplands-web.svg)](https://travis-ci.org/justinwp/croplands-web) [![Coverage Status](https://coveralls.io/repos/justinwp/croplands-web/badge.svg)](https://coveralls.io/r/justinwp/croplands-web) [![Join the chat at https://gitter.im/justinwp/croplands-web](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/justinwp/croplands-web?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
