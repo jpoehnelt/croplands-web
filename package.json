@@ -17,6 +17,7 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-coveralls": "^1.0.0",
     "grunt-html2js": "^0.3.0",
+    "grunt-invalidate-cloudfront": "^0.1.6",
     "grunt-karma": "^0.10.1",
     "grunt-replace": "^0.8.0",
     "grunt-sloc": "^0.5.2",

@@ -75,7 +75,7 @@ module.exports = function (grunt) {
                 },
                 upload: {
                     files: ['dist/**'],
-                    tasks: ['s3:dev']
+                    tasks: ['s3:devIndex']
                 }
             },
             karma: {
@@ -155,20 +155,48 @@ module.exports = function (grunt) {
             },
             s3: {
                 options: {
-                    bucket: "croplands"
+                    bucket: "croplands.org",
+                    headers: {
+                        CacheControl: 3600
+                    }
                 },
-                release: {
+                prodIndex: {
                     expand: true,
                     cwd: "dist/",
-                    src: "**"
+                    src: "index.html"
+
                 },
-                dev: {
+                prodAssets: {
                     options: {
-                        bucket: "croplands-dev"
+                        headers: {
+                            CacheControl: 31556926
+                        }
+                    },
+                    expand: true,
+                    cwd: "dist/",
+                    src: ["**", "!index.html"]
+                },
+                devIndex: {
+                    options: {
+                        bucket: "dev.croplands.org",
+                        headers: {
+                            CacheControl: 2
+                        }
                     },
                     expand: true,
                     cwd: "dist/",
                     src: "index.html"
+                },
+                devAssets: {
+                    options: {
+                        bucket: "dev.croplands.org",
+                        headers: {
+                            CacheControl: 2
+                        }
+                    },
+                    expand: true,
+                    cwd: "dist/",
+                    src: ["**", "!index.html"]
                 }
             },
             coveralls: {
@@ -179,10 +207,24 @@ module.exports = function (grunt) {
                 main_target: {
                     src: "coverage/lcovonly.info"
                 }
+            },
+            invalidate_cloudfront: {
+                options: {
+                    distribution: 'EQTNY2EQQSJL7'
+                },
+                production: {
+                    files: [{
+                        expand: true,
+                        cwd: 'dist/',
+                        src: ['**/*'],
+                        filter: 'isFile',
+                        dest: ''
+                    }]
+                }
             }
         }
-    )
-    ;
+    );
+
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
@@ -193,6 +235,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-coveralls");
     grunt.loadNpmTasks('grunt-replace');
     grunt.loadNpmTasks('grunt-aws');
+    grunt.loadNpmTasks('grunt-invalidate-cloudfront');
 
 // Default task.
     grunt.registerTask('default', ['concat', 'uglify', 'less', 'sloc', 'copy', 'replace']);
