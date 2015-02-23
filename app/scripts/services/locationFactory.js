@@ -1,8 +1,5 @@
 app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$q', '$timeout', 'icons', 'log', 'awsUrlSigning', 'version', function (mappings, $http, $rootScope, $filter, $q, $timeout, icons, log, awsUrlSigning, version) {
-    var _url = {
-            all: window.location.hostname === '127.0.0.1' ? '/static/location.0.1.0.p0.json' : '//cdn.croplands.org/json/location.0.1.0.p0.json',
-            default: window.location.hostname === '127.0.0.1' ? '/api/location/' : '//api.croplands.org/api/location/'
-        },
+    var _baseUrl = 'https://api.croplands.org/api',
         _cf = crossfilter(),
         l = {
             cf: {},
@@ -49,7 +46,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
         return deferred.promise;
     }
 
-    // Crossfilter Dimensions
+// Crossfilter Dimensions
     l.cf.dims = {
         id: _cf.dimension(function (d) {
             return d.id;
@@ -74,7 +71,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
         })
     };
 
-    //Crossfilter Groups
+//Crossfilter Groups
     l.cf.groups = {
         id: l.cf.dims.id.group(),
         year: l.cf.dims.year.group(),
@@ -84,7 +81,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
         intensity: l.cf.dims.intensity.group()
     };
 
-    // Filters
+// Filters
     l.filters.byPolygon = function (bounds, filterAll, echo) {
         // Filter markers from previous polygon or clear previous polygon and then filter
         if (filterAll === true || filterAll === undefined) {
@@ -182,19 +179,19 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
         l.returnMarkers();
     };
 
-    // Return filtered markers
+// Return filtered markers
     l.returnMarkers = function () {
         l.markers = l.cf.dims.year.top(10000);
         log.info('Markers Filtered');
         $rootScope.$broadcast("locationFactory.markers.filtered");
 
     };
-    // Download All Markers
+// Download All Markers
     l.getMarkers = function () {
         // Remove all existing location
         l.clearAll();
         awsUrlSigning.getParams().then(function (params) {
-            var file0 = $http({method: 'GET', url: '//cdn.croplands.org/json/locations.' + version + '.p0.json' + params, transformRequest: function (data, headersGetter) {
+            var file1 = $http({method: 'GET', url: '//cdn.croplands.org/json/records.' + version + '.p1.json' + params, transformRequest: function (data, headersGetter) {
                 var headers = headersGetter();
                 delete headers['authorization'];
                 return headers;
@@ -202,7 +199,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
                 success(function (data) {
                     l.addMarkers(data);
                 });
-            var file1 = $http({method: 'GET', url: '//cdn.croplands.org/json/locations.' + version + '.p1.json' + params, transformRequest: function (data, headersGetter) {
+            var file2 = $http({method: 'GET', url: '//cdn.croplands.org/json/records.' + version + '.p2.json' + params, transformRequest: function (data, headersGetter) {
                 var headers = headersGetter();
                 delete headers['authorization'];
                 return headers;
@@ -210,7 +207,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
                 success(function (data) {
                     l.addMarkers(data);
                 });
-            var file2 = $http({method: 'GET', url: '//cdn.croplands.org/json/locations.' + version + '.p2.json' + params, transformRequest: function (data, headersGetter) {
+            var file3 = $http({method: 'GET', url: '//cdn.croplands.org/json/records.' + version + '.p3.json' + params, transformRequest: function (data, headersGetter) {
                 var headers = headersGetter();
                 delete headers['authorization'];
                 return headers;
@@ -219,7 +216,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
                     l.addMarkers(data);
                 });
 
-            $q.all([file0, file1, file2]).then(function () {
+            $q.all([file1, file2, file3]).then(function () {
                 $rootScope.$broadcast("locationFactory.markers.downloaded");
                 l.returnMarkers();
             }, function () {
@@ -234,7 +231,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
     };
 
     l.addIcon = function (record) {
-        if (record.land_use_type===1) {
+        if (record.land_use_type === 1) {
             var iconString = "iconCropland";
             iconString += $filter('mappings')(record.intensity, "intensity");
             iconString += $filter('mappings')(record.water, "water");
@@ -266,11 +263,11 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
 
     };
 
-    // Download Single Marker with Details
+// Download Single Marker with Details
     l.getLocation = function (id, callback, attemptsRemaining) {
         l.changeMarkerIcon(id);
 
-        $http({method: 'GET', url: _url.default + String(id)}).
+        $http({method: 'GET', url: _url.default + '/locations/' + String(id)}).
             success(function (data, status, headers, config) {
                 _.map(data.history, function (d) {
                     d.data = JSON.parse(d.data);
@@ -337,7 +334,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
 
     l.save = function (record, callback) {
         var deferred = $q.defer(),
-            data = {}, method, id, url = '/api/record', allowedFields = ['id', 'land_use_type', 'water', 'crop_primary', 'crop_secondary', 'data_id', 'year', 'month'];
+            data = {}, method, id, url = _baseUrl + '/api/record', allowedFields = ['id', 'land_use_type', 'water', 'crop_primary', 'crop_secondary', 'data_id', 'year', 'month'];
 
         data = angular.copy(record);
 //        // Remove keys users cannot change

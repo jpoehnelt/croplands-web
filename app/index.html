@@ -12,10 +12,10 @@
     <title>Global Food Security Analysis-Support Data Project</title>
 
     <!-- CSSS -->
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"
           rel="stylesheet">
-    <link rel="stylesheet" href="css/main.@@version.min.css">
+    <link rel="stylesheet" href="@@sitecss/main.@@version.min.css">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -39,14 +39,14 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.5/angular-route.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.7/crossfilter.min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/1.0/zxcvbn-async.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/zxcvbn/1.0/zxcvbn-async.min.js"></script>
+    <script src="//maps.googleapis.com/maps/api/js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular-strap/2.0.0/angular-strap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular-strap/2.0.0/angular-strap.tpl.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular-animate.min.js"></script>
     <!-- End Libraries on CDN-->
-    <script src="js/app.@@version.min.js"></script>
+    <script src="@@sitejs/app.@@version.min.js"></script>
 
 </head>
 
@@ -101,15 +101,12 @@
 <register-form ng-show="register" class="am-fade"></register-form>
 <forgot-form ng-show="forgot" class="am-fade"></forgot-form>
 
-
 <div ng-view style="width: 100%; height: 100%;"></div>
 
 
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
-{% block footer_script %}
-{% endblock %}
 <script>
     (function (i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r;

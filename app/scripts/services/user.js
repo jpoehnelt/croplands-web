@@ -30,7 +30,7 @@ app.factory('user', [ '$http', '$window', '$q', 'log', function ($http, $window,
 
     function changePassword(token, password) {
         var deferred = $q.defer();
-        $http.post("/auth/reset", {
+        $http.post("https://api.croplands.org/auth/reset", {
             token: token,
             password: password
         }).then(function (response) {
@@ -48,7 +48,7 @@ app.factory('user', [ '$http', '$window', '$q', 'log', function ($http, $window,
             data = {email: email, password: password},
             headers = { Accept: 'application/json', 'Content-Type': 'application/json'};
 
-        $http.post("/auth/login", data, headers).then(function (r) {
+        $http.post("https://api.croplands.org/auth/login", data, headers).then(function (r) {
                 log.info("[User] Successfully logged in.");
                 // Load user if token is present, may require confirmation before logging in
                 if (r.data.data.token) {
@@ -73,7 +73,7 @@ app.factory('user', [ '$http', '$window', '$q', 'log', function ($http, $window,
         var deferred = $q.defer(),
             headers = { Accept: 'application/json', 'Content-Type': 'application/json'};
 
-        $http.post("/auth/register", data, headers).then(function (r) {
+        $http.post("https://api.croplands.org/auth/register", data, headers).then(function (r) {
                 log.info("[User] Successfully registered.");
                 // Load user if token is present, may require confirmation before logging in
                 if (r.data.data.token) {
@@ -99,7 +99,7 @@ app.factory('user', [ '$http', '$window', '$q', 'log', function ($http, $window,
             deferred = $q.defer(),
             headers = { Accept: 'application/json', 'Content-Type': 'application/json'};
 
-        $http.post("/auth/forgot", data, headers).then(function (r) {
+        $http.post("https://api.croplands.org/auth/forgot", data, headers).then(function (r) {
                 log.info("[User] Sending reset email.");
                 deferred.resolve(r.data);
             },
@@ -121,7 +121,7 @@ app.factory('user', [ '$http', '$window', '$q', 'log', function ($http, $window,
             deferred = $q.defer(),
             headers = { Accept: 'application/json', 'Content-Type': 'application/json'};
 
-        $http.post("/auth/reset", data, headers).then(function (r) {
+        $http.post("https://api.croplands.org/auth/reset", data, headers).then(function (r) {
                 log.info("[User] Changing password.");
                 if (r.data.data.token) {
                     loadFromToken(r.data.data.token);

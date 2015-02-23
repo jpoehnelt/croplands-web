@@ -7,7 +7,7 @@ app.factory('awsUrlSigning', ['$http', 'log', '$window', '$q', function ($http, 
 
     function getCurrentParams() {
         var deferred = $q.defer();
-        $http.post('/aws/policy', {}).
+        $http.post('https://api.croplands.org/aws/policy', {}).
             success(function (data, status, headers, config) {
                 // this callback will be called asynchronously
                 // when the response is available

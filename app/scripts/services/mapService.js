@@ -61,16 +61,7 @@ app.factory('mapService', ['wmsLayers', 'leafletData', function (wmsLayers, leaf
                         disableClusteringAtZoom: 10,
                         removeOutsideVisibleBounds: true
                     }
-                },
-                gee: {
-                    layerOptions: {
-                        opacity: 0.7},
-                    visible: true,
-                    name: 'Test',
-                    type: 'xyz',
-                    url: 'https://earthengine.googleapis.com/map/27b1bb76d4140e31e4d9aaa112a2cd3c/{z}/{x}/{y}?token=522f41d6282fc52ff698ba5dd2637eb1'
                 }
-
             }
         },
         paths: {

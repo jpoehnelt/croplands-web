@@ -1,2 +1,2 @@
 // current application version
-app.constant('version', '0.2.0');
+app.constant('version', '0.2.1');
