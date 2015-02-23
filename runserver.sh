@@ -1,3 +1,3 @@
 #!/bin/sh
-cd ~/projects/croplands-web/dist
-python -m SimpleHTTPServer 8000
+cd ~/projects/croplands/croplands-web/dist
+python local.py
