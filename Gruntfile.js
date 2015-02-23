@@ -71,11 +71,11 @@ module.exports = function (grunt) {
                 },
                 karma: {
                     files: ['app/scripts/*', 'tests/*.js'],
-                    tasks: ['karma:unit:continuous']
+                    tasks: ['karma:continuous']
                 },
                 upload: {
                     files: ['dist/**'],
-                    tasks: ['s3:devIndex']
+                    tasks: ['s3:devIndex', 's3:devAssets']
                 }
             },
             karma: {
@@ -134,13 +134,35 @@ module.exports = function (grunt) {
                             {
                                 match: 'version',
                                 replacement: '<%= pkg.version %>'
+                            },
+                            {
+                                match: 'site',
+                                replacement: 'http://static.croplands.org/'
                             }
                         ]
                     },
                     files: [
                         {expand: true, cwd: 'app/', src: ['index.html'], dest: 'dist/'}
                     ]
+                },
+                indexLocal: {
+                    options: {
+                        patterns: [
+                            {
+                                match: 'version',
+                                replacement: '<%= pkg.version %>'
+                            },
+                            {
+                                match: 'site',
+                                replacement: '/'
+                            }
+                        ]
+                    },
+                    files: [
+                        {src: 'app/index.html', dest: 'dist/local.html'}
+                    ]
                 }
+
             },
             copy: {
                 main: {
@@ -157,7 +179,7 @@ module.exports = function (grunt) {
                 options: {
                     bucket: "croplands.org",
                     headers: {
-                        CacheControl: 3600
+                        CacheControl: 300
                     }
                 },
                 prodIndex: {
@@ -180,7 +202,7 @@ module.exports = function (grunt) {
                     options: {
                         bucket: "dev.croplands.org",
                         headers: {
-                            CacheControl: 2
+                            CacheControl: 'no-cache'
                         }
                     },
                     expand: true,
@@ -209,10 +231,22 @@ module.exports = function (grunt) {
                 }
             },
             invalidate_cloudfront: {
-                options: {
-                    distribution: 'EQTNY2EQQSJL7'
+                www: {
+                    options: {
+                        distribution: 'EQTNY2EQQSJL7'
+                    },
+                    files: [{
+                        expand: true,
+                        cwd: 'dist/',
+                        src: ['index.html'],
+                        filter: 'isFile',
+                        dest: ''
+                    }]
                 },
-                production: {
+                static: {
+                    options: {
+                        distribution: 'E1YG46TJ14UZGF'
+                    },
                     files: [{
                         expand: true,
                         cwd: 'dist/',
@@ -238,7 +272,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-invalidate-cloudfront');
 
 // Default task.
-    grunt.registerTask('default', ['concat', 'uglify', 'less', 'sloc', 'copy', 'replace']);
+    grunt.registerTask('default', ['concat', 'uglify', 'less', 'sloc', 'copy', 'replace','invalidate_cloudfront']);
 
 }
 ;
