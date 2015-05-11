@@ -1,1 +1,1 @@
-web: run-program gunicorn herokuapp:app
+web: gunicorn herokuapp:app
