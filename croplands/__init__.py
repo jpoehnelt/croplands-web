@@ -1,9 +1,9 @@
-from flask import Flask, render_template, g
+from flask import Flask, render_template
 
 
 app = Flask(__name__)
-app.config.from_object("config")
-
+app.config['VERSION'] = '2.0.1'
+app.config['CDN'] = 'http://croplands-web.herokuapp.com'
 
 @app.route('/')
 def index(*args, **kwargs):
