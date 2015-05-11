@@ -1,2 +1,2 @@
-VERSION = '2.0.0'
-CDN = 'http://static.croplands.org'
+VERSION = '2.0.1'
+CDN = 'http://croplands-web.herokuapp.com'
