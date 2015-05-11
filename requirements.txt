@@ -1,0 +1,5 @@
+# heroku only
+gunicorn
+
+# Flask
+Flask==0.10.1
