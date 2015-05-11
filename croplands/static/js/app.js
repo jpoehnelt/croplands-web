@@ -4446,7 +4446,7 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
         'self',
         // Allow loading from our assets domain.  Notice the difference between * and **.
         'http://cache.croplands.org/static/**',
-        'http://hwstatic.croplands.org/static/**']);
+        'https://hwstatic.croplands.org/static/**']);
 }]);
 ;
 /**
