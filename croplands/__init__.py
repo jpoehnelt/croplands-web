@@ -1,9 +1,16 @@
 from flask import Flask, render_template
+from flask_cors import cross_origin
 
 
-app = Flask(__name__)
-app.config['VERSION'] = '2.0.4'
+class FlaskStaticCors(Flask):
+    @cross_origin()
+    def send_static_file(self, filename):
+        return super(FlaskStaticCors, self).send_static_file(filename)
+
+app = FlaskStaticCors(__name__)
+app.config['VERSION'] = '2.0.5'
 app.config['CDN'] = 'https://hwstatic.croplands.org'
+
 
 @app.route('/')
 def index(*args, **kwargs):
