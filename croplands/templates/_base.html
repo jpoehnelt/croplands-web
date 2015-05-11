@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <!-- App Version:  {{ version }} -->
+    <title>
+        {% block title %}Global Food Security Analysis-Support Data Project{% endblock %}
+    </title>
+
+    <!-- begin css -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"
+          rel="stylesheet">
+    <link rel="stylesheet" href="{{ cdn }}/css/main.min.css?v={{ version }}">
+    <!-- end css -->
+
+    <!-- Libraries to load from CDNs -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.5/angular.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.5/angular-route.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.5.0/lodash.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.7/crossfilter.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/zxcvbn/1.0/zxcvbn-async.min.js"></script>
+    <script src="//maps.googleapis.com/maps/api/js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-strap/2.0.0/angular-strap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-strap/2.0.0/angular-strap.tpl.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular-animate.min.js"></script>
+    <!-- End Libraries on CDN-->
+
+    <!-- pass data to angular from server -->
+    <script>
+        angular.module('server', [])
+                .constant('server.config', {
+                    version: '{{ version }}',
+                    cdn: '{{ cdn }}',
+                    csrf: '{{ csrf }}'
+                });
+    </script>
+    <!-- end pass data to angular from server -->
+    {% block scripts_head %}
+    {% endblock %}
+</head>
+<body>
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target=".navbar-collapse" blur>
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" target="_self" href="/">Global Croplands</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/app/map">Map</a></li>
+                <li><a href="/app/classify">Classify</a></li>
+                <li><a target="_self" href="/#Data">Data</a></li>
+                <li><a target="_self" href="/#Methods">Methods</a></li>
+                <li><a target="_self" href="/#Publications">Publications</a></li>
+                <li><a target="_self" href="/#Team">Team</a></li>
+                <li><a target="_self" href="/#About">About</a></li>
+
+            </ul>
+            {% block navbar %}
+
+            {% endblock %}
+            <button class="pull-right navbar-btn btn btn-default disabled hidden-xs"
+                    style="margin-right: 10px;">Beta Version
+            </button>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+
+</div>
+{% block body %}
+{% endblock %}
+
+{% block scripts_footer %}
+{% endblock %}
+</body>
+</html>

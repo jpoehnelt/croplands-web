@@ -4,10 +4,11 @@ module.exports = function (grunt) {
     grunt.initConfig({
             // Metadata.
             pkg: grunt.file.readJSON('package.json'),
-            banner: '/*! <%= pkg.title || pkg.name %> - ' +
+            banner: '/* <%= pkg.title || pkg.name %> - ' +
                 '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
                 '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
-                '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
+                '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;\n' +
+                '* Last Modified: <%= grunt.template.today() %>\n' +
                 '*/\n',
             // Task configuration.
             concat: {
@@ -15,8 +16,17 @@ module.exports = function (grunt) {
                     separator: ';\n'
                 },
                 dist: {
-                    src: ['app/scripts/lib/*.js', 'app/scripts/utilities/*.js', 'app/scripts/app/config.js', 'app/scripts/services/*.js', 'app/scripts/filters/*.js', 'app/scripts/controllers/*.js', 'app/scripts/directives/*.js'],
-                    dest: 'app/scripts/app.<%= pkg.version %>.js'
+                    src: [
+                        'croplands/static/js/lib/*.js',
+                        'croplands/static/js/utilities/*.js',
+                        'croplands/static/js/app/config.js',
+                        'croplands/static/js/services/*.js',
+                        'croplands/static/js/filters/*.js',
+                        'croplands/static/js/controllers/*.js',
+                        'croplands/static/js/controllers/account/*.js',
+                        'croplands/static/js/directives/*.js'
+                    ],
+                    dest: 'croplands/static/js/app.js'
                 }
             },
             uglify: {
@@ -26,7 +36,7 @@ module.exports = function (grunt) {
                 },
                 dist: {
                     src: '<%= concat.dist.dest %>',
-                    dest: 'app/scripts/app.<%= pkg.version %>.min.js'
+                    dest: 'croplands/static/js/app.min.js'
                 }
             },
             less: {
@@ -35,7 +45,7 @@ module.exports = function (grunt) {
                     },
                     files: {
                         // target.css file: source.less file
-                        "app/styles/main.<%= pkg.version %>.css": "app/styles/less/bootstrap.less"
+                        "croplands/static/css/main.css": "croplands/static/css/less/bootstrap.less"
                     }
                 },
                 production: {
@@ -47,35 +57,32 @@ module.exports = function (grunt) {
                     },
                     files: {
                         // target.css file: source.less file
-                        "app/styles/main.<%= pkg.version %>.min.css": "app/styles/less/bootstrap.less"
+                        "croplands/static/css/main.min.css": "croplands/static/css/less/bootstrap.less"
                     }
                 }
             },
 
             watch: {
                 js: {
-                    files: ['app/scripts/lib/*.js', 'app/scripts/utilities/*.js', 'app/scripts/app/config.js', 'app/scripts/services/*.js', 'app/scripts/filters/*.js', 'app/scripts/controllers/*.js', 'app/scripts/directives/*.js'],
-                    tasks: ['concat', 'uglify', 'copy']
+                    files: [
+                        'croplands/static/js/lib/*.js',
+                        'croplands/static/js/utilities/*.js',
+                        'croplands/static/js/app/config.js',
+                        'croplands/static/js/services/*.js',
+                        'croplands/static/js/filters/*.js',
+                        'croplands/static/js/controllers/*.js',
+                        'croplands/static/js/controllers/account/*.js',
+                        'croplands/static/js/directives/*.js'
+                    ],
+                    tasks: ['concat', 'uglify']
                 },
                 less: {
-                    files: ['app/styles/less/*', 'app/styles/less/mixins/*'],
-                    tasks: ['less', 'copy']
+                    files: ['croplands/static/css/less/*', 'croplands/static/css/less/mixins/*'],
+                    tasks: ['less']
                 },
                 all: {
                     files: ['Gruntfile.js', 'package.json'],
-                    tasks: ['replace', 'concat', 'uglify', 'less', 'copy']
-                },
-                index: {
-                    files: ['app/index.html'],
-                    tasks: ['replace']
-                },
-                karma: {
-                    files: ['app/scripts/*', 'tests/*.js'],
-                    tasks: ['karma:continuous']
-                },
-                upload: {
-                    files: ['dist/**'],
-                    tasks: ['s3:devIndex', 's3:devAssets']
+                    tasks: ['concat', 'uglify', 'less']
                 }
             },
             karma: {
@@ -84,29 +91,29 @@ module.exports = function (grunt) {
                         frameworks: ['jasmine'],
                         // list of files / patterns to load in the browser
                         files: [
-                            'app/scripts/lib/local/jquery.js',
-                            'app/scripts/lib/local/angular.js',
-                            'app/scripts/lib/local/angular-route.js',
-                            'app/scripts/lib/local/angular-strap.js',
-                            'app/scripts/lib/local/angular-strap-tpl.js',
-                            'app/scripts/lib/local/angular-animate.js',
-                            'app/scripts/lib/local/bootstrap.js',
-                            'app/scripts/lib/local/crossfilter.js',
-                            'app/scripts/lib/local/lodash.js',
-                            'app/scripts/lib/local/zxcvbn.js',
-                            'app/scripts/lib/local/leaflet.js',
-                            'app/scripts/lib/local/google-maps.js',
-                            'app/scripts/lib/*.js',
-                            'app/scripts/utilities/*.js',
-                            'app/scripts/app/config.js',
-                            'app/scripts/services/*.js',
-                            'app/scripts/filters/*.js',
-                            'app/scripts/controllers/*.js',
-                            'app/scripts/directives/*.js',
+                            'croplands/scripts/lib/local/jquery.js',
+                            'croplands/scripts/lib/local/angular.js',
+                            'croplands/scripts/lib/local/angular-route.js',
+                            'croplands/scripts/lib/local/angular-strap.js',
+                            'croplands/scripts/lib/local/angular-strap-tpl.js',
+                            'croplands/scripts/lib/local/angular-animate.js',
+                            'croplands/scripts/lib/local/bootstrap.js',
+                            'croplands/scripts/lib/local/crossfilter.js',
+                            'croplands/scripts/lib/local/lodash.js',
+                            'croplands/scripts/lib/local/zxcvbn.js',
+                            'croplands/scripts/lib/local/leaflet.js',
+                            'croplands/scripts/lib/local/google-maps.js',
+                            'croplands/scripts/lib/*.js',
+                            'croplands/scripts/utilities/*.js',
+                            'croplands/scripts/croplands/config.js',
+                            'croplands/scripts/services/*.js',
+                            'croplands/scripts/filters/*.js',
+                            'croplands/scripts/controllers/*.js',
+                            'croplands/scripts/directives/*.js',
                             'tests/*.js'
                         ],
                         preprocessors: {
-                            'app/scripts/!(*lib)/*.js': ['coverage']
+                            'croplands/scripts/!(*lib)/*.js': ['coverage']
                         },
                         reporters: ['progress', 'coverage'],
                         coverageReporter: {
@@ -127,100 +134,6 @@ module.exports = function (grunt) {
                     }
                 }
             },
-            replace: {
-                index: {
-                    options: {
-                        patterns: [
-                            {
-                                match: 'version',
-                                replacement: '<%= pkg.version %>'
-                            },
-                            {
-                                match: 'site',
-                                replacement: 'http://static.croplands.org/'
-                            }
-                        ]
-                    },
-                    files: [
-                        {expand: true, cwd: 'app/', src: ['index.html'], dest: 'dist/'}
-                    ]
-                },
-                indexLocal: {
-                    options: {
-                        patterns: [
-                            {
-                                match: 'version',
-                                replacement: '<%= pkg.version %>'
-                            },
-                            {
-                                match: 'site',
-                                replacement: '/'
-                            }
-                        ]
-                    },
-                    files: [
-                        {src: 'app/index.html', dest: 'dist/local.html'}
-                    ]
-                }
-
-            },
-            copy: {
-                main: {
-                    files: [
-                        // includes files within path
-                        {expand: true, cwd: 'app/styles/', src: ['*.css'], dest: 'dist/css/'},
-                        {expand: true, cwd: 'app/scripts/', src: ['*.js'], dest: 'dist/js/'},
-                        {expand: true, cwd: 'app/assets/', src: ['*'], dest: 'dist/images/', filter: 'isFile'},
-                        {expand: true, cwd: 'app/views/', src: ['**'], dest: 'dist/templates/'}
-                    ]
-                }
-            },
-            s3: {
-                options: {
-                    bucket: "croplands.org",
-                    headers: {
-                        CacheControl: 300
-                    }
-                },
-                prodIndex: {
-                    expand: true,
-                    cwd: "dist/",
-                    src: "index.html"
-
-                },
-                prodAssets: {
-                    options: {
-                        headers: {
-                            CacheControl: 31556926
-                        }
-                    },
-                    expand: true,
-                    cwd: "dist/",
-                    src: ["**", "!index.html"]
-                },
-                devIndex: {
-                    options: {
-                        bucket: "dev.croplands.org",
-                        headers: {
-                            CacheControl: 'no-cache'
-                        }
-                    },
-                    expand: true,
-                    cwd: "dist/",
-                    src: "index.html"
-                },
-                devAssets: {
-                    options: {
-                        bucket: "dev.croplands.org",
-                        headers: {
-                            CacheControl: 2
-                        }
-                    },
-                    expand: true,
-                    cwd: "dist/",
-                    src: ["**", "!index.html"]
-                }
-            },
             coveralls: {
                 options: {
                     // dont fail if coveralls fails
@@ -228,32 +141,6 @@ module.exports = function (grunt) {
                 },
                 main_target: {
                     src: "coverage/lcovonly.info"
-                }
-            },
-            invalidate_cloudfront: {
-                www: {
-                    options: {
-                        distribution: 'EQTNY2EQQSJL7'
-                    },
-                    files: [{
-                        expand: true,
-                        cwd: 'dist/',
-                        src: ['index.html'],
-                        filter: 'isFile',
-                        dest: ''
-                    }]
-                },
-                static: {
-                    options: {
-                        distribution: 'E1YG46TJ14UZGF'
-                    },
-                    files: [{
-                        expand: true,
-                        cwd: 'dist/',
-                        src: ['**/*'],
-                        filter: 'isFile',
-                        dest: ''
-                    }]
                 }
             }
         }
@@ -269,10 +156,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-coveralls");
     grunt.loadNpmTasks('grunt-replace');
     grunt.loadNpmTasks('grunt-aws');
-    grunt.loadNpmTasks('grunt-invalidate-cloudfront');
+//    grunt.loadNpmTasks('grunt-invalidate-cloudfront');
 
 // Default task.
-    grunt.registerTask('default', ['concat', 'uglify', 'less', 'sloc', 'copy', 'replace','invalidate_cloudfront']);
+    grunt.registerTask('default', ['concat', 'uglify', 'less', 'sloc', 'copy', 'replace', 'invalidate_cloudfront']);
 
 }
 ;

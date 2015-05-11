@@ -1,0 +1,39 @@
+{% extends '_base.html' %}
+{% block scripts_head %}
+<base href="/app">
+
+<script src="{{ cdn }}/js/app.js?v={{ version }}"></script>
+<script>
+    angular.element(document).ready(function () {
+        angular.bootstrap(document, ['app']);
+    });
+</script>
+{% endblock %}
+
+{% block navbar %}
+<ul class="nav navbar-nav navbar-right" style="margin-right: 10px;"
+    ng-controller="NavbarController">
+    <li ng-show="!isLoggedIn()"><a ng-click="goToLogin()">Login</a></li>
+    <li ng-show="isLoggedIn()" class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" role="button"
+           aria-expanded="false">Account
+            <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu" role="menu">
+            <li><a ng-click="goToLogout()">Logout</a></li>
+        </ul>
+    </li>
+</ul>
+{% endblock %}
+
+<!--start body-->
+{% block body %}
+<!--end header-->
+
+<!--start content-->
+{% block content %}
+{% endblock %}
+<!--end content-->
+
+{% endblock %}
+<!--end body->
