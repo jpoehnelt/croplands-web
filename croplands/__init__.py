@@ -1,5 +1,4 @@
 from flask import Flask, render_template, make_response, Response
-from flask.ext.compress import Compress
 from functools import wraps
 import requests
 
@@ -21,7 +20,6 @@ def cache(seconds=0):
 
 
 app = Flask(__name__)
-Compress(app)
 app.config['VERSION'] = '2.0.10'
 
 @app.route('/')
