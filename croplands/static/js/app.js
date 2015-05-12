@@ -4861,7 +4861,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
                 file3 = $q.defer();
 
 
-            $http({method: 'GET', url: '//data.croplands.org/json/records.p1.json' + params, transformRequest: function (data, headersGetter) {
+            $http({method: 'GET', url: 'http://data.croplands.org/json/records.p1.json' + params, transformRequest: function (data, headersGetter) {
                 var headers = headersGetter();
                 delete headers['authorization'];
                 return headers;
@@ -4871,7 +4871,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
                         file1.resolve();
                     });
                 });
-            $http({method: 'GET', url: '//data.croplands.org/json/records.p2.json' + params, transformRequest: function (data, headersGetter) {
+            $http({method: 'GET', url: 'http://data.croplands.org/json/records.p2.json' + params, transformRequest: function (data, headersGetter) {
                 var headers = headersGetter();
                 delete headers['authorization'];
                 return headers;
@@ -4881,7 +4881,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
                         file2.resolve();
                     });
                 });
-            $http({method: 'GET', url: '//data.croplands.org/json/records.p3.json' + params, transformRequest: function (data, headersGetter) {
+            $http({method: 'GET', url: 'http://data.croplands.org/json/records.p3.json' + params, transformRequest: function (data, headersGetter) {
                 var headers = headersGetter();
                 delete headers['authorization'];
                 return headers;

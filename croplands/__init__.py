@@ -16,7 +16,7 @@ def cache(seconds=0):
     return wrapper
 
 app = Flask(__name__)
-app.config['VERSION'] = '2.0.6'
+app.config['VERSION'] = '2.0.7'
 app.config['CDN'] = 'https://www.croplands.org/static'
 
 @app.route('/')
