@@ -1,4 +1,5 @@
-from flask import Flask, render_template, make_response, Response, request
+from flask import Flask, render_template, make_response, Response
+from flask.ext.compress import Compress
 from functools import wraps
 import requests
 
@@ -20,7 +21,8 @@ def cache(seconds=0):
 
 
 app = Flask(__name__)
-app.config['VERSION'] = '2.0.8'
+Compress(app)
+app.config['VERSION'] = '2.0.9'
 app.config['CDN'] = 'https://www.croplands.org/static'
 
 
@@ -39,7 +41,10 @@ def angular_app(path=None):
 @app.route('/s3/<path:path>')
 @cache(1800)
 def s3_proxy(path=None):
-    print request.headers
+    """ This view acts as a proxy to s3.
+    :param path: str
+    :return: Response
+    """
     def generate():
         r = requests.get('https://s3.amazonaws.com/gfsad30/' + path, stream=True)
         for chunk in r.raw.read(1024 * 1024):
@@ -48,6 +53,9 @@ def s3_proxy(path=None):
     return Response(response=generate(), content_type='application/javascript',
                     headers={'content-encoding': 'gzip'})
 
+@app.route('/mobile')
+def mobile():
+    return render_template('mobile.html', version=app.config['VERSION'], cdn=app.config['CDN'])
 
 @app.errorhandler(404)
 @cache(0)
