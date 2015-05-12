@@ -20,7 +20,7 @@ def cache(seconds=0):
 
 
 app = Flask(__name__)
-app.config['VERSION'] = '2.0.7'
+app.config['VERSION'] = '2.0.8'
 app.config['CDN'] = 'https://www.croplands.org/static'
 
 
