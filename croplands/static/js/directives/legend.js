@@ -1,4 +1,4 @@
-app.directive('legend', ['version', function (version) {
+app.directive('legend', [function () {
     return {
         restrict: 'E',
         scope: {

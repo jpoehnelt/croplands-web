@@ -1,4 +1,4 @@
-app.directive('ndvi', ['version', '$http', '$log', '$q', function (version, $http, $log, $q) {
+app.directive('ndvi', ['$http', '$log', '$q', function ($http, $log, $q) {
     var URL = 'https://api.croplands.org/gee/time_series',
         series = {};
     var canceller = $q.defer();

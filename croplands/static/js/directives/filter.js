@@ -1,4 +1,4 @@
-app.directive('filter', ['version', 'locationFactory', 'log', '$q', '$timeout', 'mappings', function (version, locationFactory, log, $q, $timeout, mappings) {
+app.directive('filter', ['locationFactory', 'log', '$q', '$timeout', 'mappings', function (locationFactory, log, $q, $timeout, mappings) {
     function reset(scope, callback) {
         log.info("Resetting Filters");
 

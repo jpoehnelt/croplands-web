@@ -1,4 +1,4 @@
-app.directive('log', ['log', 'version', function (log, version) {
+app.directive('log', ['log', function (log) {
     return {
         link: function (scope) {
             scope.list = log.getLog();
