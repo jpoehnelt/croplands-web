@@ -4408,29 +4408,29 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
 
     $routeProvider
         .when('/app/map', {
-            templateUrl: cdn + '/templates/map.html',
+            templateUrl: '/static/templates/map.html',
             controller: 'MapController',
             reloadOnSearch: false
         }).when('/app/a/login', {
-            templateUrl: cdn + '/templates/account/login.html',
+            templateUrl: '/static/templates/account/login.html',
             controller: 'LoginController'
         }).when('/app/a/register', {
-            templateUrl: cdn + '/templates/account/register.html',
+            templateUrl: '/static/templates/account/register.html',
             controller: 'RegisterController'
         }).when('/app/a/forgot', {
-            templateUrl: cdn + '/templates/account/forgot.html',
+            templateUrl: '/static/templates/account/forgot.html',
             controller: 'ForgotController'
         }).when('/app/a/reset', {
-            templateUrl: cdn + '/templates/account/reset.html',
+            templateUrl: '/static/templates/account/reset.html',
             controller: 'ResetController'
         }).when('/app/a/logout', {
-            templateUrl: cdn + '/templates/account/logout.html',
+            templateUrl: '/static/templates/account/logout.html',
             controller: 'LogoutController'
         }).when('/app/classify', {
-            templateUrl: cdn + '/templates/classify.html',
+            templateUrl: '/static/templates/classify.html',
             controller: 'ClassifyController'
         }).otherwise({
-            templateUrl: cdn + '/templates/404.html'
+            templateUrl: '/static/templates/404.html'
         });
     $locationProvider.html5Mode(true);
 //    $locationProvider.hashPrefix('!/');

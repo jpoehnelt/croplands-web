@@ -22,20 +22,18 @@ def cache(seconds=0):
 
 app = Flask(__name__)
 Compress(app)
-app.config['VERSION'] = '2.0.9'
-app.config['CDN'] = 'https://www.croplands.org/static'
-
+app.config['VERSION'] = '2.0.10'
 
 @app.route('/')
 @cache(300)
 def index(*args, **kwargs):
-    return render_template('home.html', version=app.config['VERSION'], cdn=app.config['CDN'])
+    return render_template('home.html', version=app.config['VERSION'])
 
 
 @app.route('/app/<path:path>')
 @cache(0)
 def angular_app(path=None):
-    return render_template('app.html', version=app.config['VERSION'], cdn=app.config['CDN'])
+    return render_template('app.html', version=app.config['VERSION'])
 
 
 @app.route('/s3/<path:path>')
@@ -55,14 +53,12 @@ def s3_proxy(path=None):
 
 @app.route('/mobile')
 def mobile():
-    return render_template('mobile.html', version=app.config['VERSION'], cdn=app.config['CDN'])
+    return render_template('mobile.html', version=app.config['VERSION'])
 
 @app.errorhandler(404)
 @cache(0)
 def not_found(e):
-    return render_template('404.html', version=app.config['VERSION'],
-                           cdn=app.config['CDN']), 404
+    return render_template('404.html', version=app.config['VERSION']), 404
 
 if __name__ == '__main__':
-    app.config['CDN'] = '/static'
     app.run(debug=True)
