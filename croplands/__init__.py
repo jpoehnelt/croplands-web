@@ -3,7 +3,7 @@ from flask import Flask, render_template
 
 app = Flask(__name__)
 app.config['VERSION'] = '2.0.6'
-app.config['CDN'] = 'https://www.croplands.org/static/'
+app.config['CDN'] = 'https://www.croplands.org/static'
 
 
 @app.route('/')
