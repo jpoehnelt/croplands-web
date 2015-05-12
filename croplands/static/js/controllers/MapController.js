@@ -391,7 +391,7 @@ app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'lea
                 visible: false
             },
             filters: {
-                visible: true,
+                visible: false,
                 activeFilters: {}
             },
             table: {

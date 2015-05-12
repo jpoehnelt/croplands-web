@@ -54,7 +54,7 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', function (
                 locations: {
                     name: 'Locations',
                     type: 'markercluster',
-                    visible: true,
+                    visible: false,
                     layerOptions: {
                         showCoverageOnHover: false,
                         chunkedLoading: true,
@@ -65,7 +65,7 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', function (
                 gee: {
                     layerOptions: {
                         opacity: 0.7},
-                    visible: true,
+                    visible: false,
                     name: 'Test',
                     type: 'xyz',
                     url: 'https://earthengine.googleapis.com//map/1d1122f9f537c93784d37d1c15675544/{z}/{x}/{y}?token=ebae1e7ff0843b5625c9e4c807aea231',
