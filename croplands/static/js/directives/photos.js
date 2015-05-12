@@ -1,4 +1,4 @@
-app.directive('photos', ['version', function (version) {
+app.directive('photos', [function () {
     return {
         restrict: 'E',
         scope: {

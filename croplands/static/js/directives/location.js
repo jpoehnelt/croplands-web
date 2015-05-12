@@ -1,4 +1,4 @@
-app.directive('location', ['version', 'locationFactory', 'mappings', 'leafletData', 'icons', 'mapService', 'log', function (version, locationFactory, mappings, leafletData, icons, mapService, log) {
+app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons', 'mapService', 'log', function (locationFactory, mappings, leafletData, icons, mapService, log) {
     var activeTab = 'help';
 
     function blur(e) {

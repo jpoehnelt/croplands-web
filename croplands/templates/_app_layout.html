@@ -2,7 +2,7 @@
 {% block scripts_head %}
 <base href="/app">
 
-<script src="{{ cdn }}/js/app.js?v={{ version }}"></script>
+<script src="{{ cdn }}/js/app.min.js?v={{ version }}"></script>
 <script>
     angular.element(document).ready(function () {
         angular.bootstrap(document, ['app']);
@@ -24,6 +24,9 @@
         </ul>
     </li>
 </ul>
+<button class="pull-right navbar-btn btn btn-default disabled hidden-xs"
+        style="margin-right: 10px;">Beta Version
+</button>
 {% endblock %}
 
 <!--start body-->
