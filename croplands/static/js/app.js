@@ -4449,59 +4449,6 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
         'https://hwstatic.croplands.org/**']);
 }]);
 ;
-/**
- * Created by justin on 12/5/14.
- */
-app.factory('awsUrlSigning', ['$http', 'log', '$window', '$q', function ($http, log, $window, $q) {
-    var aws = {};
-    var params, expiration;
-
-    function getCurrentParams() {
-        var deferred = $q.defer();
-        $http({method: 'POST', url: 'https://api.croplands.org/aws/policy', transformRequest: function (data, headersGetter) {
-            var headers = headersGetter();
-            delete headers['authorization'];
-            delete headers['Content-Type'];
-            return headers;
-        }}).
-            success(function (data, status, headers, config) {
-                // this callback will be called asynchronously
-                // when the response is available
-                params = data.params;
-                expiration = data.expires;
-                deferred.resolve(data);
-            }).
-            error(function (data, status, headers, config) {
-                // called asynchronously if an error occurs
-                // or server returns response with an error status.
-                deferred.reject(data);
-            });
-        return deferred.promise;
-    }
-
-    aws.getParams = function () {
-        var deferred = $q.defer();
-
-        if (expiration === undefined || params === undefined || expiration - Date.now() / 1000 < 30) {
-            getCurrentParams().then(function () {
-                log.info("Downloaded signed url parameters.");
-                deferred.resolve(params);
-            }, function () {
-                log.warn("Could not get signed url parameters.");
-                deferred.reject();
-            });
-        } else {
-            deferred.resolve(params);
-        }
-        return deferred.promise;
-    };
-
-
-    // init
-//    aws.getParams();
-
-    return aws;
-}]);;
 app.constant('countries', [
       "Afghanistan", "Aland Islands", "Albania", "Algeria", "American Samoa", "Andorra", "Angola",
       "Anguilla", "Antarctica", "Antigua And Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria",
@@ -4659,7 +4606,7 @@ iconRedSelectedVisited: _.assign({ iconUrl:"data:image/png;base64,iVBORw0KGgoAAA
 iconRedSelected: _.assign({ iconUrl:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAApCAYAAADAk4LOAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABDBJREFUeNq8V0tsG0UY/md2vGunTpyXkwYVEYQ4IHGAC0KCQxGn9g6IihuXgqCgUkUCKh5FAoRKBVwKEhUnKiFAKlSigBQIQgkkXDikUitUpYJiJ85ra68fu96d4f/HTWrHa3ttAivZs5OZ+b/v+18TM6UU/NcPI5CXx9O/m4wP7rZxX6lrb6zkHtQgL6RH1KFbx3ddwdm/Vmi4XSDA/gEunDvG+pJq1d09F6UtmMhZftZ1JwXOB/stkYRAgcpVdk9GnwHDlikQZD/HWNw/ZpmgKkFvjMfiwO9ONS94ElKJGKSFOclThtgbN3jPhJPvvAipz74F87F7d0Yd9sYEFKR/D6eviYQJUOpeSeKlRyD28CH9Lq+tNC5WJfQlBAhgSXLXYJyxrgHIRYmn3tTvpVNT4M9mGtYVukuDo1juKjmYQEToMibJ10/UvLLwDbhnfg7dM2kYUJLBOHelTE1wDiqIXvmxg3eCuO+gfndefaV1Uhg1D/H6SeRYPPlMLYHOnQa5eD18U9EHiBs3QfSE/rgjNYcu/qKDG6ZC5deg9NGZaPGjr3IFAfaIhgXr8YeADYzq4MafO9Cs4uuPW6ugB+1puwSS5MaVbNkHZjbWSuX9C1A6eaRWvMc+APHALQ2xKH/6RfsiRXtkN8F5hizPLxWxZyVF00YCqk6frWXTyQ8h/ugTnWOxnX4CyK4BbIY7Mvj8kl30GLkrJAGcqbe0//m+u7YLr2Ms0A7ZI7tkn7+7un4u73kqg/5jA7Gm/dQ0qdi2W1IEFWQnU6oC2SX7OhBY9d/Pr+YBUrHQQ1RsZFwX3oXznZvmsAnz6wWIMaZ9rQOBVXnksu0ccPcNCZPSOaT6nWdPRSsidFMFqV/aKPh4M57YTmGUdNVU7MpcztEs/u1lNbdWJO/Mk92bxUgFKoPDv+U2pdsvmmom8oPnXIvDQm7TR+8cbyjGG2pmYor9odUgm55V4HlDwUWy1wRSpyYgNl2rqVNRkfL5prZSr4YrWOxFDe2fzeQhrvh0vYomEF3lyILYdKOG6sLGrQtrto837eHQBrlTDbGZXS5EVsPG4zCTvQ4JZkxvZVRbEHqIzdzKhmYX1gUaAIZM2FQSFtfzEKaiJQix6efiO2JHLNuCjFpaRR83zoepaAmypYbYEUti20kFdY22l1YrNRbnX2o1o1ZbFXhnfNJKRVsQ3RilPIY9yAtTo1VUA+pRXlnKox2v37ZqGD/94592oxq6L3D+1d8bQOu4z+4Z5EYXeO1ywfGWKlVgIzUgGmmedcoerUf6R6KDGpvY/rRs1+oG727q1DSPoiISyJYaZO0uFT3gt+0BGmkeRUVkEGKL/N+bydo+KaGR5lFURAbRd7uSby8Xy8EP2ARXS5UizSN3T/rNGPVzfCz99NHRYUVjN+e6AqHPVHrk127PsP/jd/w/AgwAtoGzEPyHsdUAAAAASUVORK5CYII=" }, base),
 };
 }]);;
-app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$q', '$timeout', 'icons', 'log', 'awsUrlSigning', 'version', function (mappings, $http, $rootScope, $filter, $q, $timeout, icons, log, awsUrlSigning, version) {
+app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$q', '$timeout', 'icons', 'log', function (mappings, $http, $rootScope, $filter, $q, $timeout, icons, log) {
     var _baseUrl = 'https://api.croplands.org',
         _cf = crossfilter(),
         l = {
@@ -4855,55 +4802,36 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
 
         // Remove all existing location
         l.clearAll();
-        awsUrlSigning.getParams().then(function (params) {
             var file1 = $q.defer(),
                 file2 = $q.defer(),
                 file3 = $q.defer();
 
 
-            $http({method: 'GET', url: 'https://s3.amazonaws.com/gfsad30/json/records.p1.json' + params, transformRequest: function (data, headersGetter) {
-                var headers = headersGetter();
-                delete headers['authorization'];
-                return headers;
-            }}).
-                success(function (data) {
-                    l.addMarkers(data).then(function () {
-                        file1.resolve();
-                    });
+        $http({method: 'GET', url: '/s3/json/records.p1.json'}).
+            success(function (data) {
+                l.addMarkers(data).then(function () {
+                    file1.resolve();
                 });
-            $http({method: 'GET', url: 'https://s3.amazonaws.com/gfsad30/json/records.p2.json' + params, transformRequest: function (data, headersGetter) {
-                var headers = headersGetter();
-                delete headers['authorization'];
-                return headers;
-            }}).
-                success(function (data) {
-                    l.addMarkers(data).then(function () {
-                        file2.resolve();
-                    });
-                });
-            $http({method: 'GET', url: 'https://s3.amazonaws.com/gfsad30/json/records.p3.json' + params, transformRequest: function (data, headersGetter) {
-                var headers = headersGetter();
-                delete headers['authorization'];
-                return headers;
-            }}).
-                success(function (data) {
-                    l.addMarkers(data).then(function () {
-                        file3.resolve();
-                    });
-                });
-
-            $q.all([file1, file2, file3]).then(function () {
-                $rootScope.$broadcast("locationFactory.markers.downloaded");
-                l.returnMarkers();
-            }, function () {
-                log.warn("Could not download locations.", true);
-                l.returnMarkers();
             });
+        $http({method: 'GET', url: '/s3/json/records.p2.json'}).
+            success(function (data) {
+                l.addMarkers(data).then(function () {
+                    file2.resolve();
+                });
+            });
+        $http({method: 'GET', url: '/s3/json/records.p3.json'}).
+            success(function (data) {
+                l.addMarkers(data).then(function () {
+                    file3.resolve();
+                });
+            });
+        $q.all([file1, file2, file3]).then(function () {
+            $rootScope.$broadcast("locationFactory.markers.downloaded");
+            l.returnMarkers();
         }, function () {
             log.warn("Could not download locations.", true);
+            l.returnMarkers();
         });
-
-
     };
 
     l.addIcon = function (record) {
@@ -5584,9 +5512,6 @@ app.factory('user', [ '$http', '$window', '$q', 'log', function ($http, $window,
     };
 
 }]);;
-// current application version
-app.constant('version', '0.2.1');
-;
 app.value('wmsLayers', {
     gfsad1000v00: {
         name: 'GCE 1km Crop Dominance',
@@ -6378,7 +6303,7 @@ app.directive('blur', [function () {
         }
     };
 }]);;
-app.directive('filter', ['version', 'locationFactory', 'log', '$q', '$timeout', 'mappings', function (version, locationFactory, log, $q, $timeout, mappings) {
+app.directive('filter', ['locationFactory', 'log', '$q', '$timeout', 'mappings', function (locationFactory, log, $q, $timeout, mappings) {
     function reset(scope, callback) {
         log.info("Resetting Filters");
 
@@ -6557,7 +6482,7 @@ app.directive('forgotForm', ['user', 'log', '$timeout', function (user, log, $ti
     };
 
 }]);;
-app.directive('legend', ['version', function (version) {
+app.directive('legend', [function () {
     return {
         restrict: 'E',
         scope: {
@@ -6566,7 +6491,7 @@ app.directive('legend', ['version', function (version) {
         templateUrl: '/static/directives/legend.html'
     };
 }]);;
-app.directive('location', ['version', 'locationFactory', 'mappings', 'leafletData', 'icons', 'mapService', 'log', function (version, locationFactory, mappings, leafletData, icons, mapService, log) {
+app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons', 'mapService', 'log', function (locationFactory, mappings, leafletData, icons, mapService, log) {
     var activeTab = 'help';
 
     function blur(e) {
@@ -6924,7 +6849,7 @@ app.directive('locationRecordList', ['$window', function ($window) {
         templateUrl: '/static/directives/location-record-list.html'
     };
 }]);;
-app.directive('log', ['log', 'version', function (log, version) {
+app.directive('log', ['log', function (log) {
     return {
         link: function (scope) {
             scope.list = log.getLog();
@@ -6994,7 +6919,7 @@ app.directive('loginForm', ['user', 'log', '$timeout', function (user, log, $tim
     };
 
 }]);;
-app.directive('ndvi', ['version', '$http', '$log', '$q', function (version, $http, $log, $q) {
+app.directive('ndvi', ['$http', '$log', '$q', function ($http, $log, $q) {
     var URL = 'https://api.croplands.org/gee/time_series',
         series = {};
     var canceller = $q.defer();
@@ -7167,7 +7092,7 @@ app.directive('passwordConfirm', ['$window', function ($window) {
 }])
 ;
 ;
-app.directive('photos', ['version', function (version) {
+app.directive('photos', [function () {
     return {
         restrict: 'E',
         scope: {

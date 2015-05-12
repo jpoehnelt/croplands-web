@@ -1,4 +1,4 @@
-app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$q', '$timeout', 'icons', 'log', 'awsUrlSigning', 'version', function (mappings, $http, $rootScope, $filter, $q, $timeout, icons, log, awsUrlSigning, version) {
+app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$q', '$timeout', 'icons', 'log', function (mappings, $http, $rootScope, $filter, $q, $timeout, icons, log) {
     var _baseUrl = 'https://api.croplands.org',
         _cf = crossfilter(),
         l = {
@@ -194,55 +194,36 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
 
         // Remove all existing location
         l.clearAll();
-        awsUrlSigning.getParams().then(function (params) {
             var file1 = $q.defer(),
                 file2 = $q.defer(),
                 file3 = $q.defer();
 
 
-            $http({method: 'GET', url: 'https://s3.amazonaws.com/gfsad30/json/records.p1.json' + params, transformRequest: function (data, headersGetter) {
-                var headers = headersGetter();
-                delete headers['authorization'];
-                return headers;
-            }}).
-                success(function (data) {
-                    l.addMarkers(data).then(function () {
-                        file1.resolve();
-                    });
+        $http({method: 'GET', url: '/s3/json/records.p1.json'}).
+            success(function (data) {
+                l.addMarkers(data).then(function () {
+                    file1.resolve();
                 });
-            $http({method: 'GET', url: 'https://s3.amazonaws.com/gfsad30/json/records.p2.json' + params, transformRequest: function (data, headersGetter) {
-                var headers = headersGetter();
-                delete headers['authorization'];
-                return headers;
-            }}).
-                success(function (data) {
-                    l.addMarkers(data).then(function () {
-                        file2.resolve();
-                    });
-                });
-            $http({method: 'GET', url: 'https://s3.amazonaws.com/gfsad30/json/records.p3.json' + params, transformRequest: function (data, headersGetter) {
-                var headers = headersGetter();
-                delete headers['authorization'];
-                return headers;
-            }}).
-                success(function (data) {
-                    l.addMarkers(data).then(function () {
-                        file3.resolve();
-                    });
-                });
-
-            $q.all([file1, file2, file3]).then(function () {
-                $rootScope.$broadcast("locationFactory.markers.downloaded");
-                l.returnMarkers();
-            }, function () {
-                log.warn("Could not download locations.", true);
-                l.returnMarkers();
             });
+        $http({method: 'GET', url: '/s3/json/records.p2.json'}).
+            success(function (data) {
+                l.addMarkers(data).then(function () {
+                    file2.resolve();
+                });
+            });
+        $http({method: 'GET', url: '/s3/json/records.p3.json'}).
+            success(function (data) {
+                l.addMarkers(data).then(function () {
+                    file3.resolve();
+                });
+            });
+        $q.all([file1, file2, file3]).then(function () {
+            $rootScope.$broadcast("locationFactory.markers.downloaded");
+            l.returnMarkers();
         }, function () {
             log.warn("Could not download locations.", true);
+            l.returnMarkers();
         });
-
-
     };
 
     l.addIcon = function (record) {
