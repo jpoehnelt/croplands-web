@@ -6,16 +6,9 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'locationFactory',
     // Apply defaults
     angular.extend($scope, {
         center: {lat: 0, lng: 0, zoom: 15},
-        centerWide: {lat: 0, lng: 0, zoom: 2},
+        centerWide: {lat: 0, lng: 0, zoom: 3},
         images: [],
         markers: {
-            image: {
-                layer: 'markers',
-                lat: 0,
-                lng: 0
-            }
-        },
-        markersDuplicate: {
             image: {
                 layer: 'markers',
                 lat: 0,
@@ -57,10 +50,12 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'locationFactory',
     function getMoreImages(page) {
         // Gets a page of images and shuffles the images all of the images
         $http.get('https://api.croplands.org/api/images?'
-            + 'q={"order_by":[{"field":"classifications_count","direction":"asc"}],"filters":['
-            + '{"name":"image_type","op":"like","val":"%Color%"},'
-            + '{"name":"classifications_majority_agreement","op":"lt","val":75},'
-            + '{"name":"classifications_count","op":"lt","val":30}]}&page=' + String(page)).then(function (response) {
+            + 'q={"order_by":[{"field":"classifications_priority","direction":"desc"},{"field":"classifications_count","direction":"asc"}],"filters":['
+//            + '{"name":"image_type","op":"like","val":"%Color%"},'
+//            + '{"name":"classifications_majority_agreement","op":"lt","val":75},'
+            + '{"name":"classifications_count","op":"lt","val":30}'
+            +']}'
+            + '&page=' + String(page)).then(function (response) {
             $scope.images = $scope.images.concat(response.data.objects);
             max_pages = response.data.total_pages;
         });
