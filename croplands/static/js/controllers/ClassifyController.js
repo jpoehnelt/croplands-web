@@ -6,17 +6,41 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'locationFactory',
     // Apply defaults
     angular.extend($scope, {
         center: {lat: 0, lng: 0, zoom: 15},
-        center_wide: {lat: 0, lng: 0, zoom: 2},
+        centerWide: {lat: 0, lng: 0, zoom: 2},
         images: [],
-        markers: {},
-        markers_wide: {},
-        layers: mapService.layers,
+        markers: {
+            image: {
+                layer: 'markers',
+                lat: 0,
+                lng: 0
+            }
+        },
+        markersDuplicate: {
+            image: {
+                layer: 'markers',
+                lat: 0,
+                lng: 0
+            }
+        },
+        layers: {
+            baselayers: {
+                googleHybrid: angular.copy(mapService.layers.baselayers.googleHybrid)
+            },
+            overlays: {
+                        markers: {
+                            type: 'group',
+                            name: 'markers',
+                            visible: true
+                        }
+
+            }
+        },
         buttons: _.sortBy(angular.copy(mappings.landUseType.choices), function (obj) {
             return obj.order;
         })
     });
 
-    console.log($scope.buttons);
+    console.log($scope.layers);
 
     $scope.$watch(function () {
         return $scope.images.length;
@@ -54,18 +78,15 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'locationFactory',
             $scope.center.lng = $scope.image.location.lon;
             $scope.center.zoom = 15;
 
-            $scope.center_wide.lat = $scope.image.location.lat;
-            $scope.center_wide.lng = $scope.image.location.lon;
+            $scope.centerWide.lat = $scope.image.location.lat;
+            $scope.centerWide.lng = $scope.image.location.lon;
 
             // Set marker
-            $scope.markers.image = {
-                lat: $scope.image.location.lat,
-                lng: $scope.image.location.lon
-            };
-            $scope.markers_wide.image = {
-                lat: $scope.image.location.lat,
-                lng: $scope.image.location.lon
-            };
+            $scope.markers.image.lat = $scope.image.location.lat;
+            $scope.markers.image.lng = $scope.image.location.lon;
+            // Set marker
+            $scope.markersDuplicate.image.lat = $scope.image.location.lat;
+            $scope.markersDuplicate.image.lng = $scope.image.location.lon;
         }
     }
 

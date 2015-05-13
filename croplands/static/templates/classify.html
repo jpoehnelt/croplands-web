@@ -9,17 +9,21 @@
             <div class="well well-sm">
                 <h3 style="text-align: center;margin: 10px 0;">Instructions</h3>
 
-                <p>Select the class that matches the box within the image. If no clear selection is possible, please
+                <p>Select the class that matches the box within the image. If no clear selection is
+                    possible, please
                     select unknown.</p>
 
                 <h3 style="text-align: center;margin: 10px 0;">About</h3>
 
-                <p>Your contribution helps to validate important remote sensing products. All of the data collected will
+                <p>Your contribution helps to validate important remote sensing products. All of the
+                    data collected will
                     be made available to the public.</p>
 
-                <a class="btn btn-danger btn-block" href="http://public.croplands.org/json/classifications.json"
+                <a class="btn btn-danger btn-block"
+                   href="http://public.croplands.org/json/classifications.json"
                    target="_blank">Download JSON</a>
-                <a class="btn btn-danger btn-block" href="http://public.croplands.org/csv/classifications.csv"
+                <a class="btn btn-danger btn-block"
+                   href="http://public.croplands.org/csv/classifications.csv"
                    target="_blank">Download CSV</a>
 
             </div>
@@ -27,14 +31,15 @@
 
         <div class="col-sm-2 col-xl-1">
             <div class="thumbnail">
-                <leaflet style="height: 200px; width:100%;"
+                <leaflet id="map1"
+                         style="height: 200px; width:100%;"
                          layers="layers"
                          center="center"
                          markers="markers">
                 </leaflet>
                 <leaflet id="map2" style="height: 200px; width:100%; margin-top: 5px;"
                          layers="layers"
-                         center="center_wide">
+                         center="centerWide">
                 </leaflet>
             </div>
         </div>
