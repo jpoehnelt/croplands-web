@@ -1,6 +1,7 @@
-from flask import Flask, render_template, make_response, Response
+from flask import Flask, render_template, make_response, Response, redirect, request
 from functools import wraps
 import requests
+from urlparse import urlparse, urlunparse
 
 
 def cache(seconds=0):
@@ -57,6 +58,15 @@ def mobile():
 @cache(0)
 def not_found(e):
     return render_template('404.html', version=app.config['VERSION']), 404
+
+@app.before_request
+def redirect_non_www():
+    """Redirect non-www requests to www."""
+    url_parts = urlparse(request.url)
+    if url_parts.netloc == 'croplands.org':
+        url_parts_list = list(url_parts)
+        url_parts_list[1] = 'www.croplands.org'
+        return redirect(urlunparse(url_parts_list), code=301)
 
 if __name__ == '__main__':
     app.run(debug=True)
