@@ -63,6 +63,7 @@ def not_found(e):
 def redirect_non_www():
     """Redirect non-www requests to www."""
     url_parts = urlparse(request.url)
+    print url_parts
     if url_parts.netloc == 'croplands.org':
         url_parts_list = list(url_parts)
         url_parts_list[1] = 'www.croplands.org'
