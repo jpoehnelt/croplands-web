@@ -1,0 +1,173 @@
+{% extends '_primary_layout.html' %}
+{% block title %}Global Food Security Analysis-Support Data Project | Training and Validation Data{% endblock %}
+
+{% block content %}
+<style>
+    .navbar-inverse .navbar-nav > li > a {
+        padding-top: 7px;
+        padding-bottom: 5px;
+        float: left !important;
+    }
+</style>
+<nav class="navbar navbar-inverse navbar-fixed-top container-static-nav hidden-xs"
+     style="min-height: 30px; z-index:100;">
+    <div class="container">
+        <ul class="nav navbar-nav">
+            <li><a href="/data#Purpose">Purpose</a></li>
+            <li><a href="/data#Issues">Issues</a></li>
+            <li><a href="/data#Sources">Sources</a></li>
+            <li><a href="/data#Definitions">Definitions</a></li>
+            <!--<li><a href="/data#Download">Download</a></li>-->
+        </ul>
+    </div>
+</nav>
+<div class="container" style="padding-top: 70px;">
+    <div class="row">
+        <div class="col-sm-7">
+            <a name="Purpose" class="shifted-anchor">&nbsp;</a>
+
+            <h3>Training and Validation Data</h3>
+
+            <p>Reference data is needed to produce and validate our projects. Within our project we
+                carefully track which data has been used for training and which data has been used
+                for validation, although as you explore the data on this site you will not be able
+                to distinguish between the datasets.</p>
+            <a name="Issues" class="shifted-anchor">&nbsp;</a>
+
+            <h3>Issues and Challenges</h3>
+
+            <p>Getting useful data can be difficult. Two of the primary issues that we run into are
+                mixed pixels and positional error.
+            </p>
+
+
+            <p>The first issue, mixed pixels is due to satellite images not providing a high
+                enough
+                resolution. For example, landsat images have pixels approximately 30 by 30
+                meters in
+                size. Within this pixel there may be multiple land cover types as seen in the
+                diagram below.
+                To solve this issue, we try to limit our data to pure pixels, areas
+                that are
+                homogeneous across an area equal to 3 by 3 landsat pixels. </p>
+
+            <div class="center">
+                <img src="/static/imgs/mixed_pixel.png" class="img-responsive center-block"
+                     style="max-width: 350px;"/>
+            </div>
+
+
+            <p>The second issue requires us to make use of secondary data such as photos to
+                determine if the location is accurate. For example, many of the data locations are
+                along the edge of the areas of interest due to the limitations of data
+                collection.</p>
+
+
+            <a name="Form" class="shifted-anchor">&nbsp;</a>
+
+            <h3>Ground Data Form</h3>
+
+            <p>This standard ground data form is designed and developed by Dr. Russell G. Congalton.
+                This ground data form allows you to collect standardized ground data (or field data)
+                samples from 90 m by 90 m (3 by 3 Landsat pixels) area (or 0.27 m2 area). Data
+                collected includes, GPS location, land cover types, and digital photographs.
+                Ideally, sample locations are identified based on stratified random sampling
+                (stratified by road network, and randomized by locating points every few minutes of
+                drive or certain distance travelled).</p>
+
+            <p>The form can be downloaded <a
+                    href="//public.croplands.org/reference_data_collection_form.pdf"
+                    target="_blank">here</a>.</p>
+            <a name="Sources" class="shifted-anchor">&nbsp;</a>
+
+            <h3>Sources of Data</h3>
+
+            <p>The project is attempting to collect reference data from a variety of sources. Useful data on a global
+                scale is very limited and some creative ideas are required. Some of our current sources are below.</p>
+            <ul>
+                <li>Mobile Application</li>
+                <li>Field Visits</li>
+                <li>Google Street View</li>
+                <li>Very High Resolution Imagery (VHRI)</li>
+                <li>Secondary Sources from Projects/Research (e.g., LUCAS, USDA CDL, published
+                    papers, published maps)
+                </li>
+                <li>Statistical Data for Area Comparisons (e.g., MIRCA2000, FAO)</li>
+            </ul>
+
+            <a name="Definitions" class="shifted-anchor">&nbsp;</a>
+
+            <h3>Definitions of Croplands</h3>
+            <h5>Croplands</h5>
+
+            <p>All cultivated plants harvested for food, feed, and fiber, including plantations (e.g., orchards,
+                vineyards, coffee, tea, rubber).</p>
+            <h5>Minimum Mapping Unit</h5>
+
+            <p>The minimum mapping unit of a particular crop is an area of 3 by 3 (0.81 hectares) Landsat
+                pixels identified as having the same crop type.</p>
+            <h5>Cropland Extent</h5>
+
+            <p>All cultivated plants harvested for food, feed, and fiber, including plantations (e.g., orchards,
+                vineyards, coffee, tea, rubber).</p>
+            <h5>Cropland Pixel</h5>
+
+            <p>50% of pixel is cropped</p>
+            <h5>Irrigated Areas</h5>
+
+            <p>Irrigation is defined as artificial application of any amount of water to overcome crop water
+                stress. Irrigated areas are those areas which are irrigated one or more times during crop growing
+                season.</p>
+            <h5>Rainfed Areas</h5>
+
+            <p>Areas that have no irrigation whatsoever and are precipitation dependent.</p>
+            <h5>Cropping Intensity</h5>
+
+            <p>Number of cropping cycles within a 12 month period.</p>
+            <h5>Crop type</h5>
+
+            <p>Crops (Wheat, Corn, Rice, Barley, Soybeans, Pulses, Cotton, Potatoes)</p>
+        </div>
+        <div class="col-sm-5">
+            <div class="shadow"
+                 style="background-color: #f2f2f2;margin-top: 20px;padding: 3px 30px 10px 30px;">
+
+                <h3>Global Croplands App</h3>
+
+                <p class="lead">Collect data on land-use with our mobile application. It is
+                    simple
+                    to use and
+                    creates the
+                    most benefit for the project. Available for IOS and Android devices.</p>
+
+                <p><a class="btn btn-danger" href="/mobile" role="button">Get the
+                    App &raquo;</a>
+                </p>
+            </div>
+            <div style="margin-top: 40px;padding: 0 5px;">
+                <h3>Feedback and Questions</h3>
+
+                <div id="disqus_thread"></div>
+                <script type="text/javascript">
+                    /* * * CONFIGURATION VARIABLES * * */
+                    var disqus_shortname = 'croplands2';
+
+                    /* * * DON'T EDIT BELOW THIS LINE * * */
+                    (function () {
+                        var dsq = document.createElement('script');
+                        dsq.type = 'text/javascript';
+                        dsq.async = true;
+                        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                    })();
+                </script>
+                <noscript>Please enable JavaScript to view the <a
+                        href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by
+                    Disqus.</a></noscript>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

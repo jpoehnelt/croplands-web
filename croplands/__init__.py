@@ -27,6 +27,11 @@ app.config['VERSION'] = '2.0.10'
 def index(*args, **kwargs):
     return render_template('home.html', version=app.config['VERSION'])
 
+@app.route('/data')
+@cache(300)
+def data_page(*args, **kwargs):
+    return render_template('data.html', version=app.config['VERSION'])
+
 
 @app.route('/app/<path:path>')
 @cache(0)
