@@ -1,4 +1,4 @@
-from flask import Flask, render_template, make_response, Response, request
+from flask import Flask, render_template, make_response, Response
 from functools import wraps
 import requests
 
@@ -20,26 +20,32 @@ def cache(seconds=0):
 
 
 app = Flask(__name__)
-app.config['VERSION'] = '2.0.8'
-app.config['CDN'] = 'https://www.croplands.org/static'
-
+app.config['VERSION'] = '2.0.10'
 
 @app.route('/')
 @cache(300)
 def index(*args, **kwargs):
-    return render_template('home.html', version=app.config['VERSION'], cdn=app.config['CDN'])
+    return render_template('home.html', version=app.config['VERSION'])
+
+@app.route('/data')
+@cache(300)
+def data_page(*args, **kwargs):
+    return render_template('data.html', version=app.config['VERSION'])
 
 
 @app.route('/app/<path:path>')
 @cache(0)
 def angular_app(path=None):
-    return render_template('app.html', version=app.config['VERSION'], cdn=app.config['CDN'])
+    return render_template('app.html', version=app.config['VERSION'])
 
 
 @app.route('/s3/<path:path>')
 @cache(1800)
 def s3_proxy(path=None):
-    print request.headers
+    """ This view acts as a proxy to s3.
+    :param path: str
+    :return: Response
+    """
     def generate():
         r = requests.get('https://s3.amazonaws.com/gfsad30/' + path, stream=True)
         for chunk in r.raw.read(1024 * 1024):
@@ -48,13 +54,14 @@ def s3_proxy(path=None):
     return Response(response=generate(), content_type='application/javascript',
                     headers={'content-encoding': 'gzip'})
 
+@app.route('/mobile')
+def mobile():
+    return render_template('mobile.html', version=app.config['VERSION'])
 
 @app.errorhandler(404)
 @cache(0)
 def not_found(e):
-    return render_template('404.html', version=app.config['VERSION'],
-                           cdn=app.config['CDN']), 404
+    return render_template('404.html', version=app.config['VERSION']), 404
 
 if __name__ == '__main__':
-    app.config['CDN'] = '/static'
     app.run(debug=True)

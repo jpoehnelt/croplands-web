@@ -10,7 +10,7 @@
     <!-- begin css -->
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"
           rel="stylesheet">
-    <link rel="stylesheet" href="{{ cdn }}/css/main.min.css?v={{ version }}">
+    <link rel="stylesheet" href="/static/css/main.min.css?v={{ version }}">
     <!-- end css -->
 
     <!-- Libraries to load from CDNs -->
@@ -33,7 +33,6 @@
         angular.module('server', [])
                 .constant('server.config', {
                     version: '{{ version }}',
-                    cdn: '{{ cdn }}',
                     csrf: '{{ csrf }}'
                 });
     </script>
@@ -58,7 +57,8 @@
             <ul class="nav navbar-nav">
                 <li><a href="/app/map">Map</a></li>
                 <li><a href="/app/classify">Classify</a></li>
-                <li><a target="_self" href="/#Data">Data</a></li>
+                <li><a target="_self" href="/#Products">Products</a></li>
+                <li><a target="_self" href="/data">Data</a></li>
                 <li><a target="_self" href="/#Methods">Methods</a></li>
                 <li><a target="_self" href="/#Publications">Publications</a></li>
                 <li><a target="_self" href="/#Team">Team</a></li>

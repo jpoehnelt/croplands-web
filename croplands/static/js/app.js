@@ -4408,29 +4408,29 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
 
     $routeProvider
         .when('/app/map', {
-            templateUrl: cdn + '/templates/map.html',
+            templateUrl: '/static/templates/map.html',
             controller: 'MapController',
             reloadOnSearch: false
         }).when('/app/a/login', {
-            templateUrl: cdn + '/templates/account/login.html',
+            templateUrl: '/static/templates/account/login.html',
             controller: 'LoginController'
         }).when('/app/a/register', {
-            templateUrl: cdn + '/templates/account/register.html',
+            templateUrl: '/static/templates/account/register.html',
             controller: 'RegisterController'
         }).when('/app/a/forgot', {
-            templateUrl: cdn + '/templates/account/forgot.html',
+            templateUrl: '/static/templates/account/forgot.html',
             controller: 'ForgotController'
         }).when('/app/a/reset', {
-            templateUrl: cdn + '/templates/account/reset.html',
+            templateUrl: '/static/templates/account/reset.html',
             controller: 'ResetController'
         }).when('/app/a/logout', {
-            templateUrl: cdn + '/templates/account/logout.html',
+            templateUrl: '/static/templates/account/logout.html',
             controller: 'LogoutController'
         }).when('/app/classify', {
-            templateUrl: cdn + '/templates/classify.html',
+            templateUrl: '/static/templates/classify.html',
             controller: 'ClassifyController'
         }).otherwise({
-            templateUrl: cdn + '/templates/404.html'
+            templateUrl: '/static/templates/404.html'
         });
     $locationProvider.html5Mode(true);
 //    $locationProvider.hashPrefix('!/');
@@ -5307,7 +5307,9 @@ app.constant('mappings', {
             {'id': 17, 'label': 'Cassava', 'description': ''},
             {'id': 18, 'label': 'Sugarbeets', 'description': ''},
             {'id': 19, 'label': 'Palm', 'description': ''},
-            {'id': 20, 'label': 'Others', 'description': ''}
+            {'id': 20, 'label': 'Others', 'description': ''},
+            {'id': 21, 'label': 'Plantations', 'description': 'Plantations or other continuous crops'},
+            {'id': 22, 'label': 'Fallow', 'description': ''}
         ]
     },
     lat: {
@@ -5544,7 +5546,7 @@ app.value('wmsLayers', {
         name: 'GCE 1km Multi-study Crop Mask',
         type: 'wms',
         url: 'https://mapsengine.google.com:443/10477185495164119823-00161330875310406093-4/wms/',
-        visible: false,
+        visible: true,
         infoVisible: false,
         layerOptions: {
             layers: '10477185495164119823-00161330875310406093-4,10477185495164119823-16382460135717964770-4',
@@ -5596,92 +5598,116 @@ app.controller("AccountFormController", ['$location', '$scope', 'log', '$window'
     }
 
 }]);;
-app.controller("ClassifyController", ['$scope', 'mapService', 'locationFactory', 'leafletData', 'mappings', '$q', '$http', '$timeout', function ($scope, mapService, locationFactory, leafletData, mappings, $q, $http, $timeout) {
+app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http', function ($scope, mapService, mappings, $http) {
     var page = 1, max_pages = 1;
-
-    console.log(mappings.landUseType.choices);
 
     // Apply defaults
     angular.extend($scope, {
+        counter: 0,
         center: {lat: 0, lng: 0, zoom: 15},
-        center_wide: {lat: 0, lng: 0, zoom: 2},
+        centerWide: {lat: 0, lng: 0, zoom: 3},
         images: [],
-        markers: {},
-        markers_wide: {},
-        layers: mapService.layers,
+        markers: {
+            image: {
+                layer: 'markers',
+                lat: 0,
+                lng: 0
+            }
+        },
+        layers: {
+            baselayers: {
+                googleHybrid: angular.copy(mapService.layers.baselayers.googleHybrid)
+            },
+            overlays: {
+                markers: {
+                    type: 'group',
+                    name: 'markers',
+                    visible: true
+                }
+
+            }
+        },
         buttons: _.sortBy(angular.copy(mappings.landUseType.choices), function (obj) {
-            return obj.order;
+            return obj.order; // custom defined orderring per Pardha
         })
     });
 
-    console.log($scope.buttons);
-
-    $scope.$watch(function () {
-        return $scope.images.length;
-    }, function (l, previous) {
-        if (previous === 0 && l > 0) {
-            getImage();
-        }
-        if (l < 300 && max_pages >= page) {
-            console.log($scope.images.length);
-            getMoreImages(page++);
-        }
-    });
-
     function getMoreImages(page) {
-        // Gets a page of images and shuffles the images all of the images
+        // Function gets images form the api with specific set of constraints to limit.
+        // Gets a page of images
         $http.get('https://api.croplands.org/api/images?'
-            + 'q={"order_by":[{"field":"classifications_count","direction":"asc"}],"filters":['
-            + '{"name":"image_type","op":"like","val":"%Color%"},'
-            + '{"name":"classifications_majority_agreement","op":"lt","val":75},'
-            + '{"name":"classifications_count","op":"lt","val":30}]}&page=' + String(page)).then(function (response) {
+            + 'q={"order_by":[{"field":"classifications_priority","direction":"desc"}]'
+//            + ',"filters":['
+//            + '{"name":"image_type","op":"like","val":"%Color%"},'
+//            + '{"name":"classifications_majority_agreement","op":"lt","val":75},'
+//            + '{"name":"classifications_count","op":"lt","val":30}'
+//            + ']'
+            + '}'
+            + '&page=' + String(page)).then(function (response) {
             $scope.images = $scope.images.concat(response.data.objects);
             max_pages = response.data.total_pages;
         });
     }
 
     function getImage() {
+        // Function gets the next image from the array and moves the center of the map
         if ($scope.images.length > 0) {
 
             // Get next image and remove from array
             $scope.image = $scope.images.pop();
             $scope.image.url = _.trimLeft($scope.image.url, 'images/');
 
-            // Get coordinates of location
+            // Get coordinates of location and adjust maps
             $scope.center.lat = $scope.image.location.lat;
             $scope.center.lng = $scope.image.location.lon;
             $scope.center.zoom = 15;
 
-            $scope.center_wide.lat = $scope.image.location.lat;
-            $scope.center_wide.lng = $scope.image.location.lon;
+            $scope.centerWide.lat = $scope.image.location.lat;
+            $scope.centerWide.lng = $scope.image.location.lon;
+            $scope.centerWide.zoom = 3;
+
 
             // Set marker
-            $scope.markers.image = {
-                lat: $scope.image.location.lat,
-                lng: $scope.image.location.lon
-            };
-            $scope.markers_wide.image = {
-                lat: $scope.image.location.lat,
-                lng: $scope.image.location.lon
-            };
+            $scope.markers.image.lat = $scope.image.location.lat;
+            $scope.markers.image.lng = $scope.image.location.lon;
         }
     }
 
+    // watch the number of images to classify and call function to get more as neccesary
+    $scope.$watch(function () {
+        return $scope.images.length;
+    }, function (l, previous) {
+        // first page
+        if (previous === 0 && l > 0) {
+            getImage();
+        }
+        // get next page
+        if (l < 300 && max_pages >= page) {
+            getMoreImages(page++);
+        }
+    });
+
     $scope.skip = function () {
+        // User chooses not to classify image.
         getImage();
     };
 
-    $scope.classify = function (i) {
-        if (i) {
+    $scope.classify = function (classification_type) {
+        // precondition that a classification type is defined
+        if (classification_type !== undefined) {
             var data = {
-                "classification": i,
+                "classification": classification_type,
                 "image": angular.copy($scope.image.id)
             };
-            $http.post('https://api.croplands.org/api/image_classifications', data).then(function (response) {
+
+            // post to api
+            $http.post('https://api.croplands.org/api/image_classifications', data).then(function () {
+                $scope.counter++;
             });
         }
+        // go to the next image
         getImage();
-    }
+    };
 
 }]);;
 app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'leafletData', '$timeout', '$window', '$location', 'mappings', 'log', function ($scope, mapService, locationFactory, leafletData, $timeout, $window, $location, mappings, log) {
@@ -6482,6 +6508,36 @@ app.directive('forgotForm', ['user', 'log', '$timeout', function (user, log, $ti
     };
 
 }]);;
+app.directive('images', [function () {
+    return {
+        restrict: 'E',
+        scope: {
+            items: '=items'
+        },
+        link: function (scope) {
+            scope.$watch('items', function (val) {
+                if (val && val.length > 0) {
+                    scope.active = scope.items[0];
+                }
+                else {
+                    scope.active = null;
+                }
+            });
+            scope.src = function (url) {
+                if(url) {
+                    // use first directory to make subdomain
+                    return "//images.croplands.org" + url.replace('images/','/');
+                }
+            };
+
+            scope.changeLeadPhoto = function (index) {
+                scope.active = scope.items[index];
+            };
+        },
+        templateUrl: '/static/directives/images.html'
+    };
+
+}]);;
 app.directive('legend', [function () {
     return {
         restrict: 'E',
@@ -7092,35 +7148,6 @@ app.directive('passwordConfirm', ['$window', function ($window) {
 }])
 ;
 ;
-app.directive('photos', [function () {
-    return {
-        restrict: 'E',
-        scope: {
-            items: '=items'
-        },
-        link: function (scope) {
-            scope.$watch('items', function (val) {
-                if (val && val.length > 0) {
-                    scope.active = scope.items[0];
-                }
-                else {
-                    scope.active = null;
-                }
-            });
-            scope.src = function (url) {
-                if(url) {
-                    return "https://s3.amazonaws.com/gfsad30/" + url;
-                }
-            };
-
-            scope.changeLeadPhoto = function (index) {
-                scope.active = scope.items[index];
-            };
-        },
-        templateUrl: '/static/directives/photos.html'
-    };
-
-}]);;
 app.directive('resetForm', ['user', '$window', '$timeout', function (user, $window, $timeout) {
     return {
         restrict: 'E',

@@ -1,0 +1,88 @@
+{% extends '_primary_layout.html' %}
+
+{% block content %}
+<div style="background-color:#f2f2f2;">
+    <div class="container container-static-nav">
+        <h3 class="text-danger text-capitalize center"> -- Anticipated Release - Early Summer 2015
+            --</h3>
+
+        <p class="center text-muted">Contact jpoehnelt@usgs.gov to test the pre-release version.</p>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4">
+            <div style="opacity: 0.5; margin: 30px 0;">
+                <a href="#" disable><img src="/static/imgs/app_store.jpg"
+                                         class="img-responsive"/></a> <br/>
+                <a href="#" disable><img src="/static/imgs/google_play.jpg" class="img-responsive"/></a>
+            </div>
+            <img src="/static/imgs/ios_screenshot_2015-05.png"
+                 class="img-responsive hidden-xs hidden-sm"/>
+
+        </div>
+        <div class="col-sm-8">
+            <h2>Global Croplands Mobile Application</h2>
+
+            <p>Help support the project by collecting data from around the world. Training and
+                validation for land-use and more specifically crop type is extremely limited. Every
+                location you collect with this mobile app improves our products. All of the data
+                collected is made freely available for use and we encourage collaboration with other
+                projects.</p>
+
+            <h3>Instructions</h3>
+
+            <p>The mobile application is quite simple in its operation. To collect data for the
+                project simply click the collect data button and fill out the appropriate fields.
+                You must also enable the application to collect location information. Use the
+                heading capture button to get the heading to the center of the area of interest from
+                your current location.</p>
+
+            <h3>Frequently Asked Questions</h3>
+
+            <p><strong>Can I be on the edge of the field?</strong> The application and its workflow
+                is setup so that you do not need to be iat the center of the area of interest.
+                Instead, use the built-in compass to capture the direction to the center of the area
+                from your current location.
+            </p>
+
+            <p><strong>How many pictures should I take?</strong> For most locations, two is
+                sufficient. One picture can give context and show surrounding areas while a second
+                picture can show a closeup of the vegetation or crop at the location.
+            </p>
+
+            <p><strong>Why is the heading inaccurate?</strong> The built in compass needs to
+                regularly be calibrated. Android devices do not automatically prompt the user to
+                calibrate the device. To do so, simply rotate the device on each axis. Do this
+                often or whenever you enter a new environment.
+            </p>
+
+            <p><strong>What information do you collect?</strong> The app only collects the
+                information that you submit. This includes the gps location for each point, any
+                compass and heading data related to the point and photos taken with the app.
+            </p>
+            <h3>Discuss the Application</h3>
+
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                /* * * CONFIGURATION VARIABLES * * */
+                var disqus_shortname = 'croplands2';
+
+                /* * * DON'T EDIT BELOW THIS LINE * * */
+                (function () {
+                    var dsq = document.createElement('script');
+                    dsq.type = 'text/javascript';
+                    dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a
+                    href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by
+                Disqus.</a></noscript>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

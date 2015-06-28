@@ -1,4 +1,4 @@
-app.directive('photos', [function () {
+app.directive('images', [function () {
     return {
         restrict: 'E',
         scope: {
@@ -15,7 +15,8 @@ app.directive('photos', [function () {
             });
             scope.src = function (url) {
                 if(url) {
-                    return "https://s3.amazonaws.com/gfsad30/" + url;
+                    // use first directory to make subdomain
+                    return "//images.croplands.org" + url.replace('images/','/');
                 }
             };
 
@@ -23,7 +24,7 @@ app.directive('photos', [function () {
                 scope.active = scope.items[index];
             };
         },
-        templateUrl: '/static/directives/photos.html'
+        templateUrl: '/static/directives/images.html'
     };
 
 }]);

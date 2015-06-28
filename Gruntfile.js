@@ -142,9 +142,25 @@ module.exports = function (grunt) {
                 main_target: {
                     src: "coverage/lcovonly.info"
                 }
+            },
+            s3: {
+                options: {
+                    bucket: "croplands-static"
+                },
+                release: {
+                    expand: true,
+                    cwd: "croplands/static/",
+                    src: "**",
+                    dest: "static/"
+                },
+                dev: {
+                    expand: true,
+                    cwd: "croplands/static/",
+                    src: "**",
+                    dest: "dev/static/"
+                }
             }
-        }
-    );
+    });
 
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -154,7 +170,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-sloc');
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks("grunt-coveralls");
-    grunt.loadNpmTasks('grunt-replace');
+//    grunt.loadNpmTasks('grunt-replace');
     grunt.loadNpmTasks('grunt-aws');
 //    grunt.loadNpmTasks('grunt-invalidate-cloudfront');
 

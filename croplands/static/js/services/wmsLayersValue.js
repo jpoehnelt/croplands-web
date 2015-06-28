@@ -30,7 +30,7 @@ app.value('wmsLayers', {
         name: 'GCE 1km Multi-study Crop Mask',
         type: 'wms',
         url: 'https://mapsengine.google.com:443/10477185495164119823-00161330875310406093-4/wms/',
-        visible: false,
+        visible: true,
         infoVisible: false,
         layerOptions: {
             layers: '10477185495164119823-00161330875310406093-4,10477185495164119823-16382460135717964770-4',
