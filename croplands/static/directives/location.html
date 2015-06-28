@@ -31,8 +31,8 @@
                             <i class="fa fa-list-ul"></i>
                         </a>
                         <a class="list-group-item"
-                           ng-click="changeActiveTab('photos')"
-                           ng-class="{ active: activeTab === 'photos', 'disabled': location.photos === undefined || location.photos.length === 0}"
+                           ng-click="changeActiveTab('images')"
+                           ng-class="{ active: activeTab === 'images', 'disabled': location.images === undefined || location.images.length === 0}"
                            data-title="Photos" data-placement="right" bs-tooltip>
                             <i class="fa fa-photo"></i>
                         </a>
@@ -64,10 +64,10 @@
                             </div>
                         </div>
 
-                        <div class="photos" ng-show="activeTab === 'photos'" ng-cloak>
+                        <div class="images" ng-show="activeTab === 'images'" ng-cloak>
                             <div ng-show="!editLoading">
-                                <photos items="location.photos"
-                                        ng-show="location.photos && location.photos.length >= 1"></photos>
+                                <images items="location.images"
+                                        ng-show="location.images && location.images.length >= 1"></images>
                             </div>
                         </div>
                         <div class="chart" ng-show="activeTab === 'chart'">
