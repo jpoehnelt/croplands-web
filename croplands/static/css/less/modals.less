@@ -14,7 +14,7 @@
 
 // Container that the modal scrolls within
 .modal {
-//  display: none;
+  //  display: none;
   overflow: hidden;
   position: fixed;
   top: 0;
@@ -23,7 +23,7 @@
   left: 0;
   z-index: @zindex-modal;
   -webkit-overflow-scrolling: touch;
-//  background: @modal-backdrop-color;
+  //  background: @modal-backdrop-color;
   // Prevent Chrome on Windows from adding a focus outline. For details, see
   // https://github.com/twbs/bootstrap/pull/10951.
   outline: 0;
@@ -33,12 +33,19 @@
     .translate3d(0, -25%, 0);
     .transition-transform(~"0.3s ease-out");
   }
-  &.in .modal-dialog { .translate3d(0, 0, 0) }
+  &.in .modal-dialog {
+    .translate3d(0, 0, 0)
+  }
 }
 
 .modal-bg {
-    background-color: rgba(255,255,255,0.85);
+  background-color: rgba(255, 255, 255, 0.85);
 }
+
+.modal-bg-dark {
+  background-color: rgba(0, 0, 0, 0.85);
+}
+
 .modal-open .modal {
   overflow-x: hidden;
   overflow-y: auto;
@@ -58,7 +65,7 @@
   border: 1px solid @modal-content-fallback-border-color; //old browsers fallback (ie8 etc)
   border: 1px solid @modal-content-border-color;
   border-radius: @border-radius-large;
-  .box-shadow(0 3px 9px rgba(0,0,0,.5));
+  .box-shadow(0 3px 9px rgba(0, 0, 0, .5));
   background-clip: padding-box;
   // Remove focus outline from opened modal
   outline: 0;
@@ -74,8 +81,12 @@
   z-index: @zindex-modal-background;
   background-color: @modal-backdrop-bg;
   // Fade for backdrop
-  &.fade { .opacity(0); }
-  &.in { .opacity(@modal-backdrop-opacity); }
+  &.fade {
+    .opacity(0);
+  }
+  &.in {
+    .opacity(@modal-backdrop-opacity);
+  }
 }
 
 // Modal header
@@ -85,6 +96,7 @@
   border-bottom: 1px solid @modal-header-border-color;
   min-height: (@modal-title-padding + @modal-title-line-height);
 }
+
 // Close icon
 .modal-header .close {
   margin-top: -2px;
@@ -141,14 +153,33 @@
     width: @modal-md;
     margin: 70px auto;
   }
+
   .modal-content {
-    .box-shadow(0 5px 15px rgba(0,0,0,.5));
+    .box-shadow(0 5px 15px rgba(0, 0, 0, .5));
   }
 
   // Modal sizes
-  .modal-sm { width: @modal-sm; }
+  .modal-sm {
+    width: @modal-sm;
+  }
+
+  .img-responsive {
+    max-height: @screen-sm-min*.6;
+  }
 }
 
 @media (min-width: @screen-md-min) {
-  .modal-lg { width: @modal-lg; }
+  .modal-lg {
+    width: @modal-lg;
+  }
+
+  .img-responsive {
+    max-height: @screen-md-min*.6;
+  }
+}
+
+@media (min-width: @screen-lg-min) {
+  .img-responsive {
+    max-height: @screen-lg-min*.6;
+  }
 }
