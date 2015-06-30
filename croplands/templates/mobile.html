@@ -1,21 +1,14 @@
 {% extends '_primary_layout.html' %}
 
 {% block content %}
-<div style="background-color:#f2f2f2;">
-    <div class="container container-static-nav">
-        <h3 class="text-danger text-capitalize center"> -- Anticipated Release - Early Summer 2015
-            --</h3>
-
-        <p class="center text-muted">Contact jpoehnelt@usgs.gov to test the pre-release version.</p>
-    </div>
-</div>
-<div class="container">
+<div class="container container-static-nav">
     <div class="row">
         <div class="col-sm-4">
-            <div style="opacity: 0.5; margin: 30px 0;">
-                <a href="#" disable><img src="/static/imgs/app_store.jpg"
-                                         class="img-responsive"/></a> <br/>
-                <a href="#" disable><img src="/static/imgs/google_play.jpg" class="img-responsive"/></a>
+            <div style="margin: 30px 0;">
+                <a href="https://itunes.apple.com/us/app/global-croplands/id983733201">
+                    <img src="/static/imgs/app_store.jpg" class="img-responsive hover"/></a> <br/>
+                <a href="https://play.google.com/store/apps/details?id=com.ionicframework.croplandsmobile194689">
+                    <img src="/static/imgs/google_play.jpg" class="img-responsive hover"/></a>
             </div>
             <img src="/static/imgs/ios_screenshot_2015-05.png"
                  class="img-responsive hidden-xs hidden-sm"/>
@@ -37,6 +30,10 @@
                 You must also enable the application to collect location information. Use the
                 heading capture button to get the heading to the center of the area of interest from
                 your current location.</p>
+
+            <h3>Usage Tips</h3>
+
+            <p>Hold the mobile device in landscape mode to take photos.</p>
 
             <h3>Frequently Asked Questions</h3>
 
@@ -61,6 +58,7 @@
                 information that you submit. This includes the gps location for each point, any
                 compass and heading data related to the point and photos taken with the app.
             </p>
+
             <h3>Discuss the Application</h3>
 
             <div id="disqus_thread"></div>
