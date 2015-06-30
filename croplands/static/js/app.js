@@ -6526,7 +6526,7 @@ app.directive('images', [function () {
             scope.src = function (url) {
                 if(url) {
                     // use first directory to make subdomain
-                    return "//images.croplands.org" + url.replace('images/','/');
+                    return "images.croplands.org" + url.replace('images/','/');
                 }
             };
 
