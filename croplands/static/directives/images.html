@@ -1,8 +1,3 @@
-<div class="thumbnail">
-    <img ng-src="{{ src(active.url) }}" class="img-responsive">
-    <div class="caption-tight small">{{ active.date_taken | date : mediumDate }}</div>
-</div>
-
 <div class="row">
     <div ng-repeat="photo in items | orderBy:'date_taken':true | limitTo: 12 " class="col-sm-3">
         <a ng-click="changeLeadPhoto($index)" class="thumbnail">
@@ -11,3 +6,8 @@
     </div>
 </div>
 
+<div class="modal modal-bg-dark" ng-if="modal" ng-click="closeModal()">
+    <div class="modal-dialog modal-lg center">
+        <img ng-src="{{ src(active.url) }}" class="img-responsive">
+    </div>
+</div>

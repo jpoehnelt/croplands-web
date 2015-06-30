@@ -21,7 +21,12 @@ app.directive('images', [function () {
             };
 
             scope.changeLeadPhoto = function (index) {
+                scope.modal = true;
                 scope.active = scope.items[index];
+            };
+
+            scope.closeModal = function () {
+                scope.modal = false;
             };
         },
         templateUrl: '/static/directives/images.html'
