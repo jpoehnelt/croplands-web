@@ -6744,6 +6744,12 @@ button.close {
   margin-left: auto;
   margin-right: auto;
 }
+.hover {
+  opacity: 0.8;
+}
+.hover:hover {
+  opacity: 1;
+}
 .pull-right {
   float: right !important;
 }
