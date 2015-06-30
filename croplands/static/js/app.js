@@ -5636,16 +5636,15 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
         // Function gets images form the api with specific set of constraints to limit.
         // Gets a page of images
         $http.get('https://api.croplands.org/api/images?'
-            + 'q={"order_by":[{"field":"classifications_priority","direction":"desc"}]'
-//            + ',"filters":['
+            + 'q={"order_by":[{"field":"classifications_priority","direction":"desc"}'
+            + ',{"field":"classifications_count","direction":"asc"}],"filters":['
 //            + '{"name":"image_type","op":"like","val":"%Color%"},'
 //            + '{"name":"classifications_majority_agreement","op":"lt","val":75},'
-//            + '{"name":"classifications_count","op":"lt","val":30}'
-//            + ']'
-            + '}'
+            + '{"name":"classifications_count","op":"lt","val":30}'
+            + ']}'
             + '&page=' + String(page)).then(function (response) {
-            $scope.images = $scope.images.concat(response.data.objects);
-            max_pages = response.data.total_pages;
+                $scope.images = $scope.images.concat(response.data.objects);
+                max_pages = response.data.total_pages;
         });
     }
 
@@ -6526,7 +6525,7 @@ app.directive('images', [function () {
             scope.src = function (url) {
                 if(url) {
                     // use first directory to make subdomain
-                    return "images.croplands.org" + url.replace('images/','/');
+                    return "http://images.croplands.org" + url.replace('images/','/');
                 }
             };
 
