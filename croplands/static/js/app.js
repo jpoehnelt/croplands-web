@@ -6551,54 +6551,53 @@ app.directive('legend', [function () {
         templateUrl: '/static/directives/legend.html'
     };
 }]);;
-app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons', 'mapService', 'log', function (locationFactory, mappings, leafletData, icons, mapService, log) {
-    var activeTab = 'help';
+app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons', 'mapService', 'log', '$q', function (locationFactory, mappings, leafletData, icons, mapService, log, $q) {
+    var activeTab = 'help',
+        gridImageURL = "/static/imgs/icons/grid.png", shapes = {};
 
-    function blur(e) {
-        if (e) {
-            $('#' + e.currentTarget.id).blur();
-        }
-    }
-
-    function resetShapes(shapes, callback) {
+    function clearShapes() {
+        var deferred = $q.defer();
         // remove various layers from map and delete reference
         leafletData.getMap().then(function (map) {
-            _.forOwn(shapes, function (shape) {
+            _.forOwn(shapes, function (shape, key) {
+                log.info('[Location] Removing ' + key + ' from map.');
                 map.removeLayer(shape);
             });
-            if (callback) {
-                callback();
-            }
+            shapes = {};
+            deferred.resolve();
         });
+
+        return deferred.promise;
     }
 
-    function buildShapes(shapes, latLng) {
-//        var gridImageURL = "data:image/png;base64,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";
-        var gridImageURL = "//static.croplands.org/images/icons/grid.png";
+    function buildShapes(latLng, points) {
+        clearShapes().then(function () {
+            var circle250 = L.circle(latLng, 125, {fill: false, dashArray: [3, 6], color: '#00FF00'});//
+            shapes.locationAreaGrid = L.imageOverlay(gridImageURL, circle250.getBounds());
 
-        shapes.marker = L.marker(latLng, {icon: new L.icon(icons.iconRedSelected), zIndexOffset: 1000});
+            shapes.locationMarker = L.marker(latLng, {icon: new L.icon(icons.iconRedSelected), zIndexOffset: 1000});
 
-        // Build rectangle
-//        shapes.circle30 = L.circle(latLng, 15, {fill: false, dashArray: [3, 6], color: '#FF0000'});
-        shapes.circle250 = L.circle(latLng, 125, {fill: false, dashArray: [3, 6], color: '#00FF00'});
-//        shapes.box30 = L.rectangle(shapes.circle30.getBounds(), {fill: false, dashArray: [3, 6], color: '#FF0000'});
-//        shapes.box250 = L.rectangle(shapes.circle250.getBounds(), {fill: false, dashArray: [3, 6], color: '#00FF00'});
-        shapes.gridImage = L.imageOverlay(gridImageURL, shapes.circle250.getBounds());
+            if (points) {
+                var opacity = 0.5 / points.length;
+                _.each(points, function (pt, i) {
+                    shapes["gpsPoint_#" + i] = L.circle([pt.lat, pt.lon], pt.accuracy, {stroke: true, opacity: opacity, fillOpacity: opacity, fill: true, color: '#00FF00'});
+                    console.log(shapes["pt" + i]);
+                });
 
-        leafletData.getMap().then(function (map) {
-//            shapes.box30.addTo(map);
-//            shapes.box250.addTo(map);
-            shapes.marker.addTo(map);
-            shapes.gridImage.addTo(map);
+            }
 
+            leafletData.getMap().then(function (map) {
+                _.forOwn(shapes, function (shape) {
+                    shape.addTo(map);
+                });
+
+            });
         });
     }
 
     function init(scope) {
         // reset location data
-        console.log(scope.location);
         scope.location = {};
-        console.log(scope.location);
 
         // use same tab as before
         scope.activeTab = activeTab;
@@ -6622,9 +6621,7 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
                 scope.lat = data.lat;
                 scope.lon = data.lon;
 
-                resetShapes(scope.shapes, function () {
-                    buildShapes(scope.shapes, [scope.lat, scope.lon]);
-                });
+                buildShapes([scope.lat, scope.lon], scope.location.points);
             });
         } else {
             // if no id, just save location
@@ -6632,21 +6629,11 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
             scope.location.lon = scope.lon;
         }
 
-        if (scope.shapes === undefined) {
-            scope.shapes = {};
-        }
-
         if (scope.lat && scope.lon) {
-
-            // Build needs to be in callback of reset otherwise it
-            // overwrites that shape references need to remove from map
-
-            resetShapes(scope.shapes, function () {
-                buildShapes(scope.shapes, [scope.lat, scope.lon]);
-            });
+            buildShapes([scope.lat, scope.lon]);
         }
         else {
-            resetShapes(scope.shapes);
+            clearShapes();
         }
 
 
@@ -6732,7 +6719,7 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
             );
             scope.$watch('visible', function (visible) {
                 if (!visible) {
-                    resetShapes(scope.shapes);
+                    clearShapes();
                 }
             });
         },
