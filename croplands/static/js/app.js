@@ -4802,9 +4802,9 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
 
         // Remove all existing location
         l.clearAll();
-            var file1 = $q.defer(),
-                file2 = $q.defer(),
-                file3 = $q.defer();
+        var file1 = $q.defer(),
+            file2 = $q.defer(),
+            file3 = $q.defer();
 
 
         $http({method: 'GET', url: '/s3/json/records.p1.json'}).
@@ -4825,7 +4825,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
                     file3.resolve();
                 });
             });
-        $q.all([file1, file2, file3]).then(function () {
+        $q.all([file1.promise, file2.promise, file3.promise]).then(function () {
             $rootScope.$broadcast("locationFactory.markers.downloaded");
             l.returnMarkers();
         }, function () {
