@@ -1,8 +1,8 @@
 app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval', '$timeout', function (wmsLayers, leafletData, $http, $q, $interval, $timeout) {
     var CroplandMap = function (name, type, assetName, years, layerOptions, legend) {
         this._getUrl = function (year) {
-//            return 'https://tiles.croplands.org/' + this.assetName + '/{x}/{y}/{z}?year=' + year;
-            return 'http://127.0.0.1:8000/tiles/' + this.assetName + '/{x}/{y}/{z}?year=' + year;
+            return 'https://tiles.croplands.org/' + this.assetName + '/{x}/{y}/{z}?year=' + year;
+//            return 'http://127.0.0.1:8000/tiles/' + this.assetName + '/{x}/{y}/{z}?year=' + year;
         };
 
 
