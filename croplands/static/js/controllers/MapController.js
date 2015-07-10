@@ -145,6 +145,13 @@ app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'lea
         }
     });
 
+//    $scope.$watch(function () {
+//        return mapService.layers.overlays;
+//    }, function (val) {
+//        $scope.layers.overlays = val;
+//        console.log($scope.layers.overlays);
+//    }, true);
+
     $scope.$on('location.record.edit.close', function () {
         $scope.closeRecordEditForm();
     });
@@ -410,7 +417,8 @@ app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'lea
             markers: [],
             center: mapService.center,
             paths: mapService.paths,
-            layers: angular.copy(mapService.layers)
+//            layers: angular.copy(mapService.layers)
+            layers: mapService.layers
         };
 
 
@@ -453,4 +461,9 @@ app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'lea
 
     init();
 
+
+    $scope.play = function (play) {
+        console.log(play);
+        play();
+    };
 }]);

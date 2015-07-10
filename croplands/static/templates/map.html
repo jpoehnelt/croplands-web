@@ -143,7 +143,7 @@
                    ng-click="tableOfContentsVisible = !tableOfContentsVisible;"></i>
                 <h5 class="panel-title"><i class="fa fa-fw fa-database"></i> Map Layers</h5>
             </div>
-            <div class="panel-body">
+            <div class="panel-body" style="overflow: scroll;max-height: 500px;">
                 <h5>Background Layers</h5>
 
                 <div class="radio" ng-repeat="(key, layer) in layers.baselayers">
@@ -216,7 +216,26 @@
                         Training and Validation Data
                     </label>
                 </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="layers.overlays.ndvi.visible"
+                               ng-value="true">
+                        NDVI Annual Composite Landsat 7
+                        <i class="fa fa-caret-down fa-fw"
+                           ng-click="toggleLayerInfo(layers.overlays.ndvi,$event)"></i>
+                    </label>
+                </div>
+                <div ng-show="layers.overlays.ndvi.infoVisible" class="am-fade"
+                     style="padding: 0 10px 10px 15px;">
+                    <div class="range">
+                        <label class="control-label small" for="opacitySliderV10">Opacity </label>
 
+                        <input type="range" id="opacitySliderNDVI"
+                               ng-model="layers.overlays.ndvi.layerOptions.opacity" max="1"
+                               min="0"
+                               step=".01"/>
+                    </div>
+                </div>
                 <div class="checkbox">
                     <label>
                         <input type="checkbox" ng-model="layers.overlays.gee.visible"
@@ -227,18 +246,23 @@
                 </div>
                 <div ng-show="layers.overlays.gee.infoVisible" class="am-fade"
                      style="padding: 0 10px 10px 15px;">
-                    <legend items="layers.overlays.gee.legend" ng-hide="code || code === 0"></legend>
-                    <legend items="layers.overlays.gee.clusters" ng-show="layers.overlays.gee.clusters"></legend>
+                    <legend items="layers.overlays.gee.legend"
+                            ng-hide="code || code === 0"></legend>
+                    <legend items="layers.overlays.gee.clusters"
+                            ng-show="layers.overlays.gee.clusters"></legend>
                     <form class="form-horizontal" style="margin-top: 5px;">
                         <div class="form-group">
-                            <label for="codeSelect" class="control-label left small col-sm-6">Mask by
+                            <label for="codeSelect" class="control-label left small col-sm-6">Mask
+                                by
                                 Class</label>
 
                             <div class="col-sm-6">
-                                <select id="codeSelect" class="form-control input-sm" ng-model="code">
+                                <select id="codeSelect" class="form-control input-sm"
+                                        ng-model="code">
                                     <option></option>
 
-                                    <option ng-repeat="code in layers.overlays.gee.legend" value="{{ $index }}">{{
+                                    <option ng-repeat="code in layers.overlays.gee.legend"
+                                            value="{{ $index }}">{{
                                         code.label }}
                                     </option>
 
@@ -247,11 +271,13 @@
 
                         </div>
                         <div class="form-group" ng-show="false">
-                            <label for="clusterSelect" class="control-label left small col-sm-6">Mask by
+                            <label for="clusterSelect" class="control-label left small col-sm-6">Mask
+                                by
                                 Cluster</label>
 
                             <div class="col-sm-6">
-                                <select id="clusterSelect" class="form-control input-sm" ng-model="cluster">
+                                <select id="clusterSelect" class="form-control input-sm"
+                                        ng-model="cluster">
                                     <option></option>
                                     <option ng-repeat="cluster in layers.overlays.gee.clusters"
                                             value="{{cluster.label}}">{{ cluster.label }}
@@ -271,6 +297,137 @@
                         </div>
                     </form>
 
+                </div>
+
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="layers.overlays.australia.visible"
+                               ng-value="true">
+                        {{ layers.overlays.australia.name}}<i class="fa fa-caret-down fa-fw"
+                                                              ng-click="toggleLayerInfo(layers.overlays.australia,$event)"></i>
+                    </label>
+                </div>
+                <div ng-show="layers.overlays.australia.infoVisible" class="am-fade"
+                     style="padding: 0 10px 10px 15px;">
+                    <legend items="layers.overlays.australia.legend"></legend>
+                    <div style="margin:5px;">
+                        <button class="btn btn-success btn-sm"
+                                ng-click="layers.overlays.australia.previous()" blur><i
+                                class="fa fa-backward fa-fw"></i>
+                        </button>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-success btn-sm">{{
+                                layers.overlays.australia.activeYear }}
+                            </button>
+                            <button type="button" class="btn btn-success  btn-sm dropdown-toggle"
+                                    data-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                <span class="caret"></span>
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="year in layers.overlays.australia.years"
+                                    ng-click="layers.overlays.australia.setYear(year);"><a>{{ year
+                                    }}</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <button class="btn btn-success btn-sm"
+                                ng-click="layers.overlays.australia.stop()"
+                                blur><i
+                                class="fa fa-stop fa-fw"></i>
+                        </button>
+                        <button class="btn btn-success btn-sm"
+                                ng-click="layers.overlays.australia.play(true)"
+                                ng-class="{'active': layers.overlays.australia.loop}" blur><i
+                                class="fa fa-pause fa-fw"></i><i class="fa fa-play fa-fw"></i>
+                        </button>
+                        <button class="btn btn-success btn-sm"
+                                ng-click="layers.overlays.australia.next()" blur><i
+                                class="fa fa-forward fa-fw"></i>
+                        </button>
+                    </div>
+                    <form class="form-horizontal" style="margin-top: 5px;">
+
+                        <div class="form-group range">
+                            <label class="control-label left small col-sm-6"
+                                   for="opacitySlideraustralia">Opacity </label>
+
+                            <div class="col-sm-6">
+                                <input type="range" id="opacitySlideraustralia"
+                                       ng-model="layers.overlays.australia.layerOptions.opacity"
+                                       max="1"
+                                       min="0"
+                                       step=".01"/>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="layers.overlays.africa.visible"
+                               ng-value="true">
+                        {{ layers.overlays.africa.name}}<i class="fa fa-caret-down fa-fw"
+                                                              ng-click="toggleLayerInfo(layers.overlays.africa,$event)"></i>
+                    </label>
+                </div>
+                <div ng-show="layers.overlays.africa.infoVisible" class="am-fade"
+                     style="padding: 0 10px 10px 15px;">
+                    <legend items="layers.overlays.africa.legend"></legend>
+                    <div style="margin:5px;">
+                        <button class="btn btn-success btn-sm"
+                                ng-click="layers.overlays.africa.previous()" blur><i
+                                class="fa fa-backward fa-fw"></i>
+                        </button>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-success btn-sm">{{
+                                layers.overlays.africa.activeYear }}
+                            </button>
+                            <button type="button" class="btn btn-success  btn-sm dropdown-toggle"
+                                    data-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                <span class="caret"></span>
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="year in layers.overlays.africa.years"
+                                    ng-click="layers.overlays.africa.setYear(year);"><a>{{ year
+                                    }}</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <button class="btn btn-success btn-sm"
+                                ng-click="layers.overlays.africa.stop()"
+                                blur><i
+                                class="fa fa-stop fa-fw"></i>
+                        </button>
+                        <button class="btn btn-success btn-sm"
+                                ng-click="layers.overlays.africa.play(true)"
+                                ng-class="{'active': layers.overlays.africa.loop}" blur><i
+                                class="fa fa-pause fa-fw"></i><i class="fa fa-play fa-fw"></i>
+                        </button>
+                        <button class="btn btn-success btn-sm"
+                                ng-click="layers.overlays.africa.next()" blur><i
+                                class="fa fa-forward fa-fw"></i>
+                        </button>
+                    </div>
+                    <form class="form-horizontal" style="margin-top: 5px;">
+
+                        <div class="form-group range">
+                            <label class="control-label left small col-sm-6"
+                                   for="opacitySliderafrica">Opacity </label>
+
+                            <div class="col-sm-6">
+                                <input type="range" id="opacitySliderafrica"
+                                       ng-model="layers.overlays.africa.layerOptions.opacity"
+                                       max="1"
+                                       min="0"
+                                       step=".01"/>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
