@@ -133,53 +133,6 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                         removeOutsideVisibleBounds: true
                     }
                 },
-                gee: {
-                    layerOptions: {
-                        opacity: 0.7},
-                    visible: false,
-                    name: 'Test',
-                    type: 'xyz',
-                    url: 'https://earthengine.googleapis.com//map/1d1122f9f537c93784d37d1c15675544/{z}/{x}/{y}?token=ebae1e7ff0843b5625c9e4c807aea231',
-                    legend: [
-                        {
-                            "color": "#1f77b4",
-                            "label": "Noncrop Barren/Other"
-                        },
-                        {
-                            "color": "#aec7e8",
-                            "label": "Noncrop Forest/Grass/Rangelands/Shrubs"
-                        },
-                        {
-                            "color": "#ff7f0e",
-                            "label": "Irrigated Double Rice/Mixed"
-                        },
-                        {
-                            "color": "#ffbb78",
-                            "label": "Irrigated Single Rice/Sugarcane"
-                        },
-                        {
-                            "color": "#2ca02c",
-                            "label": "Rainfed Double Rice/Tef/Mixed"
-                        },
-                        {
-                            "color": "#98df8a",
-                            "label": "Rainfed Single Banana/Tef/Sorghum/Tobacco/Wheat"
-                        },
-                        {
-                            "color": "#d62728",
-                            "label": "Rainfed Single Maize/Rice/Pigeonpea/Sorghum/Mixed"
-                        },
-                        {
-                            "color": "#ff9896",
-                            "label": "Rainfed Single Sugarcane"
-                        },
-                        {
-                            "color": "#9467bd",
-                            "label": "Continuous Plantation"
-                        }
-                    ],
-                    refresh: true
-                },
                 ndvi: {
                     layerOptions: {
                         opacity: 0.7},
@@ -188,7 +141,7 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                     type: 'xyz',
                     url: 'http://tiles.croplands.org/ndvi_landsat_7_2014/{x}/{y}/{z}'
                 },
-                australia: new CroplandMap('Australia ACCA', 'xyz', 'australia_acca', [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014],
+                australia: new CroplandMap('Australia 250m ACCA', 'xyz', 'australia_acca', [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014],
                     {},
                     [
                         {label: 'Croplands, rainfed, SC (season 1 &2), all crops', color: '#FFFF00'},
@@ -198,7 +151,7 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                         {label: 'Croplands, irrigated, continuous, orchards ', color: '#00B050'},
                         {label: 'Croplands,  fallow ', color: '#FBD4B4'}
                     ]),
-                africa: new CroplandMap('Africa ACCA', 'xyz', 'africa_acca',
+                africa: new CroplandMap('Africa 250m ACCA', 'xyz', 'africa_acca',
                     [2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014],
                     {},
                     [

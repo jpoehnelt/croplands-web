@@ -209,96 +209,26 @@
                          ng-bind-html="layers.overlays.gfsad1000v10.layerOptions.attribution | unsafe"></div>
 
                 </div>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" ng-model="layers.overlays.locations.visible"
-                               ng-value="true">
-                        Training and Validation Data
-                    </label>
-                </div>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" ng-model="layers.overlays.ndvi.visible"
-                               ng-value="true">
-                        NDVI Annual Composite Landsat 7
-                        <i class="fa fa-caret-down fa-fw"
-                           ng-click="toggleLayerInfo(layers.overlays.ndvi,$event)"></i>
-                    </label>
-                </div>
-                <div ng-show="layers.overlays.ndvi.infoVisible" class="am-fade"
-                     style="padding: 0 10px 10px 15px;">
-                    <div class="range">
-                        <label class="control-label small" for="opacitySliderV10">Opacity </label>
+                <!--<div class="checkbox">-->
+                    <!--<label>-->
+                        <!--<input type="checkbox" ng-model="layers.overlays.ndvi.visible"-->
+                               <!--ng-value="true">-->
+                        <!--NDVI Annual Composite Landsat 7-->
+                        <!--<i class="fa fa-caret-down fa-fw"-->
+                           <!--ng-click="toggleLayerInfo(layers.overlays.ndvi,$event)"></i>-->
+                    <!--</label>-->
+                <!--</div>-->
+                <!--<div ng-show="layers.overlays.ndvi.infoVisible" class="am-fade"-->
+                     <!--style="padding: 0 10px 10px 15px;">-->
+                    <!--<div class="range">-->
+                        <!--<label class="control-label small" for="opacitySliderV10">Opacity </label>-->
 
-                        <input type="range" id="opacitySliderNDVI"
-                               ng-model="layers.overlays.ndvi.layerOptions.opacity" max="1"
-                               min="0"
-                               step=".01"/>
-                    </div>
-                </div>
-                <div class="checkbox">
-                    <label>
-                        <input type="checkbox" ng-model="layers.overlays.gee.visible"
-                               ng-value="true">
-                        Africa GCE2.4 L4 <i class="fa fa-caret-down fa-fw"
-                                            ng-click="toggleLayerInfo(layers.overlays.gee,$event)"></i>
-                    </label>
-                </div>
-                <div ng-show="layers.overlays.gee.infoVisible" class="am-fade"
-                     style="padding: 0 10px 10px 15px;">
-                    <legend items="layers.overlays.gee.legend"
-                            ng-hide="code || code === 0"></legend>
-                    <legend items="layers.overlays.gee.clusters"
-                            ng-show="layers.overlays.gee.clusters"></legend>
-                    <form class="form-horizontal" style="margin-top: 5px;">
-                        <div class="form-group">
-                            <label for="codeSelect" class="control-label left small col-sm-6">Mask
-                                by
-                                Class</label>
-
-                            <div class="col-sm-6">
-                                <select id="codeSelect" class="form-control input-sm"
-                                        ng-model="code">
-                                    <option></option>
-
-                                    <option ng-repeat="code in layers.overlays.gee.legend"
-                                            value="{{ $index }}">{{
-                                        code.label }}
-                                    </option>
-
-                                </select>
-                            </div>
-
-                        </div>
-                        <div class="form-group" ng-show="false">
-                            <label for="clusterSelect" class="control-label left small col-sm-6">Mask
-                                by
-                                Cluster</label>
-
-                            <div class="col-sm-6">
-                                <select id="clusterSelect" class="form-control input-sm"
-                                        ng-model="cluster">
-                                    <option></option>
-                                    <option ng-repeat="cluster in layers.overlays.gee.clusters"
-                                            value="{{cluster.label}}">{{ cluster.label }}
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group range">
-                            <label class="control-label left small col-sm-6" for="opacitySliderGEE">Opacity </label>
-
-                            <div class="col-sm-6">
-                                <input type="range" id="opacitySliderGEE"
-                                       ng-model="layers.overlays.gee.layerOptions.opacity" max="1"
-                                       min="0"
-                                       step=".01"/>
-                            </div>
-                        </div>
-                    </form>
-
-                </div>
-
+                        <!--<input type="range" id="opacitySliderNDVI"-->
+                               <!--ng-model="layers.overlays.ndvi.layerOptions.opacity" max="1"-->
+                               <!--min="0"-->
+                               <!--step=".01"/>-->
+                    <!--</div>-->
+                <!--</div>-->
                 <div class="checkbox">
                     <label>
                         <input type="checkbox" ng-model="layers.overlays.australia.visible"
@@ -429,7 +359,15 @@
                         </div>
                     </form>
                 </div>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" ng-model="layers.overlays.locations.visible"
+                               ng-value="true">
+                        Training and Validation Data
+                    </label>
+                </div>
             </div>
+
         </div>
     </div>
 </div>
