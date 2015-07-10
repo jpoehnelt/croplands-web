@@ -188,7 +188,16 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                     type: 'xyz',
                     url: 'http://tiles.croplands.org/ndvi_landsat_7_2014/{x}/{y}/{z}'
                 },
-                australia: new CroplandMap('Australia ACCA', 'xyz', 'australia_acca', [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014], {}),
+                australia: new CroplandMap('Australia ACCA', 'xyz', 'australia_acca', [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014],
+                    {},
+                    [
+                        {label: 'Croplands, rainfed, SC (season 1 &2), all crops', color: '#FFFF00'},
+                        {label: 'Croplands, rainfed,SC, pastures', color: '#66FFFF'},
+                        {label: 'Croplands, irrigated, SC, DC (Season1 &2), all crops', color: '#FF66FF'},
+                        {label: 'Croplands, irrigated, SC, pastures', color: '#00B0F0'},
+                        {label: 'Croplands, irrigated, continuous, orchards ', color: '#00B050'},
+                        {label: 'Croplands,  fallow ', color: '#FBD4B4'}
+                    ]),
                 africa: new CroplandMap('Africa ACCA', 'xyz', 'africa_acca',
                     [2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014],
                     {},
@@ -206,8 +215,7 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                         {label: 'Rainfed, Continuous, Sugarcane / Plantation / Other', color: '#FF50DC'},
                         {label: 'Rainfed, Unclassified Croplands', color: '#953663'},
                         {label: 'Fallow Croplands', color: '#FFBABB'},
-                        {label: 'Not Croplands', color: '#000000'},
-                        {label: 'Other', color: '#E1E1E1'}
+                        {label: 'Not Croplands', color: '#000000'}
                     ]
                 )
             }
