@@ -5064,8 +5064,8 @@ app.service('log', ['$log', '$timeout', function ($log, $timeout) {
 app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval', '$timeout', function (wmsLayers, leafletData, $http, $q, $interval, $timeout) {
     var CroplandMap = function (name, type, assetName, years, layerOptions, legend) {
         this._getUrl = function (year) {
-//            return 'https://tiles.croplands.org/' + this.assetName + '/{x}/{y}/{z}?year=' + year;
-            return 'http://127.0.0.1:8000/tiles/' + this.assetName + '/{x}/{y}/{z}?year=' + year;
+            return 'https://tiles.croplands.org/' + this.assetName + '/{x}/{y}/{z}?year=' + year;
+//            return 'http://127.0.0.1:8000/tiles/' + this.assetName + '/{x}/{y}/{z}?year=' + year;
         };
 
 
@@ -5092,7 +5092,7 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
         this.layerOptions = layerOptions;
         this.legend = [];
         this.refresh = true;
-        this.playSpeed = 3000;
+        this.playSpeed = 4000;
         this.legend = legend;
         this.setYear = function (year) {
             this.activeYear = year;
