@@ -3,11 +3,23 @@
 <base href="/app">
 
 <script src="/static/js/app.min.js?v={{ version }}"></script>
+
+<!-- pass data to angular from server -->
+<script>
+    angular.module('server', [])
+            .constant('server.config', {
+                version: '{{ version }}',
+                csrf: '{{ csrf }}'
+            });
+</script>
+
+<!-- end pass data to angular from server -->
 <script>
     angular.element(document).ready(function () {
         angular.bootstrap(document, ['app']);
     });
 </script>
+
 {% endblock %}
 
 {% block navbar %}

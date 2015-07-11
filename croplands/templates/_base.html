@@ -28,15 +28,6 @@
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular-animate.min.js"></script>
     <!-- End Libraries on CDN-->
 
-    <!-- pass data to angular from server -->
-    <script>
-        angular.module('server', [])
-                .constant('server.config', {
-                    version: '{{ version }}',
-                    csrf: '{{ csrf }}'
-                });
-    </script>
-    <!-- end pass data to angular from server -->
     {% block scripts_head %}
     {% endblock %}
 </head>
