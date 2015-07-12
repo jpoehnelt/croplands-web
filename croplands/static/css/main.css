@@ -1,8 +1,3 @@
-.shadow {
-  -webkit-box-shadow: 0px 10px 8px -4px rgba(0, 0, 0, 0.36);
-  -moz-box-shadow: 0px 10px 8px -4px rgba(0, 0, 0, 0.36);
-  box-shadow: 0px 10px 8px -4px rgba(0, 0, 0, 0.36);
-}
 /*! normalize.css v3.0.1 | MIT License | git.io/normalize */
 html {
   font-family: sans-serif;
@@ -1856,12 +1851,23 @@ input[type="month"].input-lg {
   position: relative;
   display: block;
   min-height: 20px;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 .radio label,
 .checkbox label {
   padding-left: 20px;
+  margin-bottom: 0;
+  font-weight: normal;
+  cursor: pointer;
+}
+.radio .checkbox-wrapper,
+.checkbox .checkbox-wrapper {
+  padding-left: 20px;
+}
+.radio .checkbox-wrapper label,
+.checkbox .checkbox-wrapper label {
+  padding-left: 5px;
   margin-bottom: 0;
   font-weight: normal;
   cursor: pointer;
@@ -6802,6 +6808,28 @@ button.close {
   -ms-transform: rotate(-90deg) translate(-100%, 0%);
   -o-transform: rotate(-90deg) translate(-100%, 0%);
   transform: rotate(-90deg) translate(-100%, 0%);
+}
+.padding-vertical {
+  padding-top: 8px;
+  padding-bottom: 5px;
+}
+.padding-horizontal {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+.padding-left {
+  padding-left: 8px;
+}
+.padding-right {
+  padding-right: 8px;
+}
+.padding {
+  padding: 8px;
+}
+.shadow {
+  -webkit-box-shadow: 0px 10px 8px -4px rgba(0, 0, 0, 0.36);
+  -moz-box-shadow: 0px 10px 8px -4px rgba(0, 0, 0, 0.36);
+  box-shadow: 0px 10px 8px -4px rgba(0, 0, 0, 0.36);
 }
 @-ms-viewport {
   width: device-width;

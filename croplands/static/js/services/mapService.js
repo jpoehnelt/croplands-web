@@ -2,9 +2,7 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
     var CroplandMap = function (name, type, assetName, years, layerOptions, legend) {
         this._getUrl = function (year) {
             return 'https://tiles.croplands.org/' + this.assetName + '/{x}/{y}/{z}?year=' + year;
-//            return 'http://127.0.0.1:8000/tiles/' + this.assetName + '/{x}/{y}/{z}?year=' + year;
         };
-
 
         this.play = function () {
             var self = this;
@@ -27,9 +25,8 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
         this.years = years;
         this.activeYear = 2014;
         this.layerOptions = layerOptions;
-        this.legend = [];
         this.refresh = true;
-        this.playSpeed = 4000;
+        this.playSpeed = 5000;
         this.legend = legend;
         this.setYear = function (year) {
             this.activeYear = year;
@@ -133,42 +130,34 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                         removeOutsideVisibleBounds: true
                     }
                 },
-                ndvi: {
-                    layerOptions: {
-                        opacity: 0.7},
-                    visible: false,
-                    name: 'NDVI Annual Composite Landsat 7',
-                    type: 'xyz',
-                    url: 'http://tiles.croplands.org/ndvi_landsat_7_2014/{x}/{y}/{z}'
-                },
-                australia: new CroplandMap('Australia 250m ACCA', 'xyz', 'australia_acca', [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014],
+                australia: new CroplandMap('Australia 250m Cropland Products 2000 to Present', 'xyz', 'australia_acca', [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014],
                     {},
                     [
-                        {label: 'Croplands, rainfed, SC (season 1 &2), all crops', color: '#FFFF00'},
-                        {label: 'Croplands, rainfed,SC, pastures', color: '#66FFFF'},
-                        {label: 'Croplands, irrigated, SC, DC (Season1 &2), all crops', color: '#FF66FF'},
-                        {label: 'Croplands, irrigated, SC, pastures', color: '#00B0F0'},
-                        {label: 'Croplands, irrigated, continuous, orchards ', color: '#00B050'},
-                        {label: 'Croplands,  fallow ', color: '#FBD4B4'}
+                        {label: '1 Croplands, rainfed, SC (Season 1 & 2), all crops', color: '#FFFF00'},
+                        {label: '2 Croplands, rainfed,SC, pastures', color: '#66FFFF'},
+                        {label: '3 Croplands, irrigated, SC, DC (Season 1 & 2), all crops', color: '#FF66FF'},
+                        {label: '4 Croplands, irrigated, SC, pastures', color: '#00B0F0'},
+                        {label: '5 Croplands, irrigated, continuous, orchards ', color: '#00B050'},
+                        {label: '6 Croplands,  fallow ', color: '#FBD4B4'}
                     ]),
-                africa: new CroplandMap('Africa 250m ACCA', 'xyz', 'africa_acca',
+                africa: new CroplandMap('Africa 250m Cropland Products 2003 to Present', 'xyz', 'africa_acca',
                     [2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014],
                     {},
                     [
-                        {label: 'Irrigated, Single, Mixed Crops I / Rice', color: '#0E1771'},
-                        {label: 'Irrigated, Single, Mixed Crops II / Rice / Sorghum', color: '#1E5CFF'},
-                        {label: 'Irrigated, Double, Mixed Crops I / Rice', color: '#00B30C'},
-                        {label: 'Irrigated, Double, Mixed Crops II / Rice', color: '#8B7140'},
-                        {label: 'Irrigated, Continuous, Sugarcane / Plantation / Other', color: '#DFFFB7'},
-                        {label: 'Irrigated, Continuous, Mixed Crops', color: '#FEA800'},
-                        {label: 'Rainfed, Single, Rice', color: '#F8FF00'},
-                        {label: 'Rainfed, Single, Maize / Unknown', color: '#00FFE3'},
-                        {label: 'Rainfed, Double, Maize / Rice', color: '#73FF71'},
-                        {label: 'Rainfed, Continuous, Plantation / Unknown', color: '#FD0000'},
-                        {label: 'Rainfed, Continuous, Sugarcane / Plantation / Other', color: '#FF50DC'},
-                        {label: 'Rainfed, Unclassified Croplands', color: '#953663'},
-                        {label: 'Fallow Croplands', color: '#FFBABB'},
-                        {label: 'Not Croplands', color: '#000000'}
+                        {label: '1 Irrigated, Single, Mixed Crops I / Rice', color: '#0E1771'},
+                        {label: '2 Irrigated, Single, Mixed Crops II / Rice / Sorghum', color: '#1E5CFF'},
+                        {label: '3 Irrigated, Double, Mixed Crops I / Rice', color: '#00B30C'},
+                        {label: '4 Irrigated, Double, Mixed Crops II / Rice', color: '#8B7140'},
+                        {label: '5 Irrigated, Continuous, Sugarcane / Plantation / Other', color: '#DFFFB7'},
+                        {label: '6 Irrigated, Continuous, Mixed Crops', color: '#FEA800'},
+                        {label: '8 Rainfed, Single, Rice', color: '#F8FF00'},
+                        {label: '9 Rainfed, Single, Maize / Unknown', color: '#00FFE3'},
+                        {label: '10 Rainfed, Double, Maize / Rice', color: '#73FF71'},
+                        {label: '11 Rainfed, Continuous, Plantation / Unknown', color: '#FD0000'},
+                        {label: '12 Rainfed, Continuous, Sugarcane / Plantation / Other', color: '#FF50DC'},
+                        {label: '14 Rainfed, Unclassified Croplands', color: '#953663'},
+                        {label: '7, 13 Fallow Croplands', color: '#FFBABB'},
+                        {label: '15, 16 Not Croplands', color: '#000000'}
                     ]
                 )
             }
@@ -207,29 +196,5 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
     map.zoomOut = function () {
         this.center.zoom -= 1;
     };
-    map.getAfricaMap = function (code, cluster) {
-        var params = {};
-
-        if (code) {
-            params.code = code;
-        }
-        if (cluster) {
-            params.cluster_code = cluster;
-        }
-
-        if (code || cluster) {
-            params.background = 'true';
-        }
-
-        params.background = 'true';
-
-        return $http({method: 'GET', url: 'https://api.croplands.org/gee/maps/africa/v3', params: params});
-    };
-
-    map.geeTileUrl = function (mapId, token) {
-        return 'https://earthengine.googleapis.com//map/' + mapId + '/{z}/{x}/{y}?token=' + token;
-    };
-
     return map;
-}])
-;
+}]);

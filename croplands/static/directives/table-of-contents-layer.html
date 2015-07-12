@@ -1,0 +1,47 @@
+<div class="checkbox">
+    <div class="checkbox-wrapper">
+        <input type="checkbox" ng-model="layer.visible"/>
+        <label ng-click="toggleShowMore()">
+            {{ layer.name}}
+            <i class="fa fa-fw"
+               ng-show="canShowMore()"
+               ng-class="{'fa-caret-down': showMore, 'fa-caret-right': !showMore  }">
+            </i>
+        </label>
+    </div>
+</div>
+<div ng-show="showMore" class="padding-left">
+    <legend items="layer.legend" ng-if="layer.legend.length"></legend>
+    <form class="form-horizontal" style="margin-top: 5px;" ng-if="layer.type !== 'markercluster'">
+        <input type="range"
+               ng-model="layer.layerOptions.opacity"
+               max="1"
+               min="0"
+               step=".01"/>
+    </form>
+    <div class="center" ng-if="layer.years && layer.years.length">
+        <div class="btn-group">
+            <button class="btn btn-success btn-xs"
+                    ng-click="layer.previous()" blur><i
+                    class="fa fa-backward fa-fw"></i>
+            </button>
+            <button type="button" class="btn btn-success btn-xs" blur>
+                {{ layer.activeYear }}
+            </button>
+
+            <button class="btn btn-success btn-xs"
+                    ng-click="layer.play(true)"
+                    blur>
+                <i class="fa fa-fw"
+                   ng-class="{'fa-pause': isPlaying(), 'fa-play': !isPlaying()}"></i>
+            </button>
+            <button class="btn btn-success btn-xs"
+                    ng-click="layer.next()" blur><i
+                    class="fa fa-forward fa-fw"></i>
+            </button>
+        </div>
+    </div>
+    <div class="small" ng-bind-html="layer.attribution | unsafe"></div>
+
+</div>
+

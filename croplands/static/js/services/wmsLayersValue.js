@@ -3,17 +3,13 @@ app.value('wmsLayers', {
         name: 'GCE 1km Crop Dominance',
         type: 'wms',
         url: 'https://mapsengine.google.com:443/10477185495164119823-00161330875310406093-4/wms/',
-        visible: false,
-        infoVisible: false,
         layerOptions: {
             layers: '10477185495164119823-00161330875310406093-4,10477185495164119823-10559428504955428209-4',
             format: 'image/png',
             minZoom: 0,
-            opacity: 0.7,
-            attribution: '<a href="https://powellcenter.usgs.gov/globalcroplandwater/sites/default/files/August%20HLA-final-1q-high-res.pdf">Thenkabail et al., 2012</a>'
-
+            opacity: 0.7
         },
-        legendVisible: false,
+        attribution: '<a href="https://powellcenter.usgs.gov/globalcroplandwater/sites/default/files/August%20HLA-final-1q-high-res.pdf">Thenkabail et al., 2012</a>',
         legend: [
             {label: 'Irrigated: Wheat and Rice Dominant', color: '#0000FF'},
             {label: 'Irrigated: Mixed Crops 1: Wheat, Rice, Barley, Soybeans', color: '#A020EF'},
@@ -30,16 +26,13 @@ app.value('wmsLayers', {
         name: 'GCE 1km Multi-study Crop Mask',
         type: 'wms',
         url: 'https://mapsengine.google.com:443/10477185495164119823-00161330875310406093-4/wms/',
-        visible: true,
-        infoVisible: false,
         layerOptions: {
             layers: '10477185495164119823-00161330875310406093-4,10477185495164119823-16382460135717964770-4',
             format: 'image/png',
             minZoom: 0,
             opacity: 0.7,
-            attribution: '<a href="http://geography.wr.usgs.gov/science/app/docs/Global-cropland-extent-V10-teluguntla-thenkabail-xiong.pdf">Teluguntla et al., 2015</a>'
         },
-        legendVisible: false,
+        attribution: '<a href="http://geography.wr.usgs.gov/science/app/docs/Global-cropland-extent-V10-teluguntla-thenkabail-xiong.pdf">Teluguntla et al., 2015</a>',
         legend: [
             {label: 'Croplands, Irrigation major', color: '#FF00FF'},
             {label: 'Croplands, Irrigation minor', color: '#00FF00'},

@@ -80,30 +80,6 @@ app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'lea
         $scope.center = center;
     }, true);
 
-    $scope.$watch(function () {
-        return [$scope.code, $scope.cluster]
-    }, function (data) {
-        if (data[0] == '') {
-            $scope.cluster = '';
-        }
-        mapService.getAfricaMap($scope.code, $scope.cluster).success(function (data) {
-            $scope.layers.overlays.gee.url = mapService.geeTileUrl(data.mapId, data.token);
-            if ($scope.code && !$scope.cluster) {
-                $scope.layers.overlays.gee.clusters = _.each(data.legend, function (item) {
-                    if (!_.startsWith(item.color, '#')) {
-                        item.color = "#" + item.color;
-                    }
-                });
-            } else if($scope.code && $scope.cluster) {
-                // do nothing
-            } else {
-                delete $scope.layers.overlays.gee.clusters;
-            }
-
-        }).error(function (err) {
-
-        });
-    }, true);
 
     $scope.$on('leafletDirectiveMarker.click', function (e, args) {
         // Args will contain the marker name and other relevant information
@@ -144,13 +120,6 @@ app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'lea
             $scope.busyDialogVisible = true;
         }
     });
-
-//    $scope.$watch(function () {
-//        return mapService.layers.overlays;
-//    }, function (val) {
-//        $scope.layers.overlays = val;
-//        console.log($scope.layers.overlays);
-//    }, true);
 
     $scope.$on('location.record.edit.close', function () {
         $scope.closeRecordEditForm();
@@ -259,19 +228,6 @@ app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'lea
 
     };
 
-
-    $scope.changeBaseLayer = function (key) {
-        leafletData.getMap().then(function (map) {
-            leafletData.getLayers().then(function (layers) {
-                _.each(layers.baselayers, function (layer) {
-                    map.removeLayer(layer);
-                });
-                map.addLayer(layers.baselayers[key]);
-            });
-        });
-
-
-    };
     $scope.toggleLayerInfo = function (layer, e) {
         e.preventDefault();
         stopPropagation(e);
@@ -363,28 +319,14 @@ app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'lea
     $scope.disableMapDragging = disableMapDragging;
     $scope.enableMapDragging = enableMapDragging;
     $scope.stopPropagation = stopPropagation;
-    var requestFullscreen = function (ele) {
-        console.log(ele);
-        if (ele.requestFullscreen) {
-            ele.requestFullscreen();
-        } else if (ele.webkitRequestFullscreen) {
-            ele.webkitRequestFullscreen();
-        } else if (ele.mozRequestFullScreen) {
-            ele.mozRequestFullScreen();
-        } else if (ele.msRequestFullscreen) {
-            ele.msRequestFullscreen();
-        } else {
-            // Fallback
-            console.log('Fullscreen API is not supported.');
-        }
-    };
+
 
 //////////
 // Init //
 //////////
 
     function init() {
-        requestFullscreen($("#map-app"));
+//        requestFullscreen($("#map-app"));
         var defaults = {
             tableOfContentsVisible: true,
             selectionAreaActive: false,
@@ -462,8 +404,7 @@ app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'lea
     init();
 
 
-    $scope.play = function (play) {
-        console.log(play);
-        play();
-    };
+    $scope.layers.overlays.africa.visible = true;
+    $scope.layers.overlays.australia.visible = true;
+
 }]);

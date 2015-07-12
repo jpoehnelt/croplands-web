@@ -1,0 +1,57 @@
+<div class="control am-slide-right" id="layers">
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <i class="fa fa-close"
+               ng-click="tableOfContentsVisible = !tableOfContentsVisible;"></i>
+            <h5 class="panel-title"><i class="fa fa-fw fa-database"></i> Map Layers
+            </h5>
+        </div>
+        <div class="panel-body">
+            <h5 ng-click="expandBackgroundLayers=!expandBackgroundLayers">
+                Background Layers
+                <i class="fa fa-fw"
+                   ng-class="{'fa-caret-down': expandBackgroundLayers, 'fa-caret-right': !expandBackgroundLayers  }">
+                </i>
+            </h5>
+
+            <div ng-if="expandBackgroundLayers" class="padding-left">
+                <div class="radio" ng-repeat="(key, layer) in layers.baselayers">
+                    <label>
+                        <input type="radio" name="backgroundRadios"
+                               ng-model="layer.visible"
+                               ng-value="true"
+                               id="backgroundRadios-{{ $index }}"
+                               ng-click="changeBaseLayer(key)">
+                        {{ layer.name }}
+                    </label>
+                </div>
+            </div>
+            <h5 ng-click="expandProductLayers=!expandProductLayers">
+                Our Products and Data
+                <i class="fa fa-fw"
+                   ng-class="{'fa-caret-down': expandProductLayers, 'fa-caret-right': !expandProductLayers  }">
+                </i>
+            </h5>
+
+            <div ng-if="expandProductLayers" class="padding-left">
+                <div table-of-contents-layer layer="layers.overlays.gfsad1000v00"></div>
+                <div table-of-contents-layer layer="layers.overlays.gfsad1000v10"></div>
+                <div table-of-contents-layer layer="layers.overlays.africa"></div>
+                <div table-of-contents-layer
+                     layer="layers.overlays.australia"></div>
+                <div table-of-contents-layer
+                     layer="layers.overlays.locations"></div>
+            </div>
+            <!--<h5 ng-click="expandOtherLayers=!expandOtherLayers">-->
+                <!--Other Layers-->
+                <!--<i class="fa fa-fw"-->
+                   <!--ng-class="{'fa-caret-down': expandOtherLayers, 'fa-caret-right': !expandOtherLayers  }">-->
+                <!--</i>-->
+            <!--</h5>-->
+
+            <!--<div ng-if="expandOtherLayers" class="padding-left">-->
+                <!--<div table-of-contents-layer layer="layers.overlays.ndvi"></div>-->
+            <!--</div>-->
+        </div>
+    </div>
+</div>
