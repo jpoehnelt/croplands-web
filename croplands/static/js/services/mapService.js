@@ -130,7 +130,7 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                         removeOutsideVisibleBounds: true
                     }
                 },
-                australia: new CroplandMap('Australia 250m Cropland Products 2000 to Present', 'xyz', 'australia_acca', [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014],
+                australia: new CroplandMap('Australia 250m Cropland Products 2000 to Present from ACCA', 'xyz', 'australia_acca', [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014],
                     {},
                     [
                         {label: '1 Croplands, rainfed, SC (Season 1 & 2), all crops', color: '#FFFF00'},
@@ -140,7 +140,7 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                         {label: '5 Croplands, irrigated, continuous, orchards ', color: '#00B050'},
                         {label: '6 Croplands,  fallow ', color: '#FBD4B4'}
                     ]),
-                africa: new CroplandMap('Africa 250m Cropland Products 2003 to Present', 'xyz', 'africa_acca',
+                africa: new CroplandMap('Africa 250m Cropland Products 2003 to Present from ACCA', 'xyz', 'africa_acca',
                     [2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014],
                     {},
                     [
