@@ -440,7 +440,7 @@ if (typeof module !== "undefined" && module.exports) {
   });
 };
 (function () {
-
+    console.log('angular leaflet');
     "use strict";
 
     angular.module("leaflet-directive", []).directive('leaflet', ["$q", "leafletData", "leafletMapDefaults", "leafletHelpers", "leafletEvents", function ($q, leafletData, leafletMapDefaults, leafletHelpers, leafletEvents) {
@@ -754,7 +754,6 @@ if (typeof module !== "undefined" && module.exports) {
                 var isDefined = leafletHelpers.isDefined,
                     leafletScope = controller.getLeafletScope(),
                     tiles = leafletScope.tiles;
-
                 if (!isDefined(tiles) && !isDefined(tiles.url)) {
                     $log.warn("[AngularJS - Leaflet] The 'tiles' definition doesn't have the 'url' property.");
                     return;
@@ -782,6 +781,7 @@ if (typeof module !== "undefined" && module.exports) {
                             if (isDefined(tiles.url)) {
                                 tileLayerUrl = tiles.url;
                             }
+                                console.log(tileLayerOptions);
 
                             tileLayerObj = L.tileLayer(tileLayerUrl, tileLayerOptions);
                             tileLayerObj.addTo(map);
@@ -4491,6 +4491,36 @@ app.constant('countries', [
       "Wallis and Futuna", "Western Sahara", "Yemen", "Zambia", "Zimbabwe"
     ])
 ;
+app.factory('geoHelperService', [ function () {
+    /**
+     * Calculates the ending location given a lat lon pair, bearing and distance.
+     * @param latlon
+     * @param bearing in degrees
+     * @param distance in km
+     * @returns {*[]}
+     */
+    function destination(latlon, bearing, distance) {
+        var R = 6378.1, lat, lon, latDest, lonDest;
+
+        // convert to radians
+        lat = latlon[0] * (Math.PI / 180);
+        lon = latlon[1] * (Math.PI / 180);
+        bearing = bearing * (Math.PI / 180);
+
+        latDest = Math.asin(Math.sin(lat) * Math.cos(distance / R) +
+            Math.cos(lat) * Math.sin(distance / R) * Math.cos(bearing));
+
+        lonDest = lon + Math.atan2(Math.sin(bearing) * Math.sin(distance / R) * Math.cos(lat),
+                Math.cos(distance / R) - Math.sin(lat) * Math.sin(latDest));
+
+        return [latDest * (180 / Math.PI), lonDest * (180 / Math.PI)];
+    }
+
+    return {
+        destination: destination
+    };
+}]);
+;
 app.factory("icons", [ function (){
 var base = {
 shadowUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACkAAAApCAYAAACoYAD2AAAC5ElEQVRYw+2YW4/TMBCF45S0S1luXZCABy5CgLQgwf//S4BYBLTdJLax0fFqmB07nnQfEGqkIydpVH85M+NLjPe++dcPc4Q8Qh4hj5D/AaQJx6H/4TMwB0PeBNwU7EGQAmAtsNfAzoZkgIa0ZgLMa4Aj6CxIAsjhjOCoL5z7Glg1JAOkaicgvQBXuncwJAWjksLtBTWZe04CnYRktUGdilALppZBOgHGZcBzL6OClABvMSVIzyBjazOgrvACf1ydC5mguqAVg6RhdkSWQFj2uxfaq/BrIZOLEWgZdALIDvcMcZLD8ZbLC9de4yR1sYMi4G20S4Q/PWeJYxTOZn5zJXANZHIxAd4JWhPIloTJZhzMQduM89WQ3MUVAE/RnhAXpTycqys3NZALOBbB7kFrgLesQl2h45Fcj8L1tTSohUwuxhy8H/Qg6K7gIs+3kkaigQCOcyEXCHN07wyQazhrmIulvKMQAwMcmLNqyCVyMAI+BuxSMeTk3OPikLY2J1uE+VHQk6ANrhds+tNARqBeaGc72cK550FP4WhXmFmcMGhTwAR1ifOe3EvPqIegFmF+C8gVy0OfAaWQPMR7gF1OQKqGoBjq90HPMP01BUjPOqGFksC4emE48tWQAH0YmvOgF3DST6xieJgHAWxPAHMuNhrImIdvoNOKNWIOcE+UXE0pYAnkX6uhWsgVXDxHdTfCmrEEmMB2zMFimLVOtiiajxiGWrbU52EeCdyOwPEQD8LqyPH9Ti2kgYMf4OhSKB7qYILbBv3CuVTJ11Y80oaseiMWOONc/Y7kJYe0xL2f0BaiFTxknHO5HaMGMublKwxFGzYdWsBF174H/QDknhTHmHHN39iWFnkZx8lPyM8WHfYELmlLKtgWNmFNzQcC1b47gJ4hL19i7o65dhH0Negbca8vONZoP7doIeOC9zXm8RjuL0Gf4d4OYaU5ljo3GYiqzrWQHfJxA6ALhDpVKv9qYeZA8eM3EhfPSCmpuD0AAAAASUVORK5CYII=",
@@ -6526,7 +6556,7 @@ app.directive('legend', [function () {
         templateUrl: '/static/directives/legend.html'
     };
 }]);;
-app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons', 'mapService', 'log', '$q', function (locationFactory, mappings, leafletData, icons, mapService, log, $q) {
+app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons', 'mapService', 'log', '$q', 'geoHelperService', function (locationFactory, mappings, leafletData, icons, mapService, log, $q, geoHelperService) {
     var activeTab = 'help',
         gridImageURL = "/static/imgs/icons/grid.png", shapes = {};
 
@@ -6545,18 +6575,21 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
         return deferred.promise;
     }
 
-    function buildShapes(latLng, points) {
+    function buildShapes(latLng, points, bearing) {
         clearShapes().then(function () {
             var circle250 = L.circle(latLng, 125, {fill: false, dashArray: [3, 6], color: '#00FF00'});//
             shapes.locationAreaGrid = L.imageOverlay(gridImageURL, circle250.getBounds());
 
             shapes.locationMarker = L.marker(latLng, {icon: new L.icon(icons.iconRedSelected), zIndexOffset: 1000});
+            if (bearing && bearing >= 0) {
+                shapes.polygon = L.polygon([latLng, geoHelperService.destination(latLng, bearing - 20, 0.2), geoHelperService.destination(latLng, bearing + 20, 0.2)], {color: '#00FF00', stroke: false, opacity: 0.4});
+            }
 
             if (points) {
-                var opacity = 0.5 / points.length;
                 _.each(points, function (pt, i) {
-                    shapes["gpsPoint_#" + i] = L.circle([pt.lat, pt.lon], pt.accuracy, {stroke: true, opacity: opacity, fillOpacity: opacity, fill: true, color: '#00FF00'});
-                    console.log(shapes["pt" + i]);
+                    var opacity = 0.5 / points.length;
+                    opacity = Math.min(opacity * 20 / pt.accuracy, 0.5);
+                    shapes["gpsPoint_#" + i] = L.circle([pt.lat, pt.lon], pt.accuracy, {stroke: false, opacity: opacity, fillOpacity: opacity, fill: true, color: '#00FF00'});
                 });
 
             }
@@ -6596,7 +6629,7 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
                 scope.lat = data.lat;
                 scope.lon = data.lon;
 
-                buildShapes([scope.lat, scope.lon], scope.location.points);
+                buildShapes([scope.lat, scope.lon], scope.location.points, scope.location.bearing);
             });
         } else {
             // if no id, just save location

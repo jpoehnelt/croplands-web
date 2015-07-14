@@ -1,4 +1,4 @@
-app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons', 'mapService', 'log', '$q', function (locationFactory, mappings, leafletData, icons, mapService, log, $q) {
+app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons', 'mapService', 'log', '$q', 'geoHelperService', function (locationFactory, mappings, leafletData, icons, mapService, log, $q, geoHelperService) {
     var activeTab = 'help',
         gridImageURL = "/static/imgs/icons/grid.png", shapes = {};
 
@@ -17,18 +17,21 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
         return deferred.promise;
     }
 
-    function buildShapes(latLng, points) {
+    function buildShapes(latLng, points, bearing) {
         clearShapes().then(function () {
             var circle250 = L.circle(latLng, 125, {fill: false, dashArray: [3, 6], color: '#00FF00'});//
             shapes.locationAreaGrid = L.imageOverlay(gridImageURL, circle250.getBounds());
 
             shapes.locationMarker = L.marker(latLng, {icon: new L.icon(icons.iconRedSelected), zIndexOffset: 1000});
+            if (bearing && bearing >= 0) {
+                shapes.polygon = L.polygon([latLng, geoHelperService.destination(latLng, bearing - 20, 0.2), geoHelperService.destination(latLng, bearing + 20, 0.2)], {color: '#00FF00', stroke: false, opacity: 0.4});
+            }
 
             if (points) {
-                var opacity = 0.5 / points.length;
                 _.each(points, function (pt, i) {
-                    shapes["gpsPoint_#" + i] = L.circle([pt.lat, pt.lon], pt.accuracy, {stroke: true, opacity: opacity, fillOpacity: opacity, fill: true, color: '#00FF00'});
-                    console.log(shapes["pt" + i]);
+                    var opacity = 0.5 / points.length;
+                    opacity = Math.min(opacity * 20 / pt.accuracy, 0.5);
+                    shapes["gpsPoint_#" + i] = L.circle([pt.lat, pt.lon], pt.accuracy, {stroke: false, opacity: opacity, fillOpacity: opacity, fill: true, color: '#00FF00'});
                 });
 
             }
@@ -68,7 +71,7 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
                 scope.lat = data.lat;
                 scope.lon = data.lon;
 
-                buildShapes([scope.lat, scope.lon], scope.location.points);
+                buildShapes([scope.lat, scope.lon], scope.location.points, scope.location.bearing);
             });
         } else {
             // if no id, just save location

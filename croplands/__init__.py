@@ -20,7 +20,7 @@ def cache(seconds=0):
 
 
 app = Flask(__name__)
-app.config['VERSION'] = '2.1.2'
+app.config['VERSION'] = '2.1.3'
 
 @app.route('/')
 @cache(300)
@@ -37,11 +37,6 @@ def data_page(*args, **kwargs):
 @cache(0)
 def angular_app(path=None):
     return render_template('app.html', version=app.config['VERSION'])
-
-@app.route('/test/<path:path>')
-@cache(0)
-def test_angular_app(path=None):
-    return render_template('test.html', version=app.config['VERSION'])
 
 @app.route('/s3/<path:path>')
 @cache(1800)
