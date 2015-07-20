@@ -1,4 +1,4 @@
-app.factory('user', [ '$http', '$window', '$q', 'log', function ($http, $window, $q, log) {
+app.factory('User', [ '$http', '$window', '$q', 'log', function ($http, $window, $q, log) {
     var _user = {};
 
     function getUser() {

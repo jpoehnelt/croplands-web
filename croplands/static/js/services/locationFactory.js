@@ -390,7 +390,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
 
         var records = l.cf.dims.year.top(Infinity);
         var csv = [
-            ["location_id, record_id, lat, lon, year, land_use_type, water, intensity, crop_primary"]
+            ["location_id, record_id, lat, lon, year, land_use_type, land_use_type_id, water, intensity, crop_primary"]
         ];
         _.each(records, function (record) {
             var recordString = [record.location_id,
@@ -399,6 +399,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
                 record.lon,
                 record.year,
                 mappings.landUseType.choices[record.land_use_type].label,
+                record.land_use_type,
                 mappings.water.choices[record.water].label,
                 mappings.intensity.choices[record.intensity].label,
                 mappings.crop.choices[record.crop_primary].label

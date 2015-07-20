@@ -35,10 +35,19 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
     function getMoreImages(page) {
         // Function gets images form the api with specific set of constraints to limit.
         // Gets a page of images
+//        $http.get('https://api.croplands.org/api/images?'
+//            + 'q={"order_by":[{"field":"date_acquired","direction":"desc"}'
+//            + ',{"field":"classifications_count","direction":"asc"}],"filters":['
+////            + '{"name":"classifications_majority_agreement","op":"lt","val":75},'
+//            + '{"name":"classifications_count","op":"lt","val":30}'
+//            + ']}'
+//            + '&page=' + String(page)).then(function (response) {
+//                $scope.images = $scope.images.concat(response.data.objects);
+//                max_pages = response.data.total_pages;
+//        });
         $http.get('https://api.croplands.org/api/images?'
-            + 'q={"order_by":[{"field":"classifications_priority","direction":"desc"}'
-            + ',{"field":"classifications_count","direction":"asc"}],"filters":['
-//            + '{"name":"image_type","op":"like","val":"%Color%"},'
+            + 'q={"order_by":[{"field":"date_acquired","direction":"desc"}'
+            + '],"filters":['
 //            + '{"name":"classifications_majority_agreement","op":"lt","val":75},'
             + '{"name":"classifications_count","op":"lt","val":30}'
             + ']}'
@@ -53,9 +62,11 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
         if ($scope.images.length > 0) {
 
             // Get next image and remove from array
-            $scope.image = $scope.images.pop();
-            $scope.image.url = _.trimLeft($scope.image.url, 'images/');
+            $scope.image = $scope.images[0];
+            $scope.images = _.slice($scope.images, 1);
+            console.log($scope.image.url);
 
+            $scope.image.url = $scope.image.url.replace('images/', '');
             // Get coordinates of location and adjust maps
             $scope.center.lat = $scope.image.location.lat;
             $scope.center.lng = $scope.image.location.lon;

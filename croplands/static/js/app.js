@@ -4449,6 +4449,212 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
         'https://hwstatic.croplands.org/**']);
 }]);
 ;
+app.factory('RatingService', ['$http', '$rootScope','log','user', function ($http, $rootScope, log, user) {
+
+    function getUserRatings(userId) {
+        if (userId === undefined){
+
+        }
+
+    }
+
+
+    return {};
+}]);;
+app.factory('User', [ '$http', '$window', '$q', 'log', function ($http, $window, $q, log) {
+    var _user = {};
+
+    function getUser() {
+        return _user;
+    }
+
+    function getRole() {
+        if (_user.role) {
+            return _user.role;
+        }
+        return 'anon';
+    }
+
+    function loadFromToken(token) {
+        _user = JSON.parse($window.atob(token.split(".")[1]));
+        _user.token = token;
+        $window.localStorage.user = JSON.stringify(_user);
+        $http.defaults.headers.post.authorization = 'bearer ' + _user.token;
+    }
+
+    function isLoggedIn() {
+        if (_user.expires && _user.token) {
+            var secondsToExpiration = _user.expires - Math.floor((new Date).getTime() / 1000);
+            return secondsToExpiration > 300;
+        }
+
+        return false;
+    }
+
+    function changePassword(token, password) {
+        var deferred = $q.defer();
+        $http.post("https://api.croplands.org/auth/reset", {
+            token: token,
+            password: password
+        }).then(function (response) {
+            deferred.resolve(true);
+        }, function (error) {
+            deferred.resolve(false);
+        });
+        return deferred.promise;
+    }
+
+    function login(email, password) {
+        log.info("[User] Logging in...");
+
+        var deferred = $q.defer(),
+            data = {email: email, password: password},
+            headers = {'Content-Type': 'application/json'};
+
+
+        $http.post("https://api.croplands.org/auth/login", data, headers).then(function (r) {
+                log.info("[User] Successfully logged in.");
+                // Load user if token is present, may require confirmation before logging in
+                if (r.data.data.token) {
+                    loadFromToken(r.data.data.token);
+                }
+                deferred.resolve(r.data);
+            },
+            function (r) {
+                if (r.data) {
+                    deferred.reject(r.data);
+                }
+                else {
+                    deferred.reject();
+                }
+            }
+        );
+
+        return deferred.promise;
+    }
+
+    function register(data) {
+        var deferred = $q.defer(),
+            headers = { Accept: 'application/json', 'Content-Type': 'application/json'};
+
+        $http.post("https://api.croplands.org/auth/register", data, headers).then(function (r) {
+                log.info("[User] Successfully registered.");
+                // Load user if token is present, may require confirmation before logging in
+                if (r.data.data.token) {
+                    loadFromToken(r.data.data.token);
+                }
+                deferred.resolve(r.data);
+            },
+            function (r) {
+                if (r.data) {
+                    deferred.reject(r.data);
+                }
+                else {
+                    deferred.reject(r);
+                }
+            }
+        );
+
+        return deferred.promise;
+    }
+
+    function forgot(email) {
+        var data = {email: email},
+            deferred = $q.defer(),
+            headers = { Accept: 'application/json', 'Content-Type': 'application/json'};
+
+        $http.post("https://api.croplands.org/auth/forgot", data, headers).then(function (r) {
+                log.info("[User] Sending reset email.");
+                deferred.resolve(r.data);
+            },
+            function (r) {
+                if (r.data) {
+                    deferred.reject(r.data);
+                }
+                else {
+                    deferred.reject();
+                }
+            }
+        );
+
+        return deferred.promise;
+    }
+
+    function reset(password, token) {
+        var data = {password: password, token: token},
+            deferred = $q.defer(),
+            headers = { Accept: 'application/json', 'Content-Type': 'application/json'};
+
+        $http.post("https://api.croplands.org/auth/reset", data, headers).then(function (r) {
+                log.info("[User] Changing password.");
+                if (r.data.data.token) {
+                    loadFromToken(r.data.data.token);
+                }
+                deferred.resolve(r.data);
+            },
+            function (r) {
+                if (r.data) {
+                    deferred.reject(r.data);
+                }
+                else {
+                    deferred.reject();
+                }
+            }
+        );
+
+        return deferred.promise;
+    }
+
+    function logout() {
+        log.info("[User] Removing user token.");
+
+        if ($window.localStorage.user) {
+            $window.localStorage.removeItem('user');
+        }
+
+        _user = {};
+        delete $http.defaults.headers.post.authorization;
+    }
+
+    function getFromStorage() {
+        var user = JSON.parse($window.localStorage.user);
+        loadFromToken(user.token);
+    }
+
+    // initialization
+    function init() {
+        // Check if user information is available in local storage
+        log.info('Checking for existence of user token.');
+        if ($window.localStorage.user) {
+            getFromStorage();
+
+        }
+
+        // Watch for changes in other tabs
+        angular.element($window).on('storage', function (event) {
+            if ($window.localStorage.user) {
+                getFromStorage();
+            } else {
+                _user = {};
+            }
+        });
+    }
+
+    init();
+
+
+    return {
+        changePassword: changePassword,
+        getRole: getRole,
+        isLoggedIn: isLoggedIn,
+        login: login,
+        logout: logout,
+        register: register,
+        forgot: forgot,
+        reset: reset
+    };
+
+}]);;
 app.constant('countries', [
       "Afghanistan", "Aland Islands", "Albania", "Algeria", "American Samoa", "Andorra", "Angola",
       "Anguilla", "Antarctica", "Antigua And Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria",
@@ -5028,7 +5234,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
 
         var records = l.cf.dims.year.top(Infinity);
         var csv = [
-            ["location_id, record_id, lat, lon, year, land_use_type, water, intensity, crop_primary"]
+            ["location_id, record_id, lat, lon, year, land_use_type, land_use_type_id, water, intensity, crop_primary"]
         ];
         _.each(records, function (record) {
             var recordString = [record.location_id,
@@ -5037,6 +5243,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
                 record.lon,
                 record.year,
                 mappings.landUseType.choices[record.land_use_type].label,
+                record.land_use_type,
                 mappings.water.choices[record.water].label,
                 mappings.intensity.choices[record.intensity].label,
                 mappings.crop.choices[record.crop_primary].label
@@ -5378,200 +5585,6 @@ app.constant('mappings', {
     }
 
 });;
-app.factory('user', [ '$http', '$window', '$q', 'log', function ($http, $window, $q, log) {
-    var _user = {};
-
-    function getUser() {
-        return _user;
-    }
-
-    function getRole() {
-        if (_user.role) {
-            return _user.role;
-        }
-        return 'anon';
-    }
-
-    function loadFromToken(token) {
-        _user = JSON.parse($window.atob(token.split(".")[1]));
-        _user.token = token;
-        $window.localStorage.user = JSON.stringify(_user);
-        $http.defaults.headers.post.authorization = 'bearer ' + _user.token;
-    }
-
-    function isLoggedIn() {
-        if (_user.expires && _user.token) {
-            var secondsToExpiration = _user.expires - Math.floor((new Date).getTime() / 1000);
-            return secondsToExpiration > 300;
-        }
-
-        return false;
-    }
-
-    function changePassword(token, password) {
-        var deferred = $q.defer();
-        $http.post("https://api.croplands.org/auth/reset", {
-            token: token,
-            password: password
-        }).then(function (response) {
-            deferred.resolve(true);
-        }, function (error) {
-            deferred.resolve(false);
-        });
-        return deferred.promise;
-    }
-
-    function login(email, password) {
-        log.info("[User] Logging in...");
-
-        var deferred = $q.defer(),
-            data = {email: email, password: password},
-            headers = {'Content-Type': 'application/json'};
-
-
-        $http.post("https://api.croplands.org/auth/login", data, headers).then(function (r) {
-                log.info("[User] Successfully logged in.");
-                // Load user if token is present, may require confirmation before logging in
-                if (r.data.data.token) {
-                    loadFromToken(r.data.data.token);
-                }
-                deferred.resolve(r.data);
-            },
-            function (r) {
-                if (r.data) {
-                    deferred.reject(r.data);
-                }
-                else {
-                    deferred.reject();
-                }
-            }
-        );
-
-        return deferred.promise;
-    }
-
-    function register(data) {
-        var deferred = $q.defer(),
-            headers = { Accept: 'application/json', 'Content-Type': 'application/json'};
-
-        $http.post("https://api.croplands.org/auth/register", data, headers).then(function (r) {
-                log.info("[User] Successfully registered.");
-                // Load user if token is present, may require confirmation before logging in
-                if (r.data.data.token) {
-                    loadFromToken(r.data.data.token);
-                }
-                deferred.resolve(r.data);
-            },
-            function (r) {
-                if (r.data) {
-                    deferred.reject(r.data);
-                }
-                else {
-                    deferred.reject(r);
-                }
-            }
-        );
-
-        return deferred.promise;
-    }
-
-    function forgot(email) {
-        var data = {email: email},
-            deferred = $q.defer(),
-            headers = { Accept: 'application/json', 'Content-Type': 'application/json'};
-
-        $http.post("https://api.croplands.org/auth/forgot", data, headers).then(function (r) {
-                log.info("[User] Sending reset email.");
-                deferred.resolve(r.data);
-            },
-            function (r) {
-                if (r.data) {
-                    deferred.reject(r.data);
-                }
-                else {
-                    deferred.reject();
-                }
-            }
-        );
-
-        return deferred.promise;
-    }
-
-    function reset(password, token) {
-        var data = {password: password, token: token},
-            deferred = $q.defer(),
-            headers = { Accept: 'application/json', 'Content-Type': 'application/json'};
-
-        $http.post("https://api.croplands.org/auth/reset", data, headers).then(function (r) {
-                log.info("[User] Changing password.");
-                if (r.data.data.token) {
-                    loadFromToken(r.data.data.token);
-                }
-                deferred.resolve(r.data);
-            },
-            function (r) {
-                if (r.data) {
-                    deferred.reject(r.data);
-                }
-                else {
-                    deferred.reject();
-                }
-            }
-        );
-
-        return deferred.promise;
-    }
-
-    function logout() {
-        log.info("[User] Removing user token.");
-
-        if ($window.localStorage.user) {
-            $window.localStorage.removeItem('user');
-        }
-
-        _user = {};
-        delete $http.defaults.headers.post.authorization;
-    }
-
-    function getFromStorage() {
-        var user = JSON.parse($window.localStorage.user);
-        loadFromToken(user.token);
-    }
-
-    // initialization
-    function init() {
-        // Check if user information is available in local storage
-        log.info('Checking for existence of user token.');
-        if ($window.localStorage.user) {
-            getFromStorage();
-
-        }
-
-        // Watch for changes in other tabs
-        angular.element($window).on('storage', function (event) {
-            if ($window.localStorage.user) {
-                getFromStorage();
-            } else {
-                _user = {};
-            }
-        });
-    }
-
-    init();
-
-
-    return {
-        changePassword: changePassword,
-        getRole: getRole,
-        isLoggedIn: isLoggedIn,
-        login: login,
-        logout: logout,
-        register: register,
-        forgot: forgot,
-        reset: reset
-    };
-
-}]);;
 app.value('wmsLayers', {
     gfsad1000v00: {
         name: 'GCE 1km Crop Dominance',
@@ -5686,10 +5699,19 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
     function getMoreImages(page) {
         // Function gets images form the api with specific set of constraints to limit.
         // Gets a page of images
+//        $http.get('https://api.croplands.org/api/images?'
+//            + 'q={"order_by":[{"field":"date_acquired","direction":"desc"}'
+//            + ',{"field":"classifications_count","direction":"asc"}],"filters":['
+////            + '{"name":"classifications_majority_agreement","op":"lt","val":75},'
+//            + '{"name":"classifications_count","op":"lt","val":30}'
+//            + ']}'
+//            + '&page=' + String(page)).then(function (response) {
+//                $scope.images = $scope.images.concat(response.data.objects);
+//                max_pages = response.data.total_pages;
+//        });
         $http.get('https://api.croplands.org/api/images?'
-            + 'q={"order_by":[{"field":"classifications_priority","direction":"desc"}'
-            + ',{"field":"classifications_count","direction":"asc"}],"filters":['
-//            + '{"name":"image_type","op":"like","val":"%Color%"},'
+            + 'q={"order_by":[{"field":"date_acquired","direction":"desc"}'
+            + '],"filters":['
 //            + '{"name":"classifications_majority_agreement","op":"lt","val":75},'
             + '{"name":"classifications_count","op":"lt","val":30}'
             + ']}'
@@ -5704,9 +5726,11 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
         if ($scope.images.length > 0) {
 
             // Get next image and remove from array
-            $scope.image = $scope.images.pop();
-            $scope.image.url = _.trimLeft($scope.image.url, 'images/');
+            $scope.image = $scope.images[0];
+            $scope.images = _.slice($scope.images, 1);
+            console.log($scope.image.url);
 
+            $scope.image.url = $scope.image.url.replace('images/', '');
             // Get coordinates of location and adjust maps
             $scope.center.lat = $scope.image.location.lat;
             $scope.center.lng = $scope.image.location.lon;
@@ -6170,7 +6194,7 @@ app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'lea
     $scope.layers.overlays.australia.visible = true;
 
 }]);;
-app.controller("NavbarController", ['$scope', 'user', '$location', function ($scope, user, $location) {
+app.controller("NavbarController", ['$scope', 'User', '$location', function ($scope, User, $location) {
     $scope.goToLogin = function () {
         var n = encodeURIComponent(window.btoa(JSON.stringify({
             path: $location.path(),
@@ -6180,7 +6204,7 @@ app.controller("NavbarController", ['$scope', 'user', '$location', function ($sc
     };
 
     $scope.isLoggedIn = function () {
-        return user.isLoggedIn();
+        return User.isLoggedIn();
     };
 
     $scope.goToLogout = function () {
@@ -6194,7 +6218,7 @@ app.controller("NavbarController", ['$scope', 'user', '$location', function ($sc
 app.controller("ConfirmController", ['$scope', 'log', function ($scope, log) {
 
 }]);;
-app.controller("ForgotController", ['$scope', 'user', function ($scope, user) {
+app.controller("ForgotController", ['$scope', 'User', function ($scope, User) {
     function setMessage(message, success) {
         $scope.success = success;
         $scope.message = message;
@@ -6202,7 +6226,7 @@ app.controller("ForgotController", ['$scope', 'user', function ($scope, user) {
 
     $scope.forgot = function () {
         $scope.busy = true;
-        user.forgot($scope.email).then(function (response) {
+        User.forgot($scope.email).then(function (response) {
             setMessage(response.description, true);
             $scope.busy = false;
             $scope.email = '';
@@ -6217,7 +6241,7 @@ app.controller("ForgotController", ['$scope', 'user', function ($scope, user) {
         });
     };
 }]);;
-app.controller("LoginController", ['$scope', 'log', 'user', '$timeout', '$location', function ($scope, log, user, $timeout, $location) {
+app.controller("LoginController", ['$scope', 'log', 'User', '$timeout', '$location', function ($scope, log, User, $timeout, $location) {
 
     function setMessage(message, success) {
         $scope.success = success;
@@ -6232,7 +6256,7 @@ app.controller("LoginController", ['$scope', 'log', 'user', '$timeout', '$locati
             setMessage('Invalid Data', false);
             return;
         }
-        user.login($scope.email, $scope.password).then(function () {
+        User.login($scope.email, $scope.password).then(function () {
             setMessage('You have successfully logged in.', true);
             $scope.busy = false;
             $scope.email = '';
@@ -6257,17 +6281,17 @@ app.controller("LoginController", ['$scope', 'log', 'user', '$timeout', '$locati
     };
 
 }]);;
-app.controller("LogoutController", ['$scope', 'user', '$location', function ($scope, user, $location) {
-    user.logout();
+app.controller("LogoutController", ['$scope', 'User', '$location', function ($scope, User, $location) {
+    User.logout();
 
     var next = JSON.parse(window.atob(decodeURIComponent($location.search().n)));
     if (next) {
         $location.path(next.path).search(next.params);
     }
 }]);;
-app.controller("RegisterController", ['user', 'countries', '$scope','$location', function (user, countries, $scope, $location) {
+app.controller("RegisterController", ['User', 'countries', '$scope','$location', function (User, countries, $scope, $location) {
 
-    if (user.isLoggedIn()) {
+    if (User.isLoggedIn()) {
          var n = encodeURIComponent(window.btoa(JSON.stringify({
             path: $location.path(),
             params: $location.search()
@@ -6291,7 +6315,7 @@ app.controller("RegisterController", ['user', 'countries', '$scope','$location',
 
     $scope.register = function () {
         $scope.busy = true;
-        user.register($scope.registration)
+        User.register($scope.registration)
             .then(function (response) {
                 $scope.busy = false;
                 setMessage(response.description, true);

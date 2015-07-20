@@ -1,4 +1,4 @@
-app.controller("LoginController", ['$scope', 'log', 'user', '$timeout', '$location', function ($scope, log, user, $timeout, $location) {
+app.controller("LoginController", ['$scope', 'log', 'User', '$timeout', '$location', function ($scope, log, User, $timeout, $location) {
 
     function setMessage(message, success) {
         $scope.success = success;
@@ -13,7 +13,7 @@ app.controller("LoginController", ['$scope', 'log', 'user', '$timeout', '$locati
             setMessage('Invalid Data', false);
             return;
         }
-        user.login($scope.email, $scope.password).then(function () {
+        User.login($scope.email, $scope.password).then(function () {
             setMessage('You have successfully logged in.', true);
             $scope.busy = false;
             $scope.email = '';

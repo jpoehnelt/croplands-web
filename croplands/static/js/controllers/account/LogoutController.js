@@ -1,5 +1,5 @@
-app.controller("LogoutController", ['$scope', 'user', '$location', function ($scope, user, $location) {
-    user.logout();
+app.controller("LogoutController", ['$scope', 'User', '$location', function ($scope, User, $location) {
+    User.logout();
 
     var next = JSON.parse(window.atob(decodeURIComponent($location.search().n)));
     if (next) {

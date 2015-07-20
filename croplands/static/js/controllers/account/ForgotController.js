@@ -1,4 +1,4 @@
-app.controller("ForgotController", ['$scope', 'user', function ($scope, user) {
+app.controller("ForgotController", ['$scope', 'User', function ($scope, User) {
     function setMessage(message, success) {
         $scope.success = success;
         $scope.message = message;
@@ -6,7 +6,7 @@ app.controller("ForgotController", ['$scope', 'user', function ($scope, user) {
 
     $scope.forgot = function () {
         $scope.busy = true;
-        user.forgot($scope.email).then(function (response) {
+        User.forgot($scope.email).then(function (response) {
             setMessage(response.description, true);
             $scope.busy = false;
             $scope.email = '';

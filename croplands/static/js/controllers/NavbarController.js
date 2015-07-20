@@ -1,4 +1,4 @@
-app.controller("NavbarController", ['$scope', 'user', '$location', function ($scope, user, $location) {
+app.controller("NavbarController", ['$scope', 'User', '$location', function ($scope, User, $location) {
     $scope.goToLogin = function () {
         var n = encodeURIComponent(window.btoa(JSON.stringify({
             path: $location.path(),
@@ -8,7 +8,7 @@ app.controller("NavbarController", ['$scope', 'user', '$location', function ($sc
     };
 
     $scope.isLoggedIn = function () {
-        return user.isLoggedIn();
+        return User.isLoggedIn();
     };
 
     $scope.goToLogout = function () {

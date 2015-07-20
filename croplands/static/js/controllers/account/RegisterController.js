@@ -1,6 +1,6 @@
-app.controller("RegisterController", ['user', 'countries', '$scope','$location', function (user, countries, $scope, $location) {
+app.controller("RegisterController", ['User', 'countries', '$scope','$location', function (User, countries, $scope, $location) {
 
-    if (user.isLoggedIn()) {
+    if (User.isLoggedIn()) {
          var n = encodeURIComponent(window.btoa(JSON.stringify({
             path: $location.path(),
             params: $location.search()
@@ -24,7 +24,7 @@ app.controller("RegisterController", ['user', 'countries', '$scope','$location',
 
     $scope.register = function () {
         $scope.busy = true;
-        user.register($scope.registration)
+        User.register($scope.registration)
             .then(function (response) {
                 $scope.busy = false;
                 setMessage(response.description, true);
