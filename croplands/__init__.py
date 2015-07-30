@@ -39,7 +39,7 @@ def angular_app(path=None):
     return render_template('app.html', version=app.config['VERSION'])
 
 @app.route('/s3/<path:path>')
-@cache(1800)
+@cache(300)
 def s3_proxy(path=None):
     """ This view acts as a proxy to s3.
     :param path: str
