@@ -1,5 +1,6 @@
 app.factory('User', [ '$http', '$window', '$q', 'log', function ($http, $window, $q, log) {
-    var _user = {};
+    var _user = {},
+      _baseUrl = 'https://api.croplands.org';
 
     function getUser() {
         return _user;
@@ -16,7 +17,10 @@ app.factory('User', [ '$http', '$window', '$q', 'log', function ($http, $window,
         _user = JSON.parse($window.atob(token.split(".")[1]));
         _user.token = token;
         $window.localStorage.user = JSON.stringify(_user);
+        // save token for future requests
         $http.defaults.headers.post.authorization = 'bearer ' + _user.token;
+        $http.defaults.headers.put.authorization = 'bearer ' + _user.token;
+        $http.defaults.headers.patch.authorization = 'bearer ' + _user.token;
     }
 
     function isLoggedIn() {
@@ -49,7 +53,7 @@ app.factory('User', [ '$http', '$window', '$q', 'log', function ($http, $window,
             headers = {'Content-Type': 'application/json'};
 
 
-        $http.post("https://api.croplands.org/auth/login", data, headers).then(function (r) {
+        $http.post(_baseUrl + "/auth/login", data, headers).then(function (r) {
                 log.info("[User] Successfully logged in.");
                 // Load user if token is present, may require confirmation before logging in
                 if (r.data.data.token) {
@@ -74,7 +78,7 @@ app.factory('User', [ '$http', '$window', '$q', 'log', function ($http, $window,
         var deferred = $q.defer(),
             headers = { Accept: 'application/json', 'Content-Type': 'application/json'};
 
-        $http.post("https://api.croplands.org/auth/register", data, headers).then(function (r) {
+        $http.post(_baseUrl + "/auth/register", data, headers).then(function (r) {
                 log.info("[User] Successfully registered.");
                 // Load user if token is present, may require confirmation before logging in
                 if (r.data.data.token) {
@@ -151,6 +155,8 @@ app.factory('User', [ '$http', '$window', '$q', 'log', function ($http, $window,
 
         _user = {};
         delete $http.defaults.headers.post.authorization;
+        delete $http.defaults.headers.put.authorization;
+        delete $http.defaults.headers.patch.authorization;
     }
 
     function getFromStorage() {
@@ -188,7 +194,8 @@ app.factory('User', [ '$http', '$window', '$q', 'log', function ($http, $window,
         logout: logout,
         register: register,
         forgot: forgot,
-        reset: reset
+        reset: reset,
+        get: getUser
     };
 
 }]);

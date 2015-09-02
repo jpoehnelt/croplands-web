@@ -17,6 +17,9 @@
             </div>
         </div>
         <div class="col-xs-3 right">
+            <icon class="fa fa-fw fa-thumbs-down fa-btn" ng-class="{'text-danger': getUserRating() === -1}" ng-click="thumbsDown()" ng-show="User.isLoggedIn()" blur></icon>
+            <icon class="fa fa-fw fa-thumbs-up fa-btn" ng-class="{'text-success': getUserRating() === 1}" ng-click="thumbsUp()" ng-show="User.isLoggedIn()" blur></icon>
+
             <icon class="fa fa-fw fa-edit fa-btn" ng-click="edit()" blur></icon>
             <icon class="fa fa-fw fa-search-plus fa-btn" ng-click="zoom()"
                   ng-show="showZoom"></icon>

@@ -1,6 +1,6 @@
 app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$q', '$timeout', 'icons', 'log', function (mappings, $http, $rootScope, $filter, $q, $timeout, icons, log) {
     var _baseUrl = 'https://api.croplands.org',
-        _cf = crossfilter(),
+        _cf = crossfilter(), allRecords = [],
         l = {
             cf: {},
             markers: [],
@@ -28,11 +28,11 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
             _.merge(existingRecord, data);
 
             // update the icon
-            l.addIcon(existingRecord);
+            l.setIcon(existingRecord);
             deferred.resolve(existingRecord);
         }
         else {
-            l.addIcon(data);
+            l.setIcon(data);
             _cf.add([data]);
 
             deferred.resolve(data);
@@ -184,7 +184,6 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
 // Return filtered markers
     l.returnMarkers = function () {
         l.markers = l.cf.dims.year.top(10000);
-        console.log(l.cf.dims.year.top(Infinity));
         log.info('Markers Filtered');
         $rootScope.$broadcast("locationFactory.markers.filtered");
 
@@ -226,18 +225,38 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
         });
     };
 
-    l.addIcon = function (record) {
+    l.setIcon = function (record) {
+        var iconString = '';
+
         if (record.land_use_type === 1) {
-            var iconString = "iconCropland";
+            iconString += "iconCropland";
             iconString += $filter('mappings')(record.intensity, "intensity");
             iconString += $filter('mappings')(record.water, "water");
-            if (icons[iconString] === undefined) {
-                log.error('No icon exists for class');
-            }
-            record.icon = icons[iconString];
         } else {
-            record.icon = icons.iconNotCropland;
+            iconString += 'iconNotCropland';
         }
+
+        if (record.visited) {
+            iconString += 'Visited';
+        }
+
+        if (record.user_rating) {
+            if (record.user_rating.rating > 0) {
+                iconString += 'ThumbsUp';
+            }
+            if (record.user_rating.rating < 0) {
+                iconString += 'ThumbsDown';
+            }
+        }
+
+        log.debug('[LocationFactory] Setting icon: ' + iconString);
+
+        if (icons[iconString] === undefined) {
+            log.error('No icon exists for class');
+        } else {
+            record.icon = icons[iconString];
+        }
+
     };
 
 
@@ -255,9 +274,10 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
                     record[keys[i]] = data.objects[n][i];
                 }
 
-                l.addIcon(record);
+                l.setIcon(record);
                 records.push(record);
             }
+            allRecords = allRecords.concat(records);
             _cf.add(records);
             deferred.resolve();
         })();
@@ -268,7 +288,6 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
 
 // Download Single Marker with Details
     l.getLocation = function (id, callback, attemptsRemaining) {
-        l.changeMarkerIcon(id);
 
         $http({method: 'GET', url: _baseUrl + '/api/locations/' + String(id)}).
             success(function (data, status, headers, config) {
@@ -281,6 +300,23 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
                     var index = -(record.year * 100 + record.month);
                     return index;
                 });
+
+                log.debug('[LocationFactory] Merge records begin.');
+
+                var hash = {};
+                _.each(data.records, function(record, idx) {
+                    hash[record.id] = idx;
+                });
+
+                _.each(allRecords, function(record) {
+                    if (hash[record.id] !== undefined) {
+                        record = _.merge(record, data.records[hash[record.id]]);
+                        record.visited = true;
+                        l.setIcon(record);
+                        data.records[hash[record.id]] = record;
+                    }
+                });
+                log.debug('[LocationFactory] Merge records complete.');
 
                 callback(data);
             }).
@@ -303,27 +339,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
 
     l.changeMarkerIcon = function (id) {
         l.cf.dims.id.filter(id);
-        _.map(l.cf.dims.id.top(Infinity), function (record) {
-
-            // Get existing marker type and append visited
-            _.forOwn(icons, function (val, key) {
-                if (record.icon === val) {
-                    // If already marked visited
-                    if (key.indexOf('Visited') > -1) {
-                        return record;
-                    }
-                    if (icons[key + "Visited"]) {
-                        record.icon = icons[key + "Visited"];
-                    }
-                    else {
-                        log.warn("No visited marker exists for: " + key, true);
-                    }
-                    return record;
-                }
-            });
-
-            return record;
-        });
+        l.setIcon(l.cf.dims.id.top(1)[0]);
         l.cf.dims.id.filterAll();
 
     };
@@ -343,7 +359,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
     };
     l.saveRecord = function (record, callback) {
         var deferred = $q.defer(),
-            data = {}, method, id, url = 'https://api.croplands.org/api/records', allowedFields = ['id', 'land_use_type', 'water', 'crop_primary', 'crop_secondary', 'location_id', 'year', 'month'];
+            data = {}, method, id, url = _baseUrl + '/api/records', allowedFields = ['id', 'land_use_type', 'water', 'crop_primary', 'crop_secondary', 'location_id', 'year', 'month'];
 
         data = angular.copy(record);
 //        // Remove keys users cannot change
@@ -360,6 +376,8 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
             url += "/" + data.id.toString();
         } else {
             method = 'POST';
+            data.source_type = 'derived';
+            data.source_description = 'croplands web application';
         }
 
         // Send to Server
@@ -369,7 +387,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
                 data.lat = record.lat;
                 data.lon = record.lon;
                 // update crossfilter
-
+                log.info('[LocationFactory] updated record #' + data.id);
                 updateSingleRecord(data).then(function (data) {
                     deferred.resolve(data);
                 });
@@ -377,6 +395,8 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
             }).
             error(function (data, status) {
                 deferred.reject();
+                log.error('[LocationFactory] Failure to update record');
+                console.log(data);
             });
 
         return deferred.promise;
@@ -408,6 +428,10 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
         });
         return csv.join('\r\n');
 
+    };
+
+    l.getRecords = function () {
+        return allRecords;
     };
     return l;
 }]);

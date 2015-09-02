@@ -1,4 +1,4 @@
-app.directive('locationRecord', ['mapService','user', function (mapService, user) {
+app.directive('locationRecord', ['mapService', 'RatingService','User', function (mapService, RatingService, User) {
     return {
         restrict: 'EA',
         scope: {
@@ -6,6 +6,7 @@ app.directive('locationRecord', ['mapService','user', function (mapService, user
             showZoom: '=showZoom'
         },
         link: function (scope) {
+            console.log(scope.record);
             // do nothing
             scope.edit = function () {
                 scope.$emit('location.record.edit.open', scope.record);
@@ -21,12 +22,20 @@ app.directive('locationRecord', ['mapService','user', function (mapService, user
             };
 
             scope.thumbsUp = function () {
-                console.log(scope.record);
+                RatingService.rateRecord(scope.record, 1);
             };
             scope.thumbsDown = function () {
-                console.log(scope.record);
+                RatingService.rateRecord(scope.record, -1);
             };
 
+            scope.getUserRating = function () {
+                if (scope.record.user_rating === undefined) {
+                    return 0;
+                }
+                return scope.record.user_rating.rating;
+            };
+
+            scope.User = User;
 
         },
         templateUrl: '/static/directives/location-record.html'

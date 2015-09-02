@@ -1,4 +1,4 @@
-app.directive('locationRecordEditForm', ['locationFactory', 'mappings', 'user', function (locationFactory, mappings, user) {
+app.directive('locationRecordEditForm', ['locationFactory', 'mappings', 'User', function (locationFactory, mappings, User) {
     return {
         restrict: 'EA',
         scope: {
