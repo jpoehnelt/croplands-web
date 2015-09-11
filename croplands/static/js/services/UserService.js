@@ -1,4 +1,4 @@
-app.factory('User', [ '$http', '$window', '$q', 'log', function ($http, $window, $q, log) {
+app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope', function ($http, $window, $q, log, $rootScope) {
     var _user = {},
       _baseUrl = 'https://api.croplands.org';
 
@@ -7,10 +7,16 @@ app.factory('User', [ '$http', '$window', '$q', 'log', function ($http, $window,
     }
 
     function getRole() {
+        var role;
         if (_user.role) {
-            return _user.role;
+            role = _user.role;
+        } else {
+            role = 'anon';
         }
-        return 'anon';
+
+        log.debug('[UserService] getRole() : ' + role);
+
+        return role;
     }
 
     function loadFromToken(token) {
@@ -60,6 +66,7 @@ app.factory('User', [ '$http', '$window', '$q', 'log', function ($http, $window,
                     loadFromToken(r.data.data.token);
                 }
                 deferred.resolve(r.data);
+                $rootScope.$emit('User.change');
             },
             function (r) {
                 if (r.data) {
@@ -85,6 +92,7 @@ app.factory('User', [ '$http', '$window', '$q', 'log', function ($http, $window,
                     loadFromToken(r.data.data.token);
                 }
                 deferred.resolve(r.data);
+                $rootScope.$emit('User.change');
             },
             function (r) {
                 if (r.data) {
@@ -157,11 +165,13 @@ app.factory('User', [ '$http', '$window', '$q', 'log', function ($http, $window,
         delete $http.defaults.headers.post.authorization;
         delete $http.defaults.headers.put.authorization;
         delete $http.defaults.headers.patch.authorization;
+        $rootScope.$emit('User.change');
     }
 
     function getFromStorage() {
         var user = JSON.parse($window.localStorage.user);
         loadFromToken(user.token);
+        $rootScope.$emit('User.change');
     }
 
     // initialization

@@ -4529,7 +4529,7 @@ app.factory('RatingService', ['$http', '$rootScope', 'log', 'User', '$q','locati
         getRecordRatings: getRecordRatings
     };
 }]);;
-app.factory('User', [ '$http', '$window', '$q', 'log', function ($http, $window, $q, log) {
+app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope', function ($http, $window, $q, log, $rootScope) {
     var _user = {},
       _baseUrl = 'https://api.croplands.org';
 
@@ -4538,10 +4538,16 @@ app.factory('User', [ '$http', '$window', '$q', 'log', function ($http, $window,
     }
 
     function getRole() {
+        var role;
         if (_user.role) {
-            return _user.role;
+            role = _user.role;
+        } else {
+            role = 'anon';
         }
-        return 'anon';
+
+        log.debug('[UserService] getRole() : ' + role);
+
+        return role;
     }
 
     function loadFromToken(token) {
@@ -4591,6 +4597,7 @@ app.factory('User', [ '$http', '$window', '$q', 'log', function ($http, $window,
                     loadFromToken(r.data.data.token);
                 }
                 deferred.resolve(r.data);
+                $rootScope.$emit('User.change');
             },
             function (r) {
                 if (r.data) {
@@ -4616,6 +4623,7 @@ app.factory('User', [ '$http', '$window', '$q', 'log', function ($http, $window,
                     loadFromToken(r.data.data.token);
                 }
                 deferred.resolve(r.data);
+                $rootScope.$emit('User.change');
             },
             function (r) {
                 if (r.data) {
@@ -4688,11 +4696,13 @@ app.factory('User', [ '$http', '$window', '$q', 'log', function ($http, $window,
         delete $http.defaults.headers.post.authorization;
         delete $http.defaults.headers.put.authorization;
         delete $http.defaults.headers.patch.authorization;
+        $rootScope.$emit('User.change');
     }
 
     function getFromStorage() {
         var user = JSON.parse($window.localStorage.user);
         loadFromToken(user.token);
+        $rootScope.$emit('User.change');
     }
 
     // initialization
@@ -4917,7 +4927,7 @@ iconRedSelectedVisited: _.assign({ iconUrl:"data:image/png;base64,iVBORw0KGgoAAA
 iconRedSelected: _.assign({ iconUrl:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAApCAYAAADAk4LOAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABDBJREFUeNq8V0tsG0UY/md2vGunTpyXkwYVEYQ4IHGAC0KCQxGn9g6IihuXgqCgUkUCKh5FAoRKBVwKEhUnKiFAKlSigBQIQgkkXDikUitUpYJiJ85ra68fu96d4f/HTWrHa3ttAivZs5OZ+b/v+18TM6UU/NcPI5CXx9O/m4wP7rZxX6lrb6zkHtQgL6RH1KFbx3ddwdm/Vmi4XSDA/gEunDvG+pJq1d09F6UtmMhZftZ1JwXOB/stkYRAgcpVdk9GnwHDlikQZD/HWNw/ZpmgKkFvjMfiwO9ONS94ElKJGKSFOclThtgbN3jPhJPvvAipz74F87F7d0Yd9sYEFKR/D6eviYQJUOpeSeKlRyD28CH9Lq+tNC5WJfQlBAhgSXLXYJyxrgHIRYmn3tTvpVNT4M9mGtYVukuDo1juKjmYQEToMibJ10/UvLLwDbhnfg7dM2kYUJLBOHelTE1wDiqIXvmxg3eCuO+gfndefaV1Uhg1D/H6SeRYPPlMLYHOnQa5eD18U9EHiBs3QfSE/rgjNYcu/qKDG6ZC5deg9NGZaPGjr3IFAfaIhgXr8YeADYzq4MafO9Cs4uuPW6ugB+1puwSS5MaVbNkHZjbWSuX9C1A6eaRWvMc+APHALQ2xKH/6RfsiRXtkN8F5hizPLxWxZyVF00YCqk6frWXTyQ8h/ugTnWOxnX4CyK4BbIY7Mvj8kl30GLkrJAGcqbe0//m+u7YLr2Ms0A7ZI7tkn7+7un4u73kqg/5jA7Gm/dQ0qdi2W1IEFWQnU6oC2SX7OhBY9d/Pr+YBUrHQQ1RsZFwX3oXznZvmsAnz6wWIMaZ9rQOBVXnksu0ccPcNCZPSOaT6nWdPRSsidFMFqV/aKPh4M57YTmGUdNVU7MpcztEs/u1lNbdWJO/Mk92bxUgFKoPDv+U2pdsvmmom8oPnXIvDQm7TR+8cbyjGG2pmYor9odUgm55V4HlDwUWy1wRSpyYgNl2rqVNRkfL5prZSr4YrWOxFDe2fzeQhrvh0vYomEF3lyILYdKOG6sLGrQtrto837eHQBrlTDbGZXS5EVsPG4zCTvQ4JZkxvZVRbEHqIzdzKhmYX1gUaAIZM2FQSFtfzEKaiJQix6efiO2JHLNuCjFpaRR83zoepaAmypYbYEUti20kFdY22l1YrNRbnX2o1o1ZbFXhnfNJKRVsQ3RilPIY9yAtTo1VUA+pRXlnKox2v37ZqGD/94592oxq6L3D+1d8bQOu4z+4Z5EYXeO1ywfGWKlVgIzUgGmmedcoerUf6R6KDGpvY/rRs1+oG727q1DSPoiISyJYaZO0uFT3gt+0BGmkeRUVkEGKL/N+bydo+KaGR5lFURAbRd7uSby8Xy8EP2ARXS5UizSN3T/rNGPVzfCz99NHRYUVjN+e6AqHPVHrk127PsP/jd/w/AgwAtoGzEPyHsdUAAAAASUVORK5CYII=" }, base),
 };
 }]);;
-app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$q', '$timeout', 'icons', 'log', function (mappings, $http, $rootScope, $filter, $q, $timeout, icons, log) {
+app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$q', '$timeout', 'icons', 'log', 'User', function (mappings, $http, $rootScope, $filter, $q, $timeout, icons, log, User) {
     var _baseUrl = 'https://api.croplands.org',
         _cf = crossfilter(), allRecords = [],
         l = {
@@ -4987,6 +4997,9 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
         }),
         spatial: _cf.dimension(function (d) {
             return {lat: d.lat, lon: d.lon};
+        }),
+        validation: _cf.dimension(function (d) {
+            return d.use_validation;
         })
     };
 
@@ -4997,7 +5010,8 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
         landUseType: l.cf.dims.landUseType.group(),
         crop: l.cf.dims.crop.group(),
         water: l.cf.dims.water.group(),
-        intensity: l.cf.dims.intensity.group()
+        intensity: l.cf.dims.intensity.group(),
+        validation: l.cf.dims.validation.group()
     };
 
 // Filters
@@ -5085,6 +5099,25 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
         _.each(l.cf.dims, function (dim) {
             dim.filterAll();
         });
+        if (User.getRole() !== 'validation' && User.getRole() !== 'admin') {
+            l.hideValidation();
+        }
+    };
+
+    l.hideValidation = function (echo) {
+        l.cf.dims.validation.filterAll();
+        l.cf.dims.validation.filter(0);
+        log.debug('[LocationFactory] Hiding Validation Data');
+        if (echo) {
+            l.returnMarkers();
+        }
+    };
+
+    l.showValidation = function (echo) {
+        l.cf.dims.validation.filterAll();
+        if (echo) {
+            l.returnMarkers();
+        }
     };
 
     l.clearAll = function () {
@@ -5168,7 +5201,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
             }
         }
 
-        log.debug('[LocationFactory] Setting icon: ' + iconString);
+//        log.debug('[LocationFactory] Setting icon: ' + iconString);
 
         if (icons[iconString] === undefined) {
             log.error('No icon exists for class');
@@ -5205,6 +5238,15 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
         return deferred.promise;
     };
 
+
+// Events to listen for
+    $rootScope.$on('User.change', function () {
+        if (User.getRole() !== 'validation' && User.getRole() !== 'admin') {
+            l.hideValidation(true);
+        }
+    });
+
+
 // Download Single Marker with Details
     l.getLocation = function (id, callback, attemptsRemaining) {
 
@@ -5223,11 +5265,11 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
                 log.debug('[LocationFactory] Merge records begin.');
 
                 var hash = {};
-                _.each(data.records, function(record, idx) {
+                _.each(data.records, function (record, idx) {
                     hash[record.id] = idx;
                 });
 
-                _.each(allRecords, function(record) {
+                _.each(allRecords, function (record) {
                     if (hash[record.id] !== undefined) {
                         record = _.merge(record, data.records[hash[record.id]]);
                         record.visited = true;
@@ -5329,7 +5371,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
 
         var records = l.cf.dims.year.top(Infinity);
         var csv = [
-            ["location_id, record_id, lat, lon, year, land_use_type, land_use_type_id, water, intensity, crop_primary"]
+            ["location_id, record_id, lat, lon, year, land_use_type, water, intensity, crop_primary, rating, use_validation"]
         ];
         _.each(records, function (record) {
             var recordString = [record.location_id,
@@ -5338,10 +5380,11 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
                 record.lon,
                 record.year,
                 mappings.landUseType.choices[record.land_use_type].label,
-                record.land_use_type,
                 mappings.water.choices[record.water].label,
                 mappings.intensity.choices[record.intensity].label,
-                mappings.crop.choices[record.crop_primary].label
+                mappings.crop.choices[record.crop_primary].label,
+                record.rating,
+                record.use_validation
             ].join(",");
             csv.push(recordString);
         });
@@ -6683,92 +6726,6 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
     var activeTab = 'help',
         gridImageURL = "/static/imgs/icons/grid.png", shapes = {};
 
-    function clearShapes() {
-        var deferred = $q.defer();
-        // remove various layers from map and delete reference
-        leafletData.getMap().then(function (map) {
-            _.forOwn(shapes, function (shape, key) {
-                log.info('[Location] Removing ' + key + ' from map.');
-                map.removeLayer(shape);
-            });
-            shapes = {};
-            deferred.resolve();
-        });
-
-        return deferred.promise;
-    }
-
-    function buildShapes(latLng, points, bearing) {
-        clearShapes().then(function () {
-            var circle250 = L.circle(latLng, 125, {fill: false, dashArray: [3, 6], color: '#00FF00'});//
-            shapes.locationAreaGrid = L.imageOverlay(gridImageURL, circle250.getBounds());
-
-            shapes.locationMarker = L.marker(latLng, {icon: new L.icon(icons.iconRedSelected), zIndexOffset: 1000});
-            if (bearing && bearing >= 0) {
-                shapes.polygon = L.polygon([latLng, geoHelperService.destination(latLng, bearing - 20, 0.2), geoHelperService.destination(latLng, bearing + 20, 0.2)], {color: '#00FF00', stroke: false, opacity: 0.4});
-            }
-
-            if (points) {
-                _.each(points, function (pt, i) {
-                    var opacity = 0.5 / points.length;
-                    opacity = Math.min(opacity * 20 / pt.accuracy, 0.5);
-                    shapes["gpsPoint_#" + i] = L.circle([pt.lat, pt.lon], pt.accuracy, {stroke: false, opacity: opacity, fillOpacity: opacity, fill: true, color: '#00FF00'});
-                });
-
-            }
-
-            leafletData.getMap().then(function (map) {
-                _.forOwn(shapes, function (shape) {
-                    shape.addTo(map);
-                });
-
-            });
-        });
-    }
-
-    function init(scope) {
-        // reset location data
-        scope.location = {};
-
-        // use same tab as before
-        scope.activeTab = activeTab;
-
-        // get children elements if id is present and make copy
-        if (scope.id && scope.id !== 0) {
-
-            // Mark panel as busy
-            scope.busy = true;
-
-            // Get detailed data
-            locationFactory.getLocation(scope.id, function (data) {
-                // Save data plus original to detect changes
-                scope.location = data;
-                scope.copy = angular.copy(scope.location);
-
-                // Location panel is no longer busy
-                scope.busy = false;
-
-                // Copy lat lon back for parent etc...
-                scope.lat = data.lat;
-                scope.lon = data.lon;
-
-                buildShapes([scope.lat, scope.lon], scope.location.points, scope.location.bearing);
-            });
-        } else {
-            // if no id, just save location
-            scope.location.lat = scope.lat;
-            scope.location.lon = scope.lon;
-        }
-
-        if (scope.lat && scope.lon) {
-            buildShapes([scope.lat, scope.lon]);
-        }
-        else {
-            clearShapes();
-        }
-
-
-    }
 
     return {
         restrict: 'E',
@@ -6779,6 +6736,116 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
             visible: '=visible'
         },
         link: function (scope) {
+
+            scope.init = function() {
+                // reset location data
+                scope.location = {};
+
+                // use same tab as before
+                scope.activeTab = activeTab;
+
+                // get children elements if id is present and make copy
+                if (scope.id && scope.id !== 0) {
+
+                    // Mark panel as busy
+                    scope.busy = true;
+
+                    // Get detailed data
+                    locationFactory.getLocation(scope.id, function (data) {
+                        // Save data plus original to detect changes
+                        scope.location = data;
+                        scope.copy = angular.copy(scope.location);
+
+                        // Location panel is no longer busy
+                        scope.busy = false;
+
+                        // Copy lat lon back for parent etc...
+                        scope.lat = data.lat;
+                        scope.lon = data.lon;
+
+                        scope.buildShapes([scope.lat, scope.lon], scope.location.points, scope.location.bearing);
+                    });
+                } else {
+                    // if no id, just save location
+                    scope.location.lat = scope.lat;
+                    scope.location.lon = scope.lon;
+                }
+
+                if (scope.lat && scope.lon) {
+                    scope.buildShapes([scope.lat, scope.lon]);
+                }
+                else {
+                    scope.clearShapes();
+                }
+
+
+            };
+
+            scope.clearShapes = function() {
+                var deferred = $q.defer();
+                // remove various layers from map and delete reference
+                leafletData.getMap().then(function (map) {
+                    _.forOwn(shapes, function (shape, key) {
+                        log.info('[Location] Removing ' + key + ' from map.');
+                        map.removeLayer(shape);
+                    });
+                    shapes = {};
+                    deferred.resolve();
+                });
+
+                return deferred.promise;
+            };
+
+            scope.buildGrid = function(latLng) {
+                leafletData.getMap().then(function (map) {
+                    try {
+                        map.removeLayer(shapes.locationAreaGrid);
+                    } catch (e) {
+                        log.debug('[Location] Area Grid Does Not Exist');
+                    }
+                    var circle250 = L.circle(latLng, 125, {fill: false, dashArray: [3, 6], color: '#00FF00'});//
+                    shapes.locationAreaGrid = L.imageOverlay(gridImageURL, circle250.getBounds());
+                    map.addLayer(shapes.locationAreaGrid);
+                });
+            };
+
+            scope.buildShapes = function (latLng, points, bearing) {
+                scope.clearShapes().then(function () {
+
+                    scope.buildGrid(latLng);
+
+                    shapes.locationMarker = L.marker(latLng, {icon: new L.icon(icons.iconRedSelected), zIndexOffset: 1000, draggable: true});
+
+                    shapes.locationMarker.on('dragend', function (event) {
+                        log.info('[Location] Dragged marker: ' + event.distance + ' meters');
+                        scope.buildGrid(shapes.locationMarker.getLatLng());
+                        latLng = shapes.locationMarker.getLatLng();
+                        scope.location.lat = latLng.lat;
+                        scope.location.lon = latLng.lng;
+                    });
+
+                    if (bearing && bearing >= 0) {
+                        shapes.polygon = L.polygon([latLng, geoHelperService.destination(latLng, bearing - 20, 0.2), geoHelperService.destination(latLng, bearing + 20, 0.2)], {color: '#00FF00', stroke: false, opacity: 0.4});
+                    }
+
+                    if (points) {
+                        _.each(points, function (pt, i) {
+                            var opacity = 0.5 / points.length;
+                            opacity = Math.min(opacity * 20 / pt.accuracy, 0.5);
+                            shapes["gpsPoint_#" + i] = L.circle([pt.lat, pt.lon], pt.accuracy, {stroke: false, opacity: opacity, fillOpacity: opacity, fill: true, color: '#00FF00'});
+                        });
+
+                    }
+
+                    leafletData.getMap().then(function (map) {
+                        _.forOwn(shapes, function (shape) {
+                            shape.addTo(map);
+                        });
+
+                    });
+                });
+            };
+
             // add some other values to scope
             angular.extend(scope, {
                 mappings: mappings,
@@ -6826,7 +6893,7 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
                             scope.location.records.push(record);
                             scope.$emit('location.record.edit.open', record);
 
-                        }).error(function (error) {
+                        }).error(function () {
                             log.info("Something went wrong creating the location.");
                         });
                 } else {
@@ -6844,13 +6911,14 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
             // Watch for new location
             scope.$watch(function () {
                     return [scope.lat, scope.lon];
-                }, function () {
-                    init(scope);
+                }, function (position) {
+                    console.log(position);
+                    scope.init();
                 }, true
             );
             scope.$watch('visible', function (visible) {
                 if (!visible) {
-                    clearShapes();
+                    scope.clearShapes();
                 }
             });
         },

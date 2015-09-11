@@ -1,4 +1,4 @@
-app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$q', '$timeout', 'icons', 'log', function (mappings, $http, $rootScope, $filter, $q, $timeout, icons, log) {
+app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$q', '$timeout', 'icons', 'log', 'User', function (mappings, $http, $rootScope, $filter, $q, $timeout, icons, log, User) {
     var _baseUrl = 'https://api.croplands.org',
         _cf = crossfilter(), allRecords = [],
         l = {
@@ -68,6 +68,9 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
         }),
         spatial: _cf.dimension(function (d) {
             return {lat: d.lat, lon: d.lon};
+        }),
+        validation: _cf.dimension(function (d) {
+            return d.use_validation;
         })
     };
 
@@ -78,7 +81,8 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
         landUseType: l.cf.dims.landUseType.group(),
         crop: l.cf.dims.crop.group(),
         water: l.cf.dims.water.group(),
-        intensity: l.cf.dims.intensity.group()
+        intensity: l.cf.dims.intensity.group(),
+        validation: l.cf.dims.validation.group()
     };
 
 // Filters
@@ -166,6 +170,25 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
         _.each(l.cf.dims, function (dim) {
             dim.filterAll();
         });
+        if (User.getRole() !== 'validation' && User.getRole() !== 'admin') {
+            l.hideValidation();
+        }
+    };
+
+    l.hideValidation = function (echo) {
+        l.cf.dims.validation.filterAll();
+        l.cf.dims.validation.filter(0);
+        log.debug('[LocationFactory] Hiding Validation Data');
+        if (echo) {
+            l.returnMarkers();
+        }
+    };
+
+    l.showValidation = function (echo) {
+        l.cf.dims.validation.filterAll();
+        if (echo) {
+            l.returnMarkers();
+        }
     };
 
     l.clearAll = function () {
@@ -249,7 +272,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
             }
         }
 
-        log.debug('[LocationFactory] Setting icon: ' + iconString);
+//        log.debug('[LocationFactory] Setting icon: ' + iconString);
 
         if (icons[iconString] === undefined) {
             log.error('No icon exists for class');
@@ -286,6 +309,15 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
         return deferred.promise;
     };
 
+
+// Events to listen for
+    $rootScope.$on('User.change', function () {
+        if (User.getRole() !== 'validation' && User.getRole() !== 'admin') {
+            l.hideValidation(true);
+        }
+    });
+
+
 // Download Single Marker with Details
     l.getLocation = function (id, callback, attemptsRemaining) {
 
@@ -304,11 +336,11 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
                 log.debug('[LocationFactory] Merge records begin.');
 
                 var hash = {};
-                _.each(data.records, function(record, idx) {
+                _.each(data.records, function (record, idx) {
                     hash[record.id] = idx;
                 });
 
-                _.each(allRecords, function(record) {
+                _.each(allRecords, function (record) {
                     if (hash[record.id] !== undefined) {
                         record = _.merge(record, data.records[hash[record.id]]);
                         record.visited = true;
@@ -410,7 +442,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
 
         var records = l.cf.dims.year.top(Infinity);
         var csv = [
-            ["location_id, record_id, lat, lon, year, land_use_type, land_use_type_id, water, intensity, crop_primary"]
+            ["location_id, record_id, lat, lon, year, land_use_type, water, intensity, crop_primary, rating, use_validation"]
         ];
         _.each(records, function (record) {
             var recordString = [record.location_id,
@@ -419,10 +451,11 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
                 record.lon,
                 record.year,
                 mappings.landUseType.choices[record.land_use_type].label,
-                record.land_use_type,
                 mappings.water.choices[record.water].label,
                 mappings.intensity.choices[record.intensity].label,
-                mappings.crop.choices[record.crop_primary].label
+                mappings.crop.choices[record.crop_primary].label,
+                record.rating,
+                record.use_validation
             ].join(",");
             csv.push(recordString);
         });
