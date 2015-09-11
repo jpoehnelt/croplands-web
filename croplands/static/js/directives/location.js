@@ -2,92 +2,6 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
     var activeTab = 'help',
         gridImageURL = "/static/imgs/icons/grid.png", shapes = {};
 
-    function clearShapes() {
-        var deferred = $q.defer();
-        // remove various layers from map and delete reference
-        leafletData.getMap().then(function (map) {
-            _.forOwn(shapes, function (shape, key) {
-                log.info('[Location] Removing ' + key + ' from map.');
-                map.removeLayer(shape);
-            });
-            shapes = {};
-            deferred.resolve();
-        });
-
-        return deferred.promise;
-    }
-
-    function buildShapes(latLng, points, bearing) {
-        clearShapes().then(function () {
-            var circle250 = L.circle(latLng, 125, {fill: false, dashArray: [3, 6], color: '#00FF00'});//
-            shapes.locationAreaGrid = L.imageOverlay(gridImageURL, circle250.getBounds());
-
-            shapes.locationMarker = L.marker(latLng, {icon: new L.icon(icons.iconRedSelected), zIndexOffset: 1000});
-            if (bearing && bearing >= 0) {
-                shapes.polygon = L.polygon([latLng, geoHelperService.destination(latLng, bearing - 20, 0.2), geoHelperService.destination(latLng, bearing + 20, 0.2)], {color: '#00FF00', stroke: false, opacity: 0.4});
-            }
-
-            if (points) {
-                _.each(points, function (pt, i) {
-                    var opacity = 0.5 / points.length;
-                    opacity = Math.min(opacity * 20 / pt.accuracy, 0.5);
-                    shapes["gpsPoint_#" + i] = L.circle([pt.lat, pt.lon], pt.accuracy, {stroke: false, opacity: opacity, fillOpacity: opacity, fill: true, color: '#00FF00'});
-                });
-
-            }
-
-            leafletData.getMap().then(function (map) {
-                _.forOwn(shapes, function (shape) {
-                    shape.addTo(map);
-                });
-
-            });
-        });
-    }
-
-    function init(scope) {
-        // reset location data
-        scope.location = {};
-
-        // use same tab as before
-        scope.activeTab = activeTab;
-
-        // get children elements if id is present and make copy
-        if (scope.id && scope.id !== 0) {
-
-            // Mark panel as busy
-            scope.busy = true;
-
-            // Get detailed data
-            locationFactory.getLocation(scope.id, function (data) {
-                // Save data plus original to detect changes
-                scope.location = data;
-                scope.copy = angular.copy(scope.location);
-
-                // Location panel is no longer busy
-                scope.busy = false;
-
-                // Copy lat lon back for parent etc...
-                scope.lat = data.lat;
-                scope.lon = data.lon;
-
-                buildShapes([scope.lat, scope.lon], scope.location.points, scope.location.bearing);
-            });
-        } else {
-            // if no id, just save location
-            scope.location.lat = scope.lat;
-            scope.location.lon = scope.lon;
-        }
-
-        if (scope.lat && scope.lon) {
-            buildShapes([scope.lat, scope.lon]);
-        }
-        else {
-            clearShapes();
-        }
-
-
-    }
 
     return {
         restrict: 'E',
@@ -98,6 +12,116 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
             visible: '=visible'
         },
         link: function (scope) {
+
+            scope.init = function() {
+                // reset location data
+                scope.location = {};
+
+                // use same tab as before
+                scope.activeTab = activeTab;
+
+                // get children elements if id is present and make copy
+                if (scope.id && scope.id !== 0) {
+
+                    // Mark panel as busy
+                    scope.busy = true;
+
+                    // Get detailed data
+                    locationFactory.getLocation(scope.id, function (data) {
+                        // Save data plus original to detect changes
+                        scope.location = data;
+                        scope.copy = angular.copy(scope.location);
+
+                        // Location panel is no longer busy
+                        scope.busy = false;
+
+                        // Copy lat lon back for parent etc...
+                        scope.lat = data.lat;
+                        scope.lon = data.lon;
+
+                        scope.buildShapes([scope.lat, scope.lon], scope.location.points, scope.location.bearing);
+                    });
+                } else {
+                    // if no id, just save location
+                    scope.location.lat = scope.lat;
+                    scope.location.lon = scope.lon;
+                }
+
+                if (scope.lat && scope.lon) {
+                    scope.buildShapes([scope.lat, scope.lon]);
+                }
+                else {
+                    scope.clearShapes();
+                }
+
+
+            };
+
+            scope.clearShapes = function() {
+                var deferred = $q.defer();
+                // remove various layers from map and delete reference
+                leafletData.getMap().then(function (map) {
+                    _.forOwn(shapes, function (shape, key) {
+                        log.info('[Location] Removing ' + key + ' from map.');
+                        map.removeLayer(shape);
+                    });
+                    shapes = {};
+                    deferred.resolve();
+                });
+
+                return deferred.promise;
+            };
+
+            scope.buildGrid = function(latLng) {
+                leafletData.getMap().then(function (map) {
+                    try {
+                        map.removeLayer(shapes.locationAreaGrid);
+                    } catch (e) {
+                        log.debug('[Location] Area Grid Does Not Exist');
+                    }
+                    var circle250 = L.circle(latLng, 125, {fill: false, dashArray: [3, 6], color: '#00FF00'});//
+                    shapes.locationAreaGrid = L.imageOverlay(gridImageURL, circle250.getBounds());
+                    map.addLayer(shapes.locationAreaGrid);
+                });
+            };
+
+            scope.buildShapes = function (latLng, points, bearing) {
+                scope.clearShapes().then(function () {
+
+                    scope.buildGrid(latLng);
+
+                    shapes.locationMarker = L.marker(latLng, {icon: new L.icon(icons.iconRedSelected), zIndexOffset: 1000, draggable: true});
+
+                    shapes.locationMarker.on('dragend', function (event) {
+                        log.info('[Location] Dragged marker: ' + event.distance + ' meters');
+                        scope.buildGrid(shapes.locationMarker.getLatLng());
+                        latLng = shapes.locationMarker.getLatLng();
+                        scope.location.lat = latLng.lat;
+                        scope.location.lon = latLng.lng;
+                    });
+
+                    if (bearing && bearing >= 0) {
+                        shapes.polygon = L.polygon([latLng, geoHelperService.destination(latLng, bearing - 20, 0.2), geoHelperService.destination(latLng, bearing + 20, 0.2)], {color: '#00FF00', stroke: false, opacity: 0.4});
+                    }
+
+                    if (points) {
+                        _.each(points, function (pt, i) {
+                            var opacity = 0.5 / points.length;
+                            opacity = Math.min(opacity * 20 / pt.accuracy, 0.5);
+                            shapes["gpsPoint_#" + i] = L.circle([pt.lat, pt.lon], pt.accuracy, {stroke: false, opacity: opacity, fillOpacity: opacity, fill: true, color: '#00FF00'});
+                        });
+
+                    }
+
+                    leafletData.getMap().then(function (map) {
+                        _.forOwn(shapes, function (shape) {
+                            shape.addTo(map);
+                        });
+
+                    });
+                });
+            };
+
             // add some other values to scope
             angular.extend(scope, {
                 mappings: mappings,
@@ -145,7 +169,7 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
                             scope.location.records.push(record);
                             scope.$emit('location.record.edit.open', record);
 
-                        }).error(function (error) {
+                        }).error(function () {
                             log.info("Something went wrong creating the location.");
                         });
                 } else {
@@ -163,13 +187,14 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
             // Watch for new location
             scope.$watch(function () {
                     return [scope.lat, scope.lon];
-                }, function () {
-                    init(scope);
+                }, function (position) {
+                    console.log(position);
+                    scope.init();
                 }, true
             );
             scope.$watch('visible', function (visible) {
                 if (!visible) {
-                    clearShapes();
+                    scope.clearShapes();
                 }
             });
         },
