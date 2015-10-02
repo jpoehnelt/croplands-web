@@ -10,7 +10,7 @@ app.directive('passwordConfirm', ['$window', function ($window) {
         },
         link: function (scope) {
             if (scope.minEntropy === undefined) {
-                scope.minEntropy = 30;
+                scope.minEntropy = 20;
             }
 
             // init values
@@ -45,7 +45,7 @@ app.directive('passwordConfirm', ['$window', function ($window) {
             });
         },
         templateUrl: '/static/directives/password-confirm.html'
-    }
-        ;
-}])
-;
+    };
+
+}]);
+
