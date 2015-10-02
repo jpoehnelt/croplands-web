@@ -4562,7 +4562,7 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope', function ($h
 
     function isLoggedIn() {
         if (_user.expires && _user.token) {
-            var secondsToExpiration = _user.expires - Math.floor((new Date).getTime() / 1000);
+            var secondsToExpiration = _user.expires - Math.floor(new Date().getTime() / 1000);
             return secondsToExpiration > 300;
         }
 
@@ -6966,7 +6966,7 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
             };
 
             scope.isLoggedIn = function () {
-                return User.isLoggedIn;
+                return User.isLoggedIn();
             };
 
             scope.canDelete = function () {

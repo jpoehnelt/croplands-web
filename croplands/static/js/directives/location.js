@@ -184,7 +184,7 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
             };
 
             scope.isLoggedIn = function () {
-                return User.isLoggedIn;
+                return User.isLoggedIn();
             };
 
             scope.canDelete = function () {
