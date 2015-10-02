@@ -122,7 +122,7 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                 locations: {
                     name: 'Locations',
                     type: 'markercluster',
-                    visible: false,
+                    visible: true,
                     layerOptions: {
                         showCoverageOnHover: false,
                         chunkedLoading: true,

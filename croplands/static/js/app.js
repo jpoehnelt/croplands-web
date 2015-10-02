@@ -5621,7 +5621,7 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                 locations: {
                     name: 'Locations',
                     type: 'markercluster',
-                    visible: false,
+                    visible: true,
                     layerOptions: {
                         showCoverageOnHover: false,
                         chunkedLoading: true,
@@ -6869,7 +6869,7 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
 
             scope.buildShapes = function (latLng, points, bearing, originalLatLng) {
                 scope.clearShapes().then(function () {
-
+                    var bearingDistance = 0, bearingSpread = 7.5;
                     scope.buildGrid(latLng);
 
                     shapes.locationMarker = L.marker(latLng, {icon: new L.icon(icons.iconRedSelected), zIndexOffset: 1000, draggable: true});
@@ -6882,8 +6882,12 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
                         scope.location.lon = latLng.lng;
                     });
 
+                    if (scope.location.distance !== undefined) {
+                        bearingDistance = scope.location.distance / 1000;
+                    }
+
                     if (bearing && bearing >= 0) {
-                        shapes.polygon = L.polygon([originalLatLng, geoHelperService.destination(originalLatLng, bearing - 20, 0.2), geoHelperService.destination(originalLatLng, bearing + 20, 0.2)], {color: '#00FF00', stroke: false, opacity: 0.4});
+                        shapes.polygon = L.polygon([originalLatLng, geoHelperService.destination(originalLatLng, bearing - bearingSpread, bearingDistance), geoHelperService.destination(originalLatLng, bearing + bearingSpread, bearingDistance)], {color: '#00FF00', stroke: false});
                     }
 
                     if (points) {
@@ -6925,7 +6929,7 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
                 scope.activeTab = tab;
             };
 
-            scope.addRecordRow = function (e) {
+            scope.addRecordRow = function () {
                 log.info('Creating new record.', true);
                 var d = new Date(),
                     record = {
