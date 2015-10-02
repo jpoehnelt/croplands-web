@@ -1,4 +1,4 @@
-app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons', 'mapService', 'log', '$q', 'geoHelperService', function (locationFactory, mappings, leafletData, icons, mapService, log, $q, geoHelperService) {
+app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons', 'mapService', 'log', '$q', 'geoHelperService', 'User', function (locationFactory, mappings, leafletData, icons, mapService, log, $q, geoHelperService, User) {
     var activeTab = 'help',
         gridImageURL = "/static/imgs/icons/grid.png", shapes = {};
 
@@ -39,7 +39,7 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
                         scope.lat = data.lat;
                         scope.lon = data.lon;
 
-                        scope.buildShapes([scope.lat, scope.lon], scope.location.points, scope.location.bearing);
+                        scope.buildShapes([scope.lat, scope.lon], scope.location.points, scope.location.bearing, [scope.location.original_lat, scope.location.original_lon]);
                     });
                 } else {
                     // if no id, just save location
@@ -85,7 +85,7 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
                 });
             };
 
-            scope.buildShapes = function (latLng, points, bearing) {
+            scope.buildShapes = function (latLng, points, bearing, originalLatLng) {
                 scope.clearShapes().then(function () {
 
                     scope.buildGrid(latLng);
@@ -101,7 +101,7 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
                     });
 
                     if (bearing && bearing >= 0) {
-                        shapes.polygon = L.polygon([latLng, geoHelperService.destination(latLng, bearing - 20, 0.2), geoHelperService.destination(latLng, bearing + 20, 0.2)], {color: '#00FF00', stroke: false, opacity: 0.4});
+                        shapes.polygon = L.polygon([originalLatLng, geoHelperService.destination(originalLatLng, bearing - 20, 0.2), geoHelperService.destination(originalLatLng, bearing + 20, 0.2)], {color: '#00FF00', stroke: false, opacity: 0.4});
                     }
 
                     if (points) {
@@ -179,6 +179,24 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
                 }
             };
 
+            scope.isLoggedIn = function () {
+                return User.isLoggedIn;
+            };
+
+            scope.canDelete = function () {
+                var role = User.getRole(),
+                    allowedRole = role === 'mapping' || role === 'validation' || role === 'admin' || role === 'partner';
+
+                return scope.isLoggedIn && allowedRole;
+            };
+
+            scope.delete = function () {
+                locationFactory.deleteLocation(scope.location);
+            };
+
+            scope.save = function () {
+                locationFactory.saveLocation(scope.location);
+            };
 
             scope.zoom = function () {
                 mapService.zoom(scope.lat, scope.lon, 16);

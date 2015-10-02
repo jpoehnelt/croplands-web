@@ -5250,7 +5250,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
 // Download Single Marker with Details
     l.getLocation = function (id, callback, attemptsRemaining) {
 
-        $http({method: 'GET', url: _baseUrl + '/api/locations/' + String(id)}).
+        $http({method: 'GET', url: _baseUrl + '/api/locations/' + String(id) + '?random=' + _.random(10000).toString()}).
             success(function (data, status, headers, config) {
                 _.map(data.history, function (d) {
                     d.data = JSON.parse(d.data);
@@ -5318,6 +5318,63 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
         location.accuracy = 0;
         return $http({method: 'POST', url: 'https://api.croplands.org/api/locations', data: location})
     };
+
+    l.deleteLocation = function (location) {
+        var deferred = $q.defer(),
+            data = {
+                'use_deleted': true
+            };
+
+        log.debug('[LocationFactory] Attempting to Delete Location');
+
+        $http({method: 'PATCH', url: 'https://api.croplands.org/api/locations/' + location.id, data: data}).then(function (response) {
+            console.log(response);
+            log.debug('[LocationFactory] Deleted Location');
+            deferred.resolve(response);
+        }, function (error) {
+            console.log(error);
+            log.debug('[LocationFactory] Error Deleting Location');
+            deferred.reject(error);
+        });
+
+        return deferred.promise;
+    };
+
+    l.saveLocation = function (location) {
+        var deferred = $q.defer(),
+            data = {}, method, id, url = _baseUrl + '/api/locations', allowedFields = ['id', 'lat', 'lon'];
+
+        data = angular.copy(location);
+
+        // Remove keys users cannot change
+        _.each(Object.keys(data), function (key) {
+            if (!_.contains(allowedFields, key)) {
+                delete data[key];
+            }
+        });
+
+        $http({method: 'PATCH', url: 'https://api.croplands.org/api/locations/' + location.id, data: data}).then(function (response) {
+            log.debug('[LocationFactory] Updated Location');
+
+            location = _.merge(location, response.data);
+
+            deferred.resolve(response.data);
+
+            _.map(allRecords, function (record) {
+                if (record.location_id === location.id) {
+                    record.lat = location.lat;
+                    record.lon = location.lon;
+                }
+                return record;
+            });
+        }, function (error) {
+            log.debug('[LocationFactory] Error Updating Location');
+            deferred.reject(error);
+        });
+
+        return deferred.promise;
+    };
+
     l.saveRecord = function (record, callback) {
         var deferred = $q.defer(),
             data = {}, method, id, url = _baseUrl + '/api/records', allowedFields = ['id', 'land_use_type', 'water', 'crop_primary', 'crop_secondary', 'location_id', 'year', 'month'];
@@ -5716,7 +5773,8 @@ app.constant('mappings', {
             {'id': 19, 'label': 'Palm', 'description': ''},
             {'id': 20, 'label': 'Others', 'description': ''},
             {'id': 21, 'label': 'Plantations', 'description': 'Plantations or other continuous crops'},
-            {'id': 22, 'label': 'Fallow', 'description': ''}
+            {'id': 22, 'label': 'Fallow', 'description': ''},
+            {'id': 23, 'label': 'Tef', 'description': ''}
         ]
     },
     lat: {
@@ -6722,7 +6780,7 @@ app.directive('legend', [function () {
         templateUrl: '/static/directives/legend.html'
     };
 }]);;
-app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons', 'mapService', 'log', '$q', 'geoHelperService', function (locationFactory, mappings, leafletData, icons, mapService, log, $q, geoHelperService) {
+app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons', 'mapService', 'log', '$q', 'geoHelperService', 'User', function (locationFactory, mappings, leafletData, icons, mapService, log, $q, geoHelperService, User) {
     var activeTab = 'help',
         gridImageURL = "/static/imgs/icons/grid.png", shapes = {};
 
@@ -6763,7 +6821,7 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
                         scope.lat = data.lat;
                         scope.lon = data.lon;
 
-                        scope.buildShapes([scope.lat, scope.lon], scope.location.points, scope.location.bearing);
+                        scope.buildShapes([scope.lat, scope.lon], scope.location.points, scope.location.bearing, [scope.location.original_lat, scope.location.original_lon]);
                     });
                 } else {
                     // if no id, just save location
@@ -6809,7 +6867,7 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
                 });
             };
 
-            scope.buildShapes = function (latLng, points, bearing) {
+            scope.buildShapes = function (latLng, points, bearing, originalLatLng) {
                 scope.clearShapes().then(function () {
 
                     scope.buildGrid(latLng);
@@ -6825,7 +6883,7 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
                     });
 
                     if (bearing && bearing >= 0) {
-                        shapes.polygon = L.polygon([latLng, geoHelperService.destination(latLng, bearing - 20, 0.2), geoHelperService.destination(latLng, bearing + 20, 0.2)], {color: '#00FF00', stroke: false, opacity: 0.4});
+                        shapes.polygon = L.polygon([originalLatLng, geoHelperService.destination(originalLatLng, bearing - 20, 0.2), geoHelperService.destination(originalLatLng, bearing + 20, 0.2)], {color: '#00FF00', stroke: false, opacity: 0.4});
                     }
 
                     if (points) {
@@ -6903,6 +6961,24 @@ app.directive('location', ['locationFactory', 'mappings', 'leafletData', 'icons'
                 }
             };
 
+            scope.isLoggedIn = function () {
+                return User.isLoggedIn;
+            };
+
+            scope.canDelete = function () {
+                var role = User.getRole(),
+                    allowedRole = role === 'mapping' || role === 'validation' || role === 'admin' || role === 'partner';
+
+                return scope.isLoggedIn && allowedRole;
+            };
+
+            scope.delete = function () {
+                locationFactory.deleteLocation(scope.location);
+            };
+
+            scope.save = function () {
+                locationFactory.saveLocation(scope.location);
+            };
 
             scope.zoom = function () {
                 mapService.zoom(scope.lat, scope.lon, 16);
@@ -7307,7 +7383,7 @@ app.directive('passwordConfirm', ['$window', function ($window) {
         },
         link: function (scope) {
             if (scope.minEntropy === undefined) {
-                scope.minEntropy = 30;
+                scope.minEntropy = 20;
             }
 
             // init values
@@ -7342,10 +7418,10 @@ app.directive('passwordConfirm', ['$window', function ($window) {
             });
         },
         templateUrl: '/static/directives/password-confirm.html'
-    }
-        ;
-}])
-;
+    };
+
+}]);
+
 ;
 app.directive('resetForm', ['user', '$window', '$timeout', function (user, $window, $timeout) {
     return {

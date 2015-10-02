@@ -116,19 +116,33 @@
 
         </div>
         <div class="panel-footer clearfix">
-    <span class="pull-left small text-muted"
-          ng-show="!busy">{{ location.lat }} &nbsp; {{ location.lon }}
-    </span>
-                <span class="pull-right right">
-                    <button id="zoomToMarkerBtn"
-                            class="btn btn-primary btn-xs"
-                            ng-class="{'disabled': busy}"
-                            ng-click="zoom($event)"
-                            data-title="Zoom to Location"
-                            data-placement="top"
-                            bs-tooltip><i class="fa fa-fw fa-search-plus"></i></button>
+            <span class="pull-left small text-muted"
+                  ng-show="!busy">{{ location.lat }} &nbsp; {{ location.lon }}
+            </span>
+            <span class="pull-right right">
+                <button id="deleteBtn"
+                        class="btn btn-primary btn-xs"
+                        ng-class="{'disabled': busy || !canDelete()}"
+                        ng-click="delete()"
+                        data-title="Delete Location and Records"
+                        data-placement="top"
+                        bs-tooltip blur><i class="fa fa-fw fa-trash"></i></button>
+                <button id="saveBtn"
+                        class="btn btn-primary btn-xs"
+                        ng-class="{'disabled': busy || isLoggedIn()}"
+                        ng-click="save()"
+                        data-title="Save Location"
+                        data-placement="top"
+                        bs-tooltip blur><i class="fa fa-fw fa-save"></i></button>
+                <button id="zoomToMarkerBtn"
+                        class="btn btn-primary btn-xs"
+                        ng-class="{'disabled': busy}"
+                        ng-click="zoom($event)"
+                        data-title="Zoom to Location"
+                        data-placement="top"
+                        bs-tooltip blur><i class="fa fa-fw fa-search-plus"></i></button>
+                </span>
 
-                    </span>
         </div>
     </div>
 

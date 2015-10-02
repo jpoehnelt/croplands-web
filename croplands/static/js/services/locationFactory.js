@@ -321,7 +321,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
 // Download Single Marker with Details
     l.getLocation = function (id, callback, attemptsRemaining) {
 
-        $http({method: 'GET', url: _baseUrl + '/api/locations/' + String(id)}).
+        $http({method: 'GET', url: _baseUrl + '/api/locations/' + String(id) + '?random=' + _.random(10000).toString()}).
             success(function (data, status, headers, config) {
                 _.map(data.history, function (d) {
                     d.data = JSON.parse(d.data);
@@ -389,6 +389,63 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
         location.accuracy = 0;
         return $http({method: 'POST', url: 'https://api.croplands.org/api/locations', data: location})
     };
+
+    l.deleteLocation = function (location) {
+        var deferred = $q.defer(),
+            data = {
+                'use_deleted': true
+            };
+
+        log.debug('[LocationFactory] Attempting to Delete Location');
+
+        $http({method: 'PATCH', url: 'https://api.croplands.org/api/locations/' + location.id, data: data}).then(function (response) {
+            console.log(response);
+            log.debug('[LocationFactory] Deleted Location');
+            deferred.resolve(response);
+        }, function (error) {
+            console.log(error);
+            log.debug('[LocationFactory] Error Deleting Location');
+            deferred.reject(error);
+        });
+
+        return deferred.promise;
+    };
+
+    l.saveLocation = function (location) {
+        var deferred = $q.defer(),
+            data = {}, method, id, url = _baseUrl + '/api/locations', allowedFields = ['id', 'lat', 'lon'];
+
+        data = angular.copy(location);
+
+        // Remove keys users cannot change
+        _.each(Object.keys(data), function (key) {
+            if (!_.contains(allowedFields, key)) {
+                delete data[key];
+            }
+        });
+
+        $http({method: 'PATCH', url: 'https://api.croplands.org/api/locations/' + location.id, data: data}).then(function (response) {
+            log.debug('[LocationFactory] Updated Location');
+
+            location = _.merge(location, response.data);
+
+            deferred.resolve(response.data);
+
+            _.map(allRecords, function (record) {
+                if (record.location_id === location.id) {
+                    record.lat = location.lat;
+                    record.lon = location.lon;
+                }
+                return record;
+            });
+        }, function (error) {
+            log.debug('[LocationFactory] Error Updating Location');
+            deferred.reject(error);
+        });
+
+        return deferred.promise;
+    };
+
     l.saveRecord = function (record, callback) {
         var deferred = $q.defer(),
             data = {}, method, id, url = _baseUrl + '/api/records', allowedFields = ['id', 'land_use_type', 'water', 'crop_primary', 'crop_secondary', 'location_id', 'year', 'month'];
