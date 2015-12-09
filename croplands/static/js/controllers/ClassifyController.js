@@ -46,10 +46,10 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
 //                max_pages = response.data.total_pages;
 //        });
         $http.get('https://api.croplands.org/api/images?'
-            + 'q={"order_by":[{"field":"date_acquired","direction":"desc"}'
+            + 'q={"order_by":[{"field":"date_modified","direction":"asc"}'
             + '],"filters":['
 //            + '{"name":"classifications_majority_agreement","op":"lt","val":75},'
-            + '{"name":"classifications_count","op":"lt","val":30}'
+            + '{"name":"classifications_count","op":"lt","val":5}'
             + ']}'
             + '&page=' + String(page)).then(function (response) {
                 $scope.images = $scope.images.concat(response.data.objects);
@@ -92,7 +92,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
             getImage();
         }
         // get next page
-        if (l < 300 && max_pages >= page) {
+        if (l < 500 && max_pages >= page) {
             getMoreImages(page++);
         }
     });
