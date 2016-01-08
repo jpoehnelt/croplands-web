@@ -5,10 +5,11 @@
     "name": "Justin Poehnelt",
     "email": "jpoehnelt@usgs.gov"
   },
-  "version": "2.1.3",
+  "version": "2.2.0",
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-aws": "^0.4.0",
+    "grunt-cli": "^0.1.13",
     "grunt-contrib-concat": "^0.5.0",
     "grunt-contrib-copy": "^0.7.0",
     "grunt-contrib-cssmin": "^0.11.0",
