@@ -17,7 +17,7 @@ app.directive('tableOfContentsLayer', [function () {
                 }
             };
             scope.canShowMore = function () {
-                return scope.layer.years || scope.layer.legend;
+                return (typeof scope.layer === 'WMSCollection' && scope.layer.hasLayers()) || scope.layer.legend;
             };
         }
     };

@@ -14,7 +14,7 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope', function ($h
             role = 'anon';
         }
 
-        log.debug('[UserService] getRole() : ' + role);
+//        log.debug('[UserService] getRole() : ' + role);
 
         return role;
     }

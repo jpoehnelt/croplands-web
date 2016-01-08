@@ -19,14 +19,14 @@
                min="0"
                step=".01"/>
     </form>
-    <div class="center" ng-if="layer.years && layer.years.length">
+    <div class="center" ng-if="layer.hasLayers()">
         <div class="btn-group">
             <button class="btn btn-success btn-xs"
                     ng-click="layer.previous()" blur><i
                     class="fa fa-backward fa-fw"></i>
             </button>
             <button type="button" class="btn btn-success btn-xs" blur>
-                {{ layer.activeYear }}
+                {{ layer.layerOptions.layerLabel }}
             </button>
 
             <button class="btn btn-success btn-xs"

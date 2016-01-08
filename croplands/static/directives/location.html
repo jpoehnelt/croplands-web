@@ -129,7 +129,7 @@
                         bs-tooltip blur><i class="fa fa-fw fa-trash"></i></button>
                 <button id="saveBtn"
                         class="btn btn-primary btn-xs"
-                        ng-class="{'disabled': busy || isLoggedIn()}"
+                        ng-class="{'disabled': busy || !isLoggedIn()}"
                         ng-click="save()"
                         data-title="Save Location"
                         data-placement="top"

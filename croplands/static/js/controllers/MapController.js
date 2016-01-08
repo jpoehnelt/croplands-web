@@ -403,8 +403,4 @@ app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'lea
 
     init();
 
-
-    $scope.layers.overlays.africa.visible = true;
-    $scope.layers.overlays.australia.visible = true;
-
 }]);
