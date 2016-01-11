@@ -45,18 +45,44 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                     layerType: 'ROADMAP',
                     type: 'google',
                     visible: false
+                },
+                ndvi_landsat_7_2014: {
+                    layerOptions: {
+                        opacity: 1,
+                        minZoom: 0,
+                        maxNativeZoom: 15,
+                        zIndex: 0
+                    },
+                    visible: false,
+                    name: 'NDVI Landsat 7 2014 Composite',
+                    type: 'xyz',
+                    url: 'http://tiles.croplands.org/ndvi_landsat_7_2014/{x}/{y}/{z}'
+                },
+                aster_dem: {
+                    name: 'Elevation',
+                    type: 'wms',
+                    url: 'http://wms.croplands.org/geoserver/Products/wms',
+                    visible: false,
+                    layerOptions: {
+                        layers: 'Products:SRTM_RAMP2_TOPO',
+                        minZoom: 0,
+                        maxNativeZoom: 5,
+                        opacity: 1,
+                        format: 'image/png',
+                        transparent: true
+                    }
                 }
-
             },
             overlays: {
                 gfsad1000v00: wmsLayers.gfsad1000v00,
                 gfsad1000v10: wmsLayers.gfsad1000v10,
                 us250v201512y2008: wmsLayers.us250v201512y2008,
                 africaL4250v201512y2014: wmsLayers.africaL4250v201512y2014,
+                egypt30mv201512y2014: wmsLayers.egypt30mv201512y2014,
                 southamerica30v201512: wmsLayers.southamerica30v201512,
                 australia: wmsLayers.australiaACCA250m,
                 locations: {
-                    name: 'Locations',
+                    name: 'Reference Data',
                     type: 'markercluster',
                     visible: true,
                     layerOptions: {

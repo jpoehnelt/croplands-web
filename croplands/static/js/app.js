@@ -5544,18 +5544,44 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                     layerType: 'ROADMAP',
                     type: 'google',
                     visible: false
+                },
+                ndvi_landsat_7_2014: {
+                    layerOptions: {
+                        opacity: 1,
+                        minZoom: 0,
+                        maxNativeZoom: 15,
+                        zIndex: 0
+                    },
+                    visible: false,
+                    name: 'NDVI Landsat 7 2014 Composite',
+                    type: 'xyz',
+                    url: 'http://tiles.croplands.org/ndvi_landsat_7_2014/{x}/{y}/{z}'
+                },
+                aster_dem: {
+                    name: 'Elevation',
+                    type: 'wms',
+                    url: 'http://wms.croplands.org/geoserver/Products/wms',
+                    visible: false,
+                    layerOptions: {
+                        layers: 'Products:SRTM_RAMP2_TOPO',
+                        minZoom: 0,
+                        maxNativeZoom: 5,
+                        opacity: 1,
+                        format: 'image/png',
+                        transparent: true
+                    }
                 }
-
             },
             overlays: {
                 gfsad1000v00: wmsLayers.gfsad1000v00,
                 gfsad1000v10: wmsLayers.gfsad1000v10,
                 us250v201512y2008: wmsLayers.us250v201512y2008,
                 africaL4250v201512y2014: wmsLayers.africaL4250v201512y2014,
+                egypt30mv201512y2014: wmsLayers.egypt30mv201512y2014,
                 southamerica30v201512: wmsLayers.southamerica30v201512,
                 australia: wmsLayers.australiaACCA250m,
                 locations: {
-                    name: 'Locations',
+                    name: 'Reference Data',
                     type: 'markercluster',
                     visible: true,
                     layerOptions: {
@@ -5691,30 +5717,80 @@ app.constant('mappings', {
     }
 
 });;
-app.factory('wmsLayers', ['$interval', 'leafletData', function ($interval, leafletData) {
+app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval, leafletData, log) {
     var _layers, WMSCollection;
-    WMSCollection = function (obj, idx) {
+    WMSCollection = function (obj, defaultLayer, defaultStyle) {
         this.playSpeed = 2000;
-        this.idx = idx === undefined ? 0 : idx;
         _.extend(this, obj);
-        this.change(0);
+
+        if (this.layers) {
+            this.idx = defaultLayer === undefined ? 0 : defaultLayer;
+            console.log(this.idx);
+            this.layerOptions.layers = this.layers[this.idx].layer;
+            this.layerOptions.layerLabel = this.layers[this.idx].label;
+        }
+
+        if (this.styles) {
+            var style, styles;
+
+            if (defaultStyle) {
+                style = this.styles[defaultStyle];
+            } else {
+                styles = _.values(this.styles);
+                style = styles[styles.length - 1];
+            }
+
+            this.legend = style.legend;
+            this.layerOptions.styles = style.id;
+        }
     };
+
     WMSCollection.prototype.hasLayers = function () {
         return this.layers && this.layers.length > 1;
     };
 
-    WMSCollection.prototype.change = function (idx) {
-        var currentLayer = this,
-            currentWMSLayer = angular.copy(this.layerOptions.layers);
+    WMSCollection.prototype.hasStyles = function () {
+        return this.styles && _.values(this.styles).length;
+    };
+
+    WMSCollection.prototype.changeImage = function (idx) {
+        var currentWMSLayer = angular.copy(this.layerOptions.layers);
 
         this.layerOptions.layers = this.layers[idx].layer;
         this.layerOptions.layerLabel = this.layers[idx].label;
 
+        this.redraw(currentWMSLayer);
+    };
+
+    WMSCollection.prototype.changeStyle = function (id) {
+        var styleData;
+        console.log(id);
+        if (this.styles && this.styles[id]) {
+            styleData = this.styles[id];
+            this.layerOptions.styles = styleData.id;
+        } else {
+            log.error("[WMS] No style available.");
+            return;
+        }
+
+        if (styleData.legend) {
+            this.legend = styleData.legend;
+        }
+
+        this.redraw(this.layerOptions.layers);
+    };
+
+    /**
+     * Set the wms parameters using leaflet functionality.
+     * @param currentWMSLayer - needed to identify layer to redraw
+     */
+    WMSCollection.prototype.redraw = function (currentWMSLayer) {
+        var currentLayer = this;
+        console.log(currentLayer.layerOptions);
         leafletData.getMap().then(function (map) {
             map.eachLayer(function (layer) {
                 if (layer.url === currentLayer._url && layer.options.layers === currentWMSLayer) {
                     var newParams = _.extend(layer.options, currentLayer.layerOptions);
-                    console.log(newParams);
                     layer.setParams(newParams);
                 }
             });
@@ -5730,7 +5806,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', function ($interval, leafl
         } else {
             this.idx++;
         }
-        this.change(this.idx);
+        this.changeImage(this.idx);
     };
 
     WMSCollection.prototype.previous = function () {
@@ -5742,7 +5818,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', function ($interval, leafl
         } else {
             this.idx--;
         }
-        this.change(this.idx);
+        this.changeImage(this.idx);
     };
 
     WMSCollection.prototype.play = function () {
@@ -5770,7 +5846,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', function ($interval, leafl
     _layers = {
         australiaACCA250m: new WMSCollection({
             id: 'australiaACCA250m',
-            name: 'Australia 250m Cropland Products 2000 to Present from ACCA',
+            name: 'Australia GCE 250m Cropland Products 2000 to Present from ACCA ',
             type: 'wms',
             url: 'http://wms.croplands.org/geoserver/Products/wms',
             layerOptions: {
@@ -5809,7 +5885,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', function ($interval, leafl
             ]
         }),
         gfsad1000v00: {
-            name: 'GCE 1km Crop Dominance',
+            name: 'Global GCE 1km Cropland Dominance and Other Products',
             type: 'wms',
             url: 'http://wms.croplands.org/geoserver/Products/wms',
             layerOptions: {
@@ -5834,7 +5910,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', function ($interval, leafl
             ]
         },
         gfsad1000v10: {
-            name: 'GCE 1km Multi-study Crop Mask',
+            name: 'Global GCE 1km Multi-study Cropland Mask Product',
             type: 'wms',
             url: 'http://wms.croplands.org/geoserver/Products/wms',
             layerOptions: {
@@ -5856,7 +5932,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', function ($interval, leafl
             ]
         },
         us250v201512y2008: {
-            name: 'United States Croplands 2008',
+            name: 'United States GCE 250m Croplands 2008 from ACCA',
             type: 'wms',
             url: 'http://wms.croplands.org/geoserver/Products/wms',
             layerOptions: {
@@ -5879,8 +5955,8 @@ app.factory('wmsLayers', ['$interval', 'leafletData', function ($interval, leafl
                 {label: 'Other Crops', color: '#FF6600'}
             ]
         },
-        africaL4250v201512y2014: {
-            name: 'Africa Crop Dominance 2014',
+        africaL4250v201512y2014: new WMSCollection({
+            name: 'Africa GCE 250m Cropland Products 2014 from ACCA',
             type: 'wms',
             url: 'http://wms.croplands.org/geoserver/Products/wms',
             layerOptions: {
@@ -5890,38 +5966,65 @@ app.factory('wmsLayers', ['$interval', 'leafletData', function ($interval, leafl
                 maxZoom: 15,
                 opacity: 1,
                 format: 'image/png',
-                transparent: true,
-                style: 'Africa ACCA L4 Dominance v201512'
-            },
+                transparent: true            },
 //        attribution: '<a href="http://geography.wr.usgs.gov/science/app/docs/Global-cropland-extent-V10-teluguntla-thenkabail-xiong.pdf">Teluguntla et al., 2015</a>',
-            legend: [
-                {label: "C; IR; sc; mc I/rice", color: "#aec7e8"},
-                {label: "C; IR; sc; mc II/rice/sorghum", color: "#ff7f0e"},
-                {label: "C; IR; dc; mc I/rice", color: "#ffbb78"},
-                {label: "C; IR; dc; mc II/rice", color: "#2ca02c"},
-                {label: "C; IR; cc; sugarcane/plantations/other crops", color: "#98df8a"},
-                {label: "C; IR; cc; mc", color: "#d62728"},
-                {label: "C; IR; fallow croplands", color: "#ff9896"},
-                {label: "C; RF; sc; rice", color: "#9467bd"},
-                {label: "C; RF; sc; maize/unknown", color: "#bcbd22"},
-                {label: "C; RF; dc; maize/rice", color: "#8c564b"},
-                {label: "C; RF; cc; plantation/unknown", color: "#c49c94"},
-                {label: "C; RF; cc; sugarcane/plantation/unknown", color: "#e377c2"},
-                {label: "C; IR; cc; mc", color: "#f7b6d2"},
-                {label: "C; RF; fallow croplands", color: "#7f7f7f"},
-                {label: "NC; IR; barren/built-up/rangelands", color: "#c7c7c7"},
-                {label: "NC; RF; shrubs/rangelands/forest", color: "#c5b0d5"},
-                {label: "NC; mixed", color: "#dbdb8d"}
-            ]
-        },
+            styles: {
+                'Africa ACCA L1 Extent v201512': {
+                    name: 'Mask',
+                    id: 'Africa ACCA L1 Extent v201512',
+                    legend: [
+                        {label: 'Cropland', color: '#00FF00'}
+                    ]
+                },
+                'Africa ACCA L2 Water v201512': {
+                    name: 'Irrigated',
+                    id: 'Africa ACCA L2 Water v201512',
+                    legend: [
+                        {label: 'Irrigated', color: '#aec7e8'},
+                        {label: 'Rainfed', color: '#9467bd'}
+                    ]
+                },
+                'Africa ACCA L3 Intensity v201512': {
+                    name: 'Intensity',
+                    id: 'Africa ACCA L3 Intensity v201512',
+                    legend: [
+                        {label: "Single", color: "#aec7e8"},
+                        {label: "Double", color: "#ffbb78"},
+                        {label: "Continuous", color: "#98df8a"}
+                    ]
+                },
+                'Africa ACCA L4 Dominance v201512': {
+                    name: 'Dominance',
+                    id: 'Africa ACCA L4 Dominance v201512',
+                    legend: [
+                        {label: "C; IR; sc; mc I/rice", color: "#aec7e8"},
+                        {label: "C; IR; sc; mc II/rice/sorghum", color: "#ff7f0e"},
+                        {label: "C; IR; dc; mc I/rice", color: "#ffbb78"},
+                        {label: "C; IR; dc; mc II/rice", color: "#2ca02c"},
+                        {label: "C; IR; cc; sugarcane/plantations/other crops", color: "#98df8a"},
+                        {label: "C; IR; cc; mc", color: "#d62728"},
+                        {label: "C; IR; fallow croplands", color: "#ff9896"},
+                        {label: "C; RF; sc; rice", color: "#9467bd"},
+                        {label: "C; RF; sc; maize/unknown", color: "#bcbd22"},
+                        {label: "C; RF; dc; maize/rice", color: "#8c564b"},
+                        {label: "C; RF; cc; plantation/unknown", color: "#c49c94"},
+                        {label: "C; RF; cc; sugarcane/plantation/unknown", color: "#e377c2"},
+                        {label: "C; IR; cc; mc", color: "#f7b6d2"},
+                        {label: "C; RF; fallow croplands", color: "#7f7f7f"},
+                        {label: "NC; IR; barren/built-up/rangelands", color: "#c7c7c7"},
+                        {label: "NC; RF; shrubs/rangelands/forest", color: "#c5b0d5"},
+                        {label: "NC; mixed", color: "#dbdb8d"}
+                    ]
+                }
+            }
+        }),
         southamerica30v201512: {
-            name: 'South America Extent 30m',
+            name: 'South America GCE 30m Cropland Mask Product 2014',
             type: 'wms',
             url: 'http://wms.croplands.org/geoserver/Products/wms',
             layerOptions: {
                 layers: 'Products:South America Extent 30m v201512',
                 minZoom: 0,
-                maxZoom: 15,
                 maxNativeZoom: 15,
                 opacity: 1,
                 format: 'image/png',
@@ -5933,29 +6036,44 @@ app.factory('wmsLayers', ['$interval', 'leafletData', function ($interval, leafl
                 {label: 'Cropland', color: '#00FF00'}
             ]
         },
-        egypt30mv201512y2014: {
-            name: 'Egypt 30m',
+        egypt30mv201512y2014: new WMSCollection({
+            name: 'Egypt GCE 30m Cropland Products 2014',
             type: 'wms',
             url: 'http://wms.croplands.org/geoserver/Products/wms',
             layerOptions: {
-                layers: 'Products:South America Extent 30m v201512',
+                bounds: L.latLngBounds(L.latLng(37.3494, 24.3695), L.latLng(21.9, 36)),
+                layers: 'Products:Egypt Extent 30m v201512 year2014',
                 minZoom: 0,
-                maxZoom: 15,
                 maxNativeZoom: 15,
                 opacity: 1,
                 format: 'image/png',
-                transparent: true,
-                bounds: L.latLngBounds(L.latLng(12.835778465638036, -81.95811941094321), L.latLng(-56.073447989999984, -31.449983235209473))
+                transparent: true
             },
 //        attribution: '<a href="http://geography.wr.usgs.gov/science/app/docs/Global-cropland-extent-V10-teluguntla-thenkabail-xiong.pdf">Teluguntla et al., 2015</a>',
-            legend: [
-                {label: 'Cropland', color: '#00FF00'}
-            ]
-        }
+            styles: {
+                'Africa ACCA L1 Extent v201512': {
+                    name: 'Mask',
+                    id: 'Africa ACCA L1 Extent v201512',
+                    legend: [
+                        {label: 'Cropland', color: '#00FF00'}
+                    ]
+                },
+                'Africa ACCA L2 Water v201512': {
+                    name: 'Irrigated',
+                    id: 'Africa ACCA L2 Water v201512',
+                    legend: [
+                        {label: 'Irrigated', color: '#aec7e8'},
+                        {label: 'Rainfed', color: '#9467bd'}
+                    ]
+                }
+            }
+        })
     };
 
     return _layers;
-}]);;
+}
+])
+;;
 app.filter('mappings', ['mappings', function (mappings) {
     return function (key, field) {
         key = key || 0;
@@ -7631,7 +7749,11 @@ app.directive('tableOfContentsLayer', [function () {
                 }
             };
             scope.canShowMore = function () {
-                return (typeof scope.layer === 'WMSCollection' && scope.layer.hasLayers()) || scope.layer.legend;
+                return (typeof scope.layer === 'WMSCollection' && (scope.layer.hasLayers() || scope.layer.hasStyles())) || scope.layer.legend;
+            };
+
+            scope.changeStyle = function () {
+                scope.layer.changeStyle(scope.style.id);
             };
         }
     };

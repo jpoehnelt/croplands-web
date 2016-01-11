@@ -17,7 +17,11 @@ app.directive('tableOfContentsLayer', [function () {
                 }
             };
             scope.canShowMore = function () {
-                return (typeof scope.layer === 'WMSCollection' && scope.layer.hasLayers()) || scope.layer.legend;
+                return (typeof scope.layer === 'WMSCollection' && (scope.layer.hasLayers() || scope.layer.hasStyles())) || scope.layer.legend;
+            };
+
+            scope.changeStyle = function () {
+                scope.layer.changeStyle(scope.style.id);
             };
         }
     };
