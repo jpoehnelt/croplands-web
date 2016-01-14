@@ -2,7 +2,8 @@
     <div class="panel panel-success">
         <div class="panel-heading">
             <i class="fa fa-close"
-               ng-click="tableOfContentsVisible = !tableOfContentsVisible;"></i>
+               ng-click="$parent.tableOfContentsVisible = !$parent.tableOfContentsVisible"
+                    ></i>
             <h5 class="panel-title"><i class="fa fa-fw fa-database"></i> Map Layers
             </h5>
         </div>
@@ -43,17 +44,19 @@
                 <div table-of-contents-layer layer="layers.overlays.australia"></div>
                 <div table-of-contents-layer
                      layer="layers.overlays.locations"></div>
-                <p>Products also available via <a href="http://geoserver.croplands.org/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities">WMS</a>.</p>
+                <p>Products also available via <a
+                        href="http://geoserver.croplands.org/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities">WMS</a>.
+                </p>
             </div>
             <!--<h5 ng-click="expandOtherLayers=!expandOtherLayers">-->
-                <!--Other Layers-->
-                <!--<i class="fa fa-fw"-->
-                   <!--ng-class="{'fa-caret-down': expandOtherLayers, 'fa-caret-right': !expandOtherLayers  }">-->
-                <!--</i>-->
+            <!--Other Layers-->
+            <!--<i class="fa fa-fw"-->
+            <!--ng-class="{'fa-caret-down': expandOtherLayers, 'fa-caret-right': !expandOtherLayers  }">-->
+            <!--</i>-->
             <!--</h5>-->
 
             <!--<div ng-if="expandOtherLayers" class="padding-left">-->
-                <!--<div table-of-contents-layer layer="layers.overlays.ndvi_landsat_7_2014"></div>-->
+            <!--<div table-of-contents-layer layer="layers.overlays.ndvi_landsat_7_2014"></div>-->
             <!--</div>-->
         </div>
     </div>
