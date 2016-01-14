@@ -3,7 +3,7 @@ app.directive('filter', ['locationFactory', 'log', '$q', '$timeout', 'mappings',
         log.info("Resetting Filters");
 
         _.each(scope.years, function (year) {
-            year.selected = year.label === 2015;
+            year.selected = true; // select all years instead of year.label === 2016;
         });
 
         _.each(scope.landUseType, function (type) {
