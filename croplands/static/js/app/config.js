@@ -7,6 +7,9 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
             templateUrl: '/static/templates/map.html',
             controller: 'MapController',
             reloadOnSearch: false
+        }).when('/app/data', {
+            templateUrl: '/static/templates/data.html',
+            controller: 'DataController'
         }).when('/app/a/login', {
             templateUrl: '/static/templates/account/login.html',
             controller: 'LoginController'
