@@ -220,20 +220,19 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
             file2 = $q.defer(),
             file3 = $q.defer();
 
-
-        $http({method: 'GET', url: '/s3/json/records.p1.json'}).
+        $http({method: 'GET', url: 'https://data.croplands.org/json/records.p1.json'}).
             success(function (data) {
                 l.addMarkers(data).then(function () {
                     file1.resolve();
                 });
             });
-        $http({method: 'GET', url: '/s3/json/records.p2.json'}).
+        $http({method: 'GET', url: 'https://data.croplands.org/json/records.p2.json'}).
             success(function (data) {
                 l.addMarkers(data).then(function () {
                     file2.resolve();
                 });
             });
-        $http({method: 'GET', url: '/s3/json/records.p3.json'}).
+        $http({method: 'GET', url: 'https://data.croplands.org/json/records.p3.json'}).
             success(function (data) {
                 l.addMarkers(data).then(function () {
                     file3.resolve();
