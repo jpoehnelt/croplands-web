@@ -5397,7 +5397,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
         } else {
             method = 'POST';
             data.source_type = 'derived';
-            data.source_description = 'croplands web application';
+            data.source_description = 'web_application';
         }
 
         // Send to Server
