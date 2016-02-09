@@ -236,6 +236,30 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
                 {label: 'Other Crops', color: '#FF6600'}
             ]
         },
+         southAsia250v201601y2010: {
+            name: 'South Asia 250m Croplands 2010-2011 from ACCA',
+            type: 'wms',
+            url: 'http://wms.croplands.org/geoserver/Products/wms',
+            layerOptions: {
+                layers: 'Products:south_asia_250m',
+                minZoom: 0,
+                maxZoom: 16,
+                opacity: 1,
+                format: 'image/png',
+                transparent: true,
+                bounds: L.latLngBounds(L.latLng(37.0985, 60.895), L.latLng(6.006, 97.416))
+            }
+//        attribution: '<a href="http://geography.wr.usgs.gov/science/app/docs/Global-cropland-extent-V10-teluguntla-thenkabail-xiong.pdf">Teluguntla et al., 2015</a>',
+//            legend: [
+//                {label: 'Corn-Soybean', color: '#FFFF00'},
+//                {label: 'Wheat-Barley', color: '#FF0000'},
+//                {label: 'Potato', color: '#663300'},
+//                {label: 'Alfalfa', color: '#00FF00'},
+//                {label: 'Cotton', color: '#00FFFF'},
+//                {label: 'Rice', color: '#0000FF'},
+//                {label: 'Other Crops', color: '#FF6600'}
+//            ]
+        },
         africaL4250v201512y2014: new WMSCollection({
             name: 'Africa GCE 250m Cropland Products 2014 from ACCA',
             type: 'wms',

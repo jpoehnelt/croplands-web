@@ -80,11 +80,12 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                 africaL4250v201512y2014: wmsLayers.africaL4250v201512y2014,
                 egypt30mv201512y2014: wmsLayers.egypt30mv201512y2014,
                 southamerica30v201512: wmsLayers.southamerica30v201512,
+                southAsia250v201601y2010: wmsLayers.southAsia250v201601y2010,
                 australia: wmsLayers.australiaACCA250m,
                 locations: {
                     name: 'Reference Data',
                     type: 'markercluster',
-                    visible: true,
+                    visible: false,
                     layerOptions: {
                         showCoverageOnHover: false,
                         chunkedLoading: true,
