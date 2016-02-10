@@ -236,7 +236,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
                 {label: 'Other Crops', color: '#FF6600'}
             ]
         },
-         southAsia250v201601y2010: {
+        southAsia250v201601y2010: {
             name: 'South Asia 250m Croplands 2010-2011 from ACCA',
             type: 'wms',
             url: 'http://wms.croplands.org/geoserver/Products/wms',
@@ -248,17 +248,31 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
                 format: 'image/png',
                 transparent: true,
                 bounds: L.latLngBounds(L.latLng(37.0985, 60.895), L.latLng(6.006, 97.416))
-            }
-//        attribution: '<a href="http://geography.wr.usgs.gov/science/app/docs/Global-cropland-extent-V10-teluguntla-thenkabail-xiong.pdf">Teluguntla et al., 2015</a>',
-//            legend: [
-//                {label: 'Corn-Soybean', color: '#FFFF00'},
-//                {label: 'Wheat-Barley', color: '#FF0000'},
-//                {label: 'Potato', color: '#663300'},
-//                {label: 'Alfalfa', color: '#00FF00'},
-//                {label: 'Cotton', color: '#00FFFF'},
-//                {label: 'Rice', color: '#0000FF'},
-//                {label: 'Other Crops', color: '#FF6600'}
-//            ]
+            },
+            legend: [
+                {label: "Unclassified", color: "#000000"},
+                {label: "Irrigated-SW/GW-DC-rice-wheat", color: "#006400"},
+                {label: "Irrigated-SW/GW-DC-rice-rice", color: "#00ff00"},
+                {label: "Irrgated-SW-DC-beans/cotton-wheat", color: "#a0c27c"},
+                {label: "Irrigated-SW-DC-Sugarcane/rice-rice/Plantations", color: "#7e9e65"},
+                {label: "Irrigated-DC-fallows/pulses-rice-fallow", color: "#c5e5a4"},
+                {label: "Irrigated-GW-DC-rice-maize/chickpea", color: "#7fffd4"},
+                {label: "Irrgated-TC-rice-mixedcrops-mixedcrops", color: "#40e0d0"},
+                {label: "Irrigated-GW-DC-millet/sorghum/potato-wheat/mustartd", color: "#cfe09c"},
+                {label: "Irrigated-SW-DC-cotton/chilli/maize-fallow/pulses", color: "#00ffff"},
+                {label: "Rainfed-DC-rice-fallows-jute/rice/mixed crops", color: "#ffff00"},
+                {label: "Rainfed-SC-rice-fallow/pulses", color: "#ffd700"},
+                {label: "Rainfed-DC-millets-chickpea/Fallows", color: "#cdad00"},
+                {label: "Rainfed-SC-cotton/pigeonpea/mixedcrops", color: "#8b6913"},
+                {label: "Rainfed-SC-groundnut/millets/sorghum", color: "#cd853f"},
+                {label: "Rainfed-SC-pigeonpea/mixedcrops", color: "#ee9a49"},
+                {label: "Rainfed-SC-millet-fallows/mixedcrops-", color: "#d8a585"},
+                {label: "Rainfed-SC-fallow-chickpea-", color: "#e6bc8a"},
+                {label: "Rainfed-SC-millets/fallows-LS", color: "#e0cab4"},
+                {label: "Rainfed-SC-mixedcrops/Plantations", color: "#bd5e4d"},
+                {label: "Shrublands/trees/Rainfed-mixedcrops30%", color: "#a020f0"},
+                {label: "Other LULC", color: "#c0c0c0"}
+            ]
         },
         africaL4250v201512y2014: new WMSCollection({
             name: 'Africa GCE 250m Cropland Products 2014 from ACCA',
