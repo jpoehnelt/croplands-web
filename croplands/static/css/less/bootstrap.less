@@ -25,11 +25,11 @@
 @import "pager";
 //@import "labels.less";
 //@import "badges.less";
-@import "jumbotron";
+//@import "jumbotron";
 @import "thumbnails";
 @import "alerts";
 @import "progress-bars";
-@import "media";
+//@import "media";
 @import "list-group";
 @import "panels";
 @import "responsive-embed";
@@ -45,7 +45,7 @@
 @import "modals";
 @import "tooltip";
 //@import "popovers.less";
-@import "carousel";
+//@import "carousel";
 // Utility classes
 @import "utilities";
 @import "responsive-utilities";
@@ -62,13 +62,8 @@
   display: none !important;
 }
 
-// Home Page
-.jumbotron-banner {
-  padding-top: 20px;
-  color: #ffffff;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-image: url('http://static.croplands.org/images/map.jpg');
+#layers {
+  width: 450px;
 }
 
 .partners {
@@ -92,17 +87,6 @@
   height: 100%;
 }
 
-#layers, #filters {
-  width: 350px;
-}
-
-.filter-tags .btn {
-  margin: 2px;
-}
-
-.filter-tags .btn i {
-  line-height: inherit;
-}
 
 /* control positioning */
 
@@ -253,32 +237,6 @@ input.input-xs {
   margin-bottom: 7px;
 }
 
-#data-properties > .panel {
-  display: inline;
-  float: left;
-}
-
-#data-properties > .panel > .panel-body {
-  min-height: 345px;
-  min-width: 360px;
-}
-
-#data-properties .properties, #data-properties .images, #data-properties .history, #data-properties .chart, #data-properties .comments, #data-properties .records, #data-properties .help {
-  //    margin-left: 40px;
-  //    max-width: 300px;
-  overflow: hidden;
-}
-
-#data-properties .nav-pills {
-  position: absolute;
-  width: 30px;
-}
-
-#data-properties .nav-pills .list-group-item {
-  text-align: center;
-  padding: 3px;
-}
-
 label {
   font-weight: normal;
 }
@@ -310,37 +268,14 @@ input[type="range"] {
 .left {
   text-align: left !important;
 }
-.time-series > g > polyline {
-  stroke-width: 3px;
-  fill: none;
-  opacity: 1;
-
-}
-
-.time-series > g > .active {
-  stroke-width: 5px;
-  stroke: #000000;
-  opacity: 1;
-}
-
-.time-series > g > .inactive {
-  opacity: 0.2;
-
-}
-
-.year-label .inactive {
-  color: #dddddd;
-}
-
-#filters {
-  width: 440px;
-}
-
-.btn-crop {
-  margin: 1px;
-}
 
 .account-form {
   margin-top: 40px;
 }
 
+
+
+//Data Search
+.btn-filter {
+  margin: 0 1px 1px 1px;
+}

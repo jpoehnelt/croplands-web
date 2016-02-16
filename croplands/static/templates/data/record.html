@@ -1,0 +1,90 @@
+<style>
+    .search-controls button {
+        display: block;
+        text-align: center;
+        margin: 0 0 2px 7px;
+    }
+
+    #filters {
+        width: 100%;
+        padding: 5px;
+        border: 1px solid #cccccc;
+        background-color: #f4f4f4;
+        min-height: 40px;
+    }
+
+    #records thead tr {
+        background-color: #f4f4f4;
+        border: 1px solid #cccccc;
+        font-weight: 500;
+    }
+
+    .selected {
+        /*text-decoration: underline;*/
+       /*font-weight: 700;*/
+        background-color: #eaeaea !important;
+    }
+
+    #records tbody tr {
+        border: 1px solid #cccccc;
+        background-color: #ffffff;
+
+    }
+
+    .tall-button {
+        min-height: 40px;
+    }
+</style>
+<div class="container container-static-nav" style="margin-top: 60px;">
+    <div class="row">
+        <div class="col-sm-8 col-md-7">
+
+            <div class="row">
+                <div class="col-sm-10  no-gutter-right">
+                    <div id="filters">
+                        <button class="btn btn-default">id=123</button>
+                        <button class="btn btn-primary">id=123</button>
+                        <button class="btn btn-primary">id=123</button>
+                        <button class="btn btn-primary">id=123</button>
+                    </div>
+                </div>
+
+                <div class="col-sm-2 no-gutter-left search-controls">
+                    <button class="btn btn-success tall-button fill center">Add Filter</button>
+                </div>
+            </div>
+
+            <div class="row padding-vertical">
+                <div class="col-sm-10  no-gutter-right">
+
+                    <table id="records" class="table table-hover fill">
+                        <thead>
+                        <tr>
+                            <th ng-repeat="column in tableColumns" ng-class="{selected: sort.column == column.id}" ng-click="$parent.sortColumn(column.id);">{{ column.label }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="record in fakeData | orderBy : sort.column : sort.reverse" ng-click="goToRecord(record.record_id)">
+                            <td ng-repeat="column in tableColumns">{{ record[column.id] }}</td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+
+                </div>
+
+                <div class="col-sm-2 no-gutter-left search-controls">
+                    <button class="btn btn-default fill center">Columns</button>
+                    <button class="btn btn-default fill center">Download</button>
+                    <button class="btn btn-default fill center">Definitions</button>
+                    <button class="btn btn-default fill center">Collect</button>
+                    <button class="btn btn-default fill center">Citation</button>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4 col-md-5">
+            <div style="width:100%; height:400px;background-color: #cccccc;"></div>
+        </div>
+    </div>
+</div>

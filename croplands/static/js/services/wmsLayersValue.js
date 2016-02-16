@@ -130,6 +130,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
             name: 'Australia GCE 250m Cropland Products 2000 to Present from ACCA ',
             type: 'wms',
             url: 'http://wms.croplands.org/geoserver/Products/wms',
+            visible: true,
             layerOptions: {
                 bounds: L.latLngBounds(L.latLng(-9.83464522447101, 110.000125), L.latLng(-45.00754522447101, 158.961625)),
                 layers: 'Products:GCE 1km Crop Dominance year2000',
@@ -216,6 +217,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
             name: 'United States GCE 250m Croplands 2008 from ACCA',
             type: 'wms',
             url: 'http://wms.croplands.org/geoserver/Products/wms',
+            visible: true,
             layerOptions: {
                 layers: 'Products:United States ACCA 250m v201512 year2008',
                 minZoom: 0,
@@ -240,6 +242,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
             name: 'South Asia 250m Croplands 2010-2011 from ACCA',
             type: 'wms',
             url: 'http://wms.croplands.org/geoserver/Products/wms',
+            visible: true,
             layerOptions: {
                 layers: 'Products:south_asia_250m',
                 minZoom: 0,
@@ -278,6 +281,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
             name: 'Africa GCE 250m Cropland Products 2014 from ACCA',
             type: 'wms',
             url: 'http://wms.croplands.org/geoserver/Products/wms',
+            visible: true,
             layerOptions: {
                 bounds: L.latLngBounds(L.latLng(37.3494, -25.3695), L.latLng(-34.83026000000001, 63.50536000000001)),
                 layers: 'Products:Africa ACCA L4 250m v201512 year2014',
@@ -311,36 +315,37 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
                         {label: "Double", color: "#ffbb78"},
                         {label: "Continuous", color: "#98df8a"}
                     ]
-                },
-                'Africa ACCA L4 Dominance v201512': {
-                    name: 'Dominance',
-                    id: 'Africa ACCA L4 Dominance v201512',
-                    legend: [
-                        {label: "C; IR; sc; mc I/rice", color: "#aec7e8"},
-                        {label: "C; IR; sc; mc II/rice/sorghum", color: "#ff7f0e"},
-                        {label: "C; IR; dc; mc I/rice", color: "#ffbb78"},
-                        {label: "C; IR; dc; mc II/rice", color: "#2ca02c"},
-                        {label: "C; IR; cc; sugarcane/plantations/other crops", color: "#98df8a"},
-                        {label: "C; IR; cc; mc", color: "#d62728"},
-                        {label: "C; IR; fallow croplands", color: "#ff9896"},
-                        {label: "C; RF; sc; rice", color: "#9467bd"},
-                        {label: "C; RF; sc; maize/unknown", color: "#bcbd22"},
-                        {label: "C; RF; dc; maize/rice", color: "#8c564b"},
-                        {label: "C; RF; cc; plantation/unknown", color: "#c49c94"},
-                        {label: "C; RF; cc; sugarcane/plantation/unknown", color: "#e377c2"},
-                        {label: "C; IR; cc; mc", color: "#f7b6d2"},
-                        {label: "C; RF; fallow croplands", color: "#7f7f7f"},
-                        {label: "NC; IR; barren/built-up/rangelands", color: "#c7c7c7"},
-                        {label: "NC; RF; shrubs/rangelands/forest", color: "#c5b0d5"},
-                        {label: "NC; mixed", color: "#dbdb8d"}
-                    ]
-                }
+                }//,
+//                'Africa ACCA L4 Dominance v201512': {
+//                    name: 'Dominance',
+//                    id: 'Africa ACCA L4 Dominance v201512',
+//                    legend: [
+//                        {label: "C; IR; sc; mc I/rice", color: "#aec7e8"},
+//                        {label: "C; IR; sc; mc II/rice/sorghum", color: "#ff7f0e"},
+//                        {label: "C; IR; dc; mc I/rice", color: "#ffbb78"},
+//                        {label: "C; IR; dc; mc II/rice", color: "#2ca02c"},
+//                        {label: "C; IR; cc; sugarcane/plantations/other crops", color: "#98df8a"},
+//                        {label: "C; IR; cc; mc", color: "#d62728"},
+//                        {label: "C; IR; fallow croplands", color: "#ff9896"},
+//                        {label: "C; RF; sc; rice", color: "#9467bd"},
+//                        {label: "C; RF; sc; maize/unknown", color: "#bcbd22"},
+//                        {label: "C; RF; dc; maize/rice", color: "#8c564b"},
+//                        {label: "C; RF; cc; plantation/unknown", color: "#c49c94"},
+//                        {label: "C; RF; cc; sugarcane/plantation/unknown", color: "#e377c2"},
+//                        {label: "C; IR; cc; mc", color: "#f7b6d2"},
+//                        {label: "C; RF; fallow croplands", color: "#7f7f7f"},
+//                        {label: "NC; IR; barren/built-up/rangelands", color: "#c7c7c7"},
+//                        {label: "NC; RF; shrubs/rangelands/forest", color: "#c5b0d5"},
+//                        {label: "NC; mixed", color: "#dbdb8d"}
+//                    ]
+//                }
             }
         }),
         southamerica30v201512: {
             name: 'South America GCE 30m Cropland Mask Product 2014',
             type: 'wms',
             url: 'http://wms.croplands.org/geoserver/Products/wms',
+            visible: true,
             layerOptions: {
                 layers: 'Products:South America Extent 30m v201512',
                 minZoom: 0,
@@ -391,5 +396,4 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
 
     return _layers;
 }
-])
-;
+]);

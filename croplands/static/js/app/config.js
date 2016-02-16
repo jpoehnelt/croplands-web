@@ -10,6 +10,12 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
         }).when('/app/data', {
             templateUrl: '/static/templates/data.html',
             controller: 'DataController'
+        }).when('/app/data/search', {
+            templateUrl: '/static/templates/data/search.html',
+            controller: 'DataSearchController'
+        }).when('/app/data/record', {
+            templateUrl: '/static/templates/data/record.html',
+            controller: 'DataRecordController'
         }).when('/app/a/login', {
             templateUrl: '/static/templates/account/login.html',
             controller: 'LoginController'

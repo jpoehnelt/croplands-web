@@ -4414,6 +4414,12 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
         }).when('/app/data', {
             templateUrl: '/static/templates/data.html',
             controller: 'DataController'
+        }).when('/app/data/search', {
+            templateUrl: '/static/templates/data/search.html',
+            controller: 'DataSearchController'
+        }).when('/app/data/record', {
+            templateUrl: '/static/templates/data/record.html',
+            controller: 'DataRecordController'
         }).when('/app/a/login', {
             templateUrl: '/static/templates/account/login.html',
             controller: 'LoginController'
@@ -5558,20 +5564,6 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                     name: 'NDVI Landsat 7 2014 Composite',
                     type: 'xyz',
                     url: 'http://tiles.croplands.org/ndvi_landsat_7_2014/{x}/{y}/{z}'
-                },
-                aster_dem: {
-                    name: 'Elevation',
-                    type: 'wms',
-                    url: 'http://wms.croplands.org/geoserver/Products/wms',
-                    visible: false,
-                    layerOptions: {
-                        layers: 'Products:SRTM_RAMP2_TOPO',
-                        minZoom: 0,
-                        maxNativeZoom: 5,
-                        opacity: 1,
-                        format: 'image/png',
-                        transparent: true
-                    }
                 }
             },
             overlays: {
@@ -5582,39 +5574,9 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                 egypt30mv201512y2014: wmsLayers.egypt30mv201512y2014,
                 southamerica30v201512: wmsLayers.southamerica30v201512,
                 southAsia250v201601y2010: wmsLayers.southAsia250v201601y2010,
-                australia: wmsLayers.australiaACCA250m,
-                locations: {
-                    name: 'Reference Data',
-                    type: 'markercluster',
-                    visible: false,
-                    layerOptions: {
-                        showCoverageOnHover: false,
-                        chunkedLoading: true,
-                        disableClusteringAtZoom: 10,
-                        removeOutsideVisibleBounds: true
-                    }
-                }
+                australia: wmsLayers.australiaACCA250m
             }
-        },
-        paths: {
-            selection: {
-                opacity: 0.75,
-                weight: 2,
-                type: "rectangle",
-                created: false,
-                cropped: false,
-                visible: false,
-                dashArray: '3, 3',
-                color: '#428bca',
-                fillColor: 'rgba(150,200,255,0.9)',
-                latlngs: [
-                    {lat: 0, lng: 0},
-                    {lat: 0, lng: 0}
-                ]
-            }
-        },
-        markers: []
-
+        }
     };
 
     map.zoom = function (lat, lon, zoom) {
@@ -5852,6 +5814,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
             name: 'Australia GCE 250m Cropland Products 2000 to Present from ACCA ',
             type: 'wms',
             url: 'http://wms.croplands.org/geoserver/Products/wms',
+            visible: true,
             layerOptions: {
                 bounds: L.latLngBounds(L.latLng(-9.83464522447101, 110.000125), L.latLng(-45.00754522447101, 158.961625)),
                 layers: 'Products:GCE 1km Crop Dominance year2000',
@@ -5938,6 +5901,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
             name: 'United States GCE 250m Croplands 2008 from ACCA',
             type: 'wms',
             url: 'http://wms.croplands.org/geoserver/Products/wms',
+            visible: true,
             layerOptions: {
                 layers: 'Products:United States ACCA 250m v201512 year2008',
                 minZoom: 0,
@@ -5962,6 +5926,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
             name: 'South Asia 250m Croplands 2010-2011 from ACCA',
             type: 'wms',
             url: 'http://wms.croplands.org/geoserver/Products/wms',
+            visible: true,
             layerOptions: {
                 layers: 'Products:south_asia_250m',
                 minZoom: 0,
@@ -6000,6 +5965,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
             name: 'Africa GCE 250m Cropland Products 2014 from ACCA',
             type: 'wms',
             url: 'http://wms.croplands.org/geoserver/Products/wms',
+            visible: true,
             layerOptions: {
                 bounds: L.latLngBounds(L.latLng(37.3494, -25.3695), L.latLng(-34.83026000000001, 63.50536000000001)),
                 layers: 'Products:Africa ACCA L4 250m v201512 year2014',
@@ -6033,36 +5999,37 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
                         {label: "Double", color: "#ffbb78"},
                         {label: "Continuous", color: "#98df8a"}
                     ]
-                },
-                'Africa ACCA L4 Dominance v201512': {
-                    name: 'Dominance',
-                    id: 'Africa ACCA L4 Dominance v201512',
-                    legend: [
-                        {label: "C; IR; sc; mc I/rice", color: "#aec7e8"},
-                        {label: "C; IR; sc; mc II/rice/sorghum", color: "#ff7f0e"},
-                        {label: "C; IR; dc; mc I/rice", color: "#ffbb78"},
-                        {label: "C; IR; dc; mc II/rice", color: "#2ca02c"},
-                        {label: "C; IR; cc; sugarcane/plantations/other crops", color: "#98df8a"},
-                        {label: "C; IR; cc; mc", color: "#d62728"},
-                        {label: "C; IR; fallow croplands", color: "#ff9896"},
-                        {label: "C; RF; sc; rice", color: "#9467bd"},
-                        {label: "C; RF; sc; maize/unknown", color: "#bcbd22"},
-                        {label: "C; RF; dc; maize/rice", color: "#8c564b"},
-                        {label: "C; RF; cc; plantation/unknown", color: "#c49c94"},
-                        {label: "C; RF; cc; sugarcane/plantation/unknown", color: "#e377c2"},
-                        {label: "C; IR; cc; mc", color: "#f7b6d2"},
-                        {label: "C; RF; fallow croplands", color: "#7f7f7f"},
-                        {label: "NC; IR; barren/built-up/rangelands", color: "#c7c7c7"},
-                        {label: "NC; RF; shrubs/rangelands/forest", color: "#c5b0d5"},
-                        {label: "NC; mixed", color: "#dbdb8d"}
-                    ]
-                }
+                }//,
+//                'Africa ACCA L4 Dominance v201512': {
+//                    name: 'Dominance',
+//                    id: 'Africa ACCA L4 Dominance v201512',
+//                    legend: [
+//                        {label: "C; IR; sc; mc I/rice", color: "#aec7e8"},
+//                        {label: "C; IR; sc; mc II/rice/sorghum", color: "#ff7f0e"},
+//                        {label: "C; IR; dc; mc I/rice", color: "#ffbb78"},
+//                        {label: "C; IR; dc; mc II/rice", color: "#2ca02c"},
+//                        {label: "C; IR; cc; sugarcane/plantations/other crops", color: "#98df8a"},
+//                        {label: "C; IR; cc; mc", color: "#d62728"},
+//                        {label: "C; IR; fallow croplands", color: "#ff9896"},
+//                        {label: "C; RF; sc; rice", color: "#9467bd"},
+//                        {label: "C; RF; sc; maize/unknown", color: "#bcbd22"},
+//                        {label: "C; RF; dc; maize/rice", color: "#8c564b"},
+//                        {label: "C; RF; cc; plantation/unknown", color: "#c49c94"},
+//                        {label: "C; RF; cc; sugarcane/plantation/unknown", color: "#e377c2"},
+//                        {label: "C; IR; cc; mc", color: "#f7b6d2"},
+//                        {label: "C; RF; fallow croplands", color: "#7f7f7f"},
+//                        {label: "NC; IR; barren/built-up/rangelands", color: "#c7c7c7"},
+//                        {label: "NC; RF; shrubs/rangelands/forest", color: "#c5b0d5"},
+//                        {label: "NC; mixed", color: "#dbdb8d"}
+//                    ]
+//                }
             }
         }),
         southamerica30v201512: {
             name: 'South America GCE 30m Cropland Mask Product 2014',
             type: 'wms',
             url: 'http://wms.croplands.org/geoserver/Products/wms',
+            visible: true,
             layerOptions: {
                 layers: 'Products:South America Extent 30m v201512',
                 minZoom: 0,
@@ -6113,8 +6080,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
 
     return _layers;
 }
-])
-;;
+]);;
 app.filter('mappings', ['mappings', function (mappings) {
     return function (key, field) {
         key = key || 0;
@@ -6301,6 +6267,10 @@ app.controller("DataController", ['$scope', '$http', 'mapService', 'leafletData'
         }
     });
 
+    _.each($scope.layers.overlays, function (layer) {
+        layer.visible = false;
+    });
+
 
     function getColor(properties) {
 
@@ -6315,7 +6285,7 @@ app.controller("DataController", ['$scope', '$http', 'mapService', 'leafletData'
 
         var color, ratio, scale, red, green, blue;
 
-        ratio = properties.ratio;
+        ratio = properties.ratio*10;
         scale = Math.max(Math.min((ratio - 500) / 50000, 1), 0);
 
         red = Math.round(255 * scale);
@@ -6380,10 +6350,84 @@ app.controller("DataController", ['$scope', '$http', 'mapService', 'leafletData'
 
 
 }]);;
+app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafletData', '$window', 'locationFactory', function ($scope, $http, mapService, leafletData, $window, locationFactory) {
+
+    angular.extend($scope, {
+        tableColumns: [
+            {
+                id: 'record_id',
+                label: 'ID'
+            },
+            {
+                id: 'crop_primary',
+                label: 'Primary Crop'
+            },
+            {
+                id: 'year',
+                label: 'Year'
+            },
+            {
+                id: 'country',
+                label: 'Country'
+            }
+        ],
+        sort: {
+            reverse: false
+        }
+    });
+
+    $scope.sortColumn = function (column) {
+        console.log(column);
+        if (column === $scope.sort.column) {
+            $scope.sort.reverse = !$scope.sort.reverse;
+        } else {
+            $scope.sort = {
+                column: column,
+                reverse: false
+            };
+        }
+    };
+
+    $scope.goToRecord = function (id) {
+        $window.location.href = '/app/data/record?id=' + id;
+    };
+
+    $scope.fakeData = [
+        {
+            record_id: 1,
+            country: 'Mali',
+            crop_primary: 'Wheat',
+            year: 2013
+        },
+        {
+            record_id: 2,
+            country: 'United States',
+            crop_primary: 'Barley',
+            year: 2012
+        },
+        {
+            record_id: 3,
+            country: 'Canada',
+            crop_primary: 'Wheat',
+            year: 2012
+        },
+        {
+            record_id: 4,
+            country: 'Indonesia',
+            crop_primary: 'Sugarcane',
+            year: 2010
+        }
+    ];
+}]);;
 app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'leafletData', '$timeout', '$window', '$location', 'mappings', 'log', function ($scope, mapService, locationFactory, leafletData, $timeout, $window, $location, mappings, log) {
-    var selectionAreaMouseDownSubscription,
-        selectionAreaClickSubscription,
-        selectionAreaMousemoveSubscription;
+
+    ///////////
+    // Utils //
+    ///////////
+
+    function stopPropagation(e) {
+        L.DomEvent.stopPropagation(e);
+    }
 
     $location.moveCenter = function (lat, lng, zoom) {
         this.search(_.merge(this.search(), {lat: Math.round(lat * Math.pow(10, 5)) / Math.pow(10, 5), lng: lng, zoom: zoom}));
@@ -6411,50 +6455,9 @@ app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'lea
         }
     };
 
-    ///////////
-    // Utils //
-    ///////////
-    function disableMapDragging() {
-        leafletData.getMap().then(function (map) {
-            map.dragging.disable();
-        });
-    }
-
-    function enableMapDragging() {
-        leafletData.getMap().then(function (map) {
-            map.dragging.enable();
-        });
-    }
-
-    function stopPropagation(e) {
-        L.DomEvent.stopPropagation(e);
-    }
-
-
 ///////////////////////
 // Listen for Events //
 ///////////////////////
-
-    $scope.$on("locationFactory.markers.filtered", function () {
-        log.info('Mapping ' + locationFactory.getFilteredRecordCount() + ' Locations', true);
-
-        $scope.markers = locationFactory.markers;
-
-        $scope.busy = false;
-        $timeout(function () {
-            $scope.busyDialogVisible = false;
-        }, 10000);
-    });
-    $scope.$on("locationFactory.markers.downloaded", function () {
-        log.info('Finished downloading location data.', true);
-    });
-
-    $scope.$on("locationFactory.markers.error", function () {
-        log.info('Error downloading location data. Trying again...', true);
-        $timeout(function () {
-            locationFactory.getMarkers();
-        }, 2000);
-    });
 
     $scope.$watch(function () {
         return mapService.center;
@@ -6462,40 +6465,9 @@ app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'lea
         $scope.center = center;
     }, true);
 
-
-    $scope.$on('leafletDirectiveMarker.click', function (e, args) {
-        // Args will contain the marker name and other relevant information
-        $scope.loadMarker($scope.markers[args.markerName]);
-    });
-
     $scope.$watch('center', function (center) {
         $location.moveCenter(center.lat, center.lng, center.zoom);
-        console.log($scope.location);
-        // If marker is no longer contained in bounds of map, drop from url parameters.
-        if ($scope.location.lat && $scope.location.lon) {
-
-            leafletData.getMap().then(function (map) {
-
-                if (!map.getBounds().contains(L.latLng($scope.location.lat, $scope.location.lon))) {
-                    // remove open marker since no long displayed
-                    $location.removeId();
-                    $scope.location.visible = false;
-                }
-            });
-        } else {
-            $location.removeId();
-            $scope.location.visible = false;
-        }
     });
-
-    $scope.$watch('location', function (location) {
-        if (location.visible && location.id > 0) {
-            $location.setId(location.id);
-        }
-        else {
-            $location.removeId();
-        }
-    }, true);
 
     $scope.$watch('busy', function () {
         if ($scope.busy) {
@@ -6503,112 +6475,11 @@ app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'lea
         }
     });
 
-    $scope.$on('location.record.edit.close', function () {
-        $scope.closeRecordEditForm();
-    });
 
-    $scope.$on('location.record.edit.open', function (e, record) {
-        $scope.record = record;
-
-
-        // if coming from location panel, won't have lat/lon since that is not part of the
-        // underlying data that gets downloaded
-        if (record.lat && record.lon) {
-            mapService.zoom(record.lat, record.lon, 15);
-            console.log(mapService.center);
-        }
-        $timeout(function () {
-            $scope.showRecordEditForm = true;
-        }, 200);
-        $scope.$broadcast('location.record.edit.close', record);
-
-    });
-    $scope.closeRecordEditForm = function () {
-        $scope.showRecordEditForm = false;
-        $scope.$broadcast('location.record.edit.inactive');
-    };
 ///////////////////////
 // Button Actions    //
 ///////////////////////
-    $scope.selectArea = function (e) {
 
-        // put selection back to 0,0
-        $scope.paths.selection.latlngs[0] = {lat: 0, lng: 0};
-        $scope.paths.selection.latlngs[1] = {lat: 0, lng: 0};
-
-        // no selection has been created and no filtering of markers
-        $scope.paths.selection.created = false;
-        $scope.paths.selection.cropped = false;
-
-
-        // toggle selection area control
-        $scope.selectionAreaActive = !$scope.selectionAreaActive;
-
-        // if selection active
-        if ($scope.selectionAreaActive) {
-            // get first corner
-            selectionAreaMouseDownSubscription = $scope.$on('leafletDirectiveMap.mousedown', function (e, args) {
-                disableMapDragging();
-
-                $scope.paths.selection.latlngs[0] = {
-                    lat: args.leafletEvent.latlng.lat,
-                    lng: args.leafletEvent.latlng.lng };
-                $scope.paths.selection.latlngs[1] = {
-                    lat: args.leafletEvent.latlng.lat,
-                    lng: args.leafletEvent.latlng.lng };
-
-                // remove mousedown event listener
-                selectionAreaMouseDownSubscription();
-                // adjust selection mouse moves
-                selectionAreaMousemoveSubscription = $scope.$on('leafletDirectiveMap.mousemove', function (e, args) {
-
-                    $scope.paths.selection.latlngs[1] = {
-                        lat: args.leafletEvent.latlng.lat,
-                        lng: args.leafletEvent.latlng.lng };
-                });
-            });
-
-            // capture second corner
-            selectionAreaClickSubscription = $scope.$on('leafletDirectiveMap.click', function (e, args) {
-                selectionAreaClickSubscription();
-                if (selectionAreaMousemoveSubscription) {
-                    selectionAreaMousemoveSubscription();
-                }
-
-                enableMapDragging();
-
-                $scope.paths.selection.latlngs[1] = {
-                    lat: args.leafletEvent.latlng.lat,
-                    lng: args.leafletEvent.latlng.lng };
-                $scope.paths.selection.created = true;
-                $scope.selectionAreaActive = !$scope.selectionAreaActive;
-            });
-
-
-        }
-    };
-
-    $scope.filterBySelection = function (e) {
-
-        $scope.busy = true;
-
-        log.info('Filtering ' + locationFactory.getTotalRecordCount().toLocaleString() + ' Records', true);
-        $timeout(function () {
-            var bounds = {}, rect = $scope.paths.selection.latlngs;
-            bounds.southWest = { lat: Math.min(rect[0].lat, rect[1].lat), lng: Math.min(rect[0].lng, rect[1].lng)};
-            bounds.northEast = { lat: Math.max(rect[0].lat, rect[1].lat), lng: Math.max(rect[0].lng, rect[1].lng)};
-            locationFactory.filters.byPolygon(bounds, true, true);
-            // put selection back to 0,0
-            $scope.paths.selection.latlngs[0] = {lat: 0, lng: 0};
-            $scope.paths.selection.latlngs[1] = {lat: 0, lng: 0};
-
-            // no selection has been created and no filtering of markers
-            $scope.paths.selection.created = false;
-            $scope.paths.selection.cropped = false;
-        }, 200);
-
-
-    };
 
     $scope.toggleLayerInfo = function (layer, e) {
         e.preventDefault();
@@ -6621,86 +6492,11 @@ app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'lea
         mapService.center.lng = 0;
         mapService.center.zoom = 2;
     };
-    $scope.refreshLocations = function () {
-        log.info('Loading Location Data', true);
-        $scope.busy = true;
 
-        locationFactory.getMarkers();
-    };
-
-
-    $scope.loadMarker = function (m) {
-        if (m.location_id) {
-            log.info("Loading Marker, ID: " + m.data_id, true);
-
-            // Save id in url parameter
-            $location.setId($scope.location.data_id);
-        }
-
-        // Save marker location
-        $scope.location = _.clone(m, true);
-
-        $scope.location.visible = true;
-
-        // Call function to move to marker
-        $scope.goToMarker(m);
-    };
-
-
-    $scope.goToMarker = function (m, e, ignoreBounds) {
-        if (ignoreBounds) {
-            // Zoom in if not already
-            if (mapService.center.zoom < 13) {
-                mapService.center.lat = m.lat;
-                mapService.center.lng = m.lon;
-                mapService.center.zoom = 16;
-            } else {
-                mapService.center.zoom += 1;
-            }
-
-        } else {
-            // Pan map if marker not within bounds of map
-            leafletData.getMap().then(function (map) {
-                if (!map.getBounds().contains(L.latLng(m.lat, m.lon))) {
-                    mapService.center.lat = m.lat;
-                    mapService.center.lng = m.lon;
-                }
-            });
-        }
-    };
-
-
-    $scope.resetGroundData = function () {
-        log.info('Clearing Selection on Locations', true);
-        $scope.busy = true;
-        locationFactory.cf.dims.spatial.filterAll();
-        locationFactory.returnMarkers();
-
-    };
-
-    $scope.downloadLocations = function () {
-        var blob = new Blob([locationFactory.getCSV()], {type: "data:application/csv;charset=utf-8", endings: 'native'});
-        var filename = "GFSAD-Locations-" + Math.round(new Date() / 1000) + ".csv";
-        saveAs(blob, filename);
-    };
 
     $scope.print = function () {
         window.print();
     };
-
-    $scope.addLocation = function (e) {
-        $scope.addLocationActive = true;
-        var mapClickSubscription = $scope.$on('leafletDirectiveMap.click', function (e, args) {
-            mapClickSubscription();
-            $scope.loadMarker({lat: args.leafletEvent.latlng.lat, lon: args.leafletEvent.latlng.lng});
-            $scope.addLocationActive = false;
-        });
-    };
-
-// Add to scope
-    $scope.disableMapDragging = disableMapDragging;
-    $scope.enableMapDragging = enableMapDragging;
-    $scope.stopPropagation = stopPropagation;
 
 
 //////////
@@ -6711,20 +6507,10 @@ app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'lea
 //        requestFullscreen($("#map-app"));
         var defaults = {
             tableOfContentsVisible: true,
-            selectionAreaActive: false,
-            addLocationActive: false,
             showHelp: false,
             showDownloadModal: false,
             busy: false,
             busyDialogVisible: false,
-            mappings: mappings,
-            location: {
-                visible: false
-            },
-            filters: {
-                visible: false,
-                activeFilters: {}
-            },
             table: {
                 visible: false
             },
@@ -6732,16 +6518,9 @@ app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'lea
                 map: {
                     enable: ['mousedown', 'mousemove', 'click'],
                     logic: 'emit'
-                },
-                marker: {
-                    enable: ['click'],
-                    logic: 'emit'
                 }
             },
-            markers: [],
             center: mapService.center,
-            paths: mapService.paths,
-//            layers: angular.copy(mapService.layers)
             layers: mapService.layers
         };
 
@@ -6759,28 +6538,8 @@ app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'lea
         }
 
 
-        if ($location.getId()) {
-            defaults.location.id = $location.getId();
-            defaults.location.visible = true;
-        }
-
-
-        // See if browser can download files
-        if (!!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/)) {
-            defaults.canDownloadFiles = false;
-        } else {
-            try {
-                defaults.canDownloadFiles = !!new Blob;
-            } catch (e) {
-                defaults.canDownloadFiles = false;
-            }
-        }
-
         // Apply defaults
         angular.extend($scope, defaults);
-
-        // Get Locations
-        $scope.refreshLocations();
     }
 
     init();
