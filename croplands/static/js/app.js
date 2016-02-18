@@ -4458,6 +4458,99 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
         'https://hwstatic.croplands.org/**']);
 }]);
 ;
+app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout', 'log', 'User', function (mappings, $http, $rootScope, $q, $timeout, log, User) {
+    var _baseUrl = 'http://data.croplands.org',
+        data = {
+            records: [],
+            count: {},
+            columns: angular.copy(mappings),
+            ordering: {},
+            paging: {
+                page: 1,
+                page_size: 200
+            },
+            busy: false
+        };
+
+    function getParams() {
+        var filters = {};
+        _.each(data.columns, function (column, key) {
+            var values = [];
+            _.each(column.choices, function (option) {
+                if (option.selected) {
+                    values.push(option.id);
+                }
+            });
+
+            filters[key] = values;
+        });
+
+        return _.assign(filters, data.ordering, data.paging);
+    }
+
+    function csvToJSON(csv, types) {
+        var lines = csv.split("\n"),
+            headers = lines[0].split(','),
+            results;
+
+        results = _.map(lines.slice(1, lines.length - 1), function (l) {
+            var row = {};
+            _.each(l.split(','), function (col, i) {
+                var value = col;
+                if (types && types[headers[i]]) {
+                    value = types[headers[i]](col);
+                }
+
+                row[headers[i]] = value;
+            });
+            return row;
+        });
+        return results;
+    }
+
+    data.reset = function () {
+        data.filters = angular.copy(mappings);
+    };
+
+    // load data from server
+    data.load = function () {
+        var deferred = $q.defer();
+        data.busy = true;
+
+        $http({
+            url: _baseUrl + '/data/search',
+            method: "GET",
+            params: getParams()
+        }).then(function (response) {
+            data.records = csvToJSON(response.data, {
+                id: parseInt,
+                month: parseInt,
+                year: parseInt,
+                lat: parseFloat,
+                lon: parseFloat,
+                crop_primary: parseInt,
+                crop_secondary: parseInt,
+                water: parseInt,
+                intensity: parseInt,
+                land_use_type: parseInt
+            });
+
+            var headers = response.headers();
+            data.count.total = headers['query-count-total'];
+            data.count.filtered = headers['query-count-filtered'];
+            console.log(data.count);
+            deferred.resolve(response);
+            $rootScope.$broadcast("DataService.load", data.records);
+            data.busy = false;
+        }, function (e) {
+            deferred.reject(e);
+        });
+
+        return deferred.promise;
+    };
+    return data;
+}]);
+;
 app.factory('RatingService', ['$http', '$rootScope', 'log', 'User', '$q','locationFactory', function ($http, $rootScope, log, User, $q, locationFactory) {
     var ratingLookup = {},
 //        _baseUrl = 'http://127.0.0.1:8000';
@@ -5146,11 +5239,11 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
     l.returnMarkers = function () {
         l.markers = l.cf.dims.year.top(10000);
         log.info('Markers Filtered');
-        $rootScope.$broadcast("locationFactory.markers.filtered");
+        $rootScope.$broadcast("locationFactory.markers.filtered", l.markers);
 
     };
 // Download All Markers
-    l.getMarkers = function () {
+    l.getLocations = function () {
 
         // Remove all existing location
         l.clearAll();
@@ -5158,19 +5251,19 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
             file2 = $q.defer(),
             file3 = $q.defer();
 
-        $http({method: 'GET', url: 'https://data.croplands.org/json/records.p1.json'}).
+        $http({method: 'GET', url: 'https://s3.croplands.org/json/records.p1.json'}).
             success(function (data) {
                 l.addMarkers(data).then(function () {
                     file1.resolve();
                 });
             });
-        $http({method: 'GET', url: 'https://data.croplands.org/json/records.p2.json'}).
+        $http({method: 'GET', url: 'https://s3.croplands.org/json/records.p2.json'}).
             success(function (data) {
                 l.addMarkers(data).then(function () {
                     file2.resolve();
                 });
             });
-        $http({method: 'GET', url: 'https://data.croplands.org/json/records.p3.json'}).
+        $http({method: 'GET', url: 'https://s3.croplands.org/json/records.p3.json'}).
             success(function (data) {
                 l.addMarkers(data).then(function () {
                     file3.resolve();
@@ -5178,10 +5271,8 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
             });
         $q.all([file1.promise, file2.promise, file3.promise]).then(function () {
             $rootScope.$broadcast("locationFactory.markers.downloaded");
-            l.returnMarkers();
         }, function () {
             log.warn("Could not download locations.", true);
-            l.returnMarkers();
         });
     };
 
@@ -5234,7 +5325,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
                     record[keys[i]] = data.objects[n][i];
                 }
 
-                l.setIcon(record);
+//                l.setIcon(record);
                 records.push(record);
             }
             allRecords = allRecords.concat(records);
@@ -5594,94 +5685,105 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
     };
     return map;
 }]);;
+app.factory('mappings', [function () {
+    var data = {
+        land_use_type: {'label': 'Land Use Type',
+            'style': 'primary',
+            'choices': [
+                {'id': 0, 'order': 8, 'label': 'Unknown', 'description': 'Not cropland is...'},
+                {'id': 1, 'order': 1, 'label': 'Cropland', 'description': 'Cropland is...'},
+                {'id': 2, 'order': 4, 'label': 'Forest', 'description': 'Forest is ...'},
+                {'id': 3, 'order': 3, 'label': 'Grassland', 'description': 'Grassland is ...'},
+                {'id': 4, 'order': 2, 'label': 'Barren', 'description': 'Barrenland is ...'},
+                {'id': 5, 'order': 6, 'label': 'Builtup', 'description': 'Urban is ...'},
+                {'id': 6, 'order': 5, 'label': 'Shrub', 'description': 'Shrub is ...'},
+                {'id': 7, 'order': 7, 'label': 'Water', 'description': 'Water is ...'}
+            ]},
 
-app.constant('mappings', {
-    landUseType: {'label': 'Land Use Type',
-        'style': 'primary',
-        'choices': [
-            {'id': 0, 'order': 8, 'label': 'Unknown', 'description': 'Not cropland is...'},
-            {'id': 1, 'order': 1, 'label': 'Cropland', 'description': 'Cropland is...'},
-            {'id': 2, 'order': 4, 'label': 'Forest', 'description': 'Forest is ...'},
-            {'id': 3, 'order': 3, 'label': 'Grassland', 'description': 'Grassland is ...'},
-            {'id': 4, 'order': 2, 'label': 'Barren', 'description': 'Barrenland is ...'},
-            {'id': 5, 'order': 6, 'label': 'Builtup', 'description': 'Urban is ...'},
-            {'id': 6, 'order': 5, 'label': 'Shrub', 'description': 'Shrub is ...'},
-            {'id': 7, 'order': 7, 'label': 'Water', 'description': 'Water is ...'}
-        ]},
+        water: {'label': 'Water Source',
+            'style': 'danger',
+            'choices': [
+                {'id': 0, 'label': 'Unknown', 'description': 'No irrigation specified...'},
+                {'id': 1, 'label': 'Rainfed',
+                    'description': 'Rainfed is ...'},
+                {'id': 2, 'label': 'Irrigated',
+                    'description': 'Irrigated is ...'}
+            ]
+        },
+        intensity: {'label': 'Intensify of Cropping',
+            'style': 'success',
+            'choices': [
+                {'id': 0, 'label': 'Unknown', 'description': 'Continuous is...'},
+                {'id': 1, 'label': 'Single', 'description': 'Single is...'},
+                {'id': 2, 'label': 'Double', 'description': 'Double is...'},
+                {'id': 3, 'label': 'Triple', 'description': 'Triple is...'},
+                {'id': 4, 'label': 'Continuous', 'description': 'Continuous is...'}
+            ]
+        },
+        crop_primary: {'label': 'Crop Type',
+            'choices': [
+                {'id': 0, 'label': 'Unknown', 'description': 'No crop type specified.'},
+                {'id': 1, 'label': 'Wheat', 'description': ''},
+                {'id': 2, 'label': 'Maize (Corn)', 'description': ''},
+                {'id': 3, 'label': 'Rice', 'description': ''},
+                {'id': 4, 'label': 'Barley', 'description': ''},
+                {'id': 5, 'label': 'Soybeans', 'description': ''},
+                {'id': 6, 'label': 'Pulses', 'description': ''},
+                {'id': 7, 'label': 'Cotton', 'description': ''},
+                {'id': 8, 'label': 'Potatoes', 'description': ''},
+                {'id': 9, 'label': 'Alfalfa', 'description': ''},
+                {'id': 10, 'label': 'Sorghum', 'description': ''},
+                {'id': 11, 'label': 'Millet', 'description': ''},
+                {'id': 12, 'label': 'Sunflower', 'description': ''},
+                {'id': 13, 'label': 'Rye', 'description': ''},
+                {'id': 14, 'label': 'Rapeseed or Canola', 'description': ''},
+                {'id': 15, 'label': 'Sugarcane', 'description': ''},
+                {'id': 16, 'label': 'Groundnuts or Peanuts', 'description': ''},
+                {'id': 17, 'label': 'Cassava', 'description': ''},
+                {'id': 18, 'label': 'Sugarbeets', 'description': ''},
+                {'id': 19, 'label': 'Palm', 'description': ''},
+                {'id': 20, 'label': 'Others', 'description': ''},
+                {'id': 21, 'label': 'Plantations', 'description': 'Plantations or other continuous crops'},
+                {'id': 22, 'label': 'Fallow', 'description': ''},
+                {'id': 23, 'label': 'Tef', 'description': ''}
+            ]
+        },
+        lat: {
+            'label': 'Latitude'
+        },
+        lon: {
+            'label': 'Longitude'
+        },
+        source_type: {
+            'label': 'Source of Data',
+            choices: [
+                {'id': 'ground', 'label': 'Ground'},
+                {'id': 'unknown', 'label': 'Unknown'},
+                {'id': 'derived', 'label': 'Derived'}
+            ]
+        },
+        user_validation: {'label': 'Validation Only',
+            'style': 'success',
+            'choices': [
+                {'id': 0, 'label': 'Training', 'description': 'Data is used for training.'},
+                {'id': 1, 'label': 'Validation', 'description': 'Data is used for validation.'}
+            ]
+        },
+        year: {
+            label: "Year",
+            choices: []
+        }
+    };
+    data.crop_secondary = angular.copy(data.crop_primary);
 
-    water: {'label': 'Water Source',
-        'style': 'danger',
-        'choices': [
-            {'id': 0, 'label': 'Unknown', 'description': 'No irrigation specified...'},
-            {'id': 1, 'label': 'Rainfed',
-                'description': 'Rainfed is ...'},
-            {'id': 2, 'label': 'Irrigated',
-                'description': 'Irrigated is ...'}
-        ]
-    },
-    intensity: {'label': 'Intensify of Cropping',
-        'style': 'success',
-        'choices': [
-            {'id': 0, 'label': 'Unknown', 'description': 'Continuous is...'},
-            {'id': 1, 'label': 'Single', 'description': 'Single is...'},
-            {'id': 2, 'label': 'Double', 'description': 'Double is...'},
-            {'id': 3, 'label': 'Triple', 'description': 'Triple is...'},
-            {'id': 4, 'label': 'Continuous', 'description': 'Continuous is...'}
-        ]
-    },    source: {'label': 'Source of data',
-        'style': 'success',
-        'choices': [
-            {'id': 0, 'label': 'Unknown', 'description': 'Continuous is...'},
-            {'id': 1, 'label': 'Site Visit', 'description': 'Single is...'},
-            {'id': 2, 'label': 'Satellite', 'description': 'Double is...'},
-            {'id': 3, 'label': 'Third Party', 'description': 'Triple is...'},
-            {'id': 4, 'label': 'Other', 'description': 'Continuous is...'}
-        ]
-    },
-    confidence: {'label': 'Confidence',
-        'style': 'success',
-        'choices': [
-            {'id': 0, 'label': 'Low', 'description': 'Continuous is...'},
-            {'id': 1, 'label': 'Moderate', 'description': 'Single is...'},
-            {'id': 2, 'label': 'High', 'description': 'Double is...'}
-        ]
-    },
-    crop: {'label': 'Crop Type',
-        'choices': [
-            {'id': 0, 'label': 'Unknown', 'description': 'No crop type specified.'},
-            {'id': 1, 'label': 'Wheat', 'description': ''},
-            {'id': 2, 'label': 'Maize (Corn)', 'description': ''},
-            {'id': 3, 'label': 'Rice', 'description': ''},
-            {'id': 4, 'label': 'Barley', 'description': ''},
-            {'id': 5, 'label': 'Soybeans', 'description': ''},
-            {'id': 6, 'label': 'Pulses', 'description': ''},
-            {'id': 7, 'label': 'Cotton', 'description': ''},
-            {'id': 8, 'label': 'Potatoes', 'description': ''},
-            {'id': 9, 'label': 'Alfalfa', 'description': ''},
-            {'id': 10, 'label': 'Sorghum', 'description': ''},
-            {'id': 11, 'label': 'Millet', 'description': ''},
-            {'id': 12, 'label': 'Sunflower', 'description': ''},
-            {'id': 13, 'label': 'Rye', 'description': ''},
-            {'id': 14, 'label': 'Rapeseed or Canola', 'description': ''},
-            {'id': 15, 'label': 'Sugarcane', 'description': ''},
-            {'id': 16, 'label': 'Groundnuts or Peanuts', 'description': ''},
-            {'id': 17, 'label': 'Cassava', 'description': ''},
-            {'id': 18, 'label': 'Sugarbeets', 'description': ''},
-            {'id': 19, 'label': 'Palm', 'description': ''},
-            {'id': 20, 'label': 'Others', 'description': ''},
-            {'id': 21, 'label': 'Plantations', 'description': 'Plantations or other continuous crops'},
-            {'id': 22, 'label': 'Fallow', 'description': ''},
-            {'id': 23, 'label': 'Tef', 'description': ''}
-        ]
-    },
-    lat: {
-        'label': 'Latitude'
-    },
-    long: {
-        'label': 'Longitude'
+
+    var currentYear = new Date().getFullYear();
+    for (var i = 2000; i < currentYear + 1; i++) {
+        data.year.choices.push({label: i, id: i});
     }
 
-});;
+    return data;
+}]);;
 app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval, leafletData, log) {
     var _layers, WMSCollection;
     WMSCollection = function (obj, defaultLayer, defaultStyle) {
@@ -6084,7 +6186,11 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
 app.filter('mappings', ['mappings', function (mappings) {
     return function (key, field) {
         key = key || 0;
-        return mappings[field].choices[key].label;
+        try {
+            return mappings[field].choices[key].label;
+        } catch(e) {
+            return key;
+        }
     };
 }]);;
 app.filter('monthName', [function () {
@@ -6350,74 +6456,89 @@ app.controller("DataController", ['$scope', '$http', 'mapService', 'leafletData'
 
 
 }]);;
-app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafletData', '$window', 'locationFactory', function ($scope, $http, mapService, leafletData, $window, locationFactory) {
+app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafletData', '$window', 'DataService', '$timeout', function ($scope, $http, mapService, leafletData, $window, DataService, $timeout) {
 
     angular.extend($scope, {
         tableColumns: [
             {
-                id: 'record_id',
-                label: 'ID'
+                id: 'id',
+                label: 'ID',
+                visible: false
+            },
+            {
+                id: 'land_use_type',
+                label: 'Land Use Type',
+                visible: true
+
             },
             {
                 id: 'crop_primary',
-                label: 'Primary Crop'
+                label: 'Primary Crop',
+                visible: true
+            },
+            {
+                id: 'water',
+                label: 'Irrigation',
+                visible: true
+            },
+            {
+                id: 'intensity',
+                label: 'Intensity',
+                visible: true
             },
             {
                 id: 'year',
-                label: 'Year'
+                label: 'Year',
+                visible: true
             },
             {
                 id: 'country',
-                label: 'Country'
+                label: 'Country',
+                visible: false
+            },
+            {
+                id: 'source_type',
+                label: 'Source',
+                visible: true
             }
         ],
-        sort: {
-            reverse: false
-        }
+        ordering: DataService.ordering,
+        busy: false
+    });
+
+
+    function getData() {
+        $scope.busy = true;
+        $scope.$evalAsync(DataService.load);
+    }
+
+    $scope.$on("DataService.load", function (e, records) {
+        $scope.records = records;
+        $scope.$evalAsync(function () {
+            $scope.busy = false;
+        });
     });
 
     $scope.sortColumn = function (column) {
-        console.log(column);
-        if (column === $scope.sort.column) {
-            $scope.sort.reverse = !$scope.sort.reverse;
+        if (column === DataService.ordering.order_by) {
+            if (DataService.ordering.order_by_direction === 'asc') {
+                DataService.ordering.order_by_direction = 'desc';
+            } else {
+                DataService.ordering.order_by_direction = 'asc';
+            }
         } else {
-            $scope.sort = {
-                column: column,
-                reverse: false
-            };
+            DataService.ordering.order_by_direction = 'asc';
+            DataService.ordering.order_by = column;
         }
+
+        getData();
     };
 
     $scope.goToRecord = function (id) {
         $window.location.href = '/app/data/record?id=' + id;
     };
 
-    $scope.fakeData = [
-        {
-            record_id: 1,
-            country: 'Mali',
-            crop_primary: 'Wheat',
-            year: 2013
-        },
-        {
-            record_id: 2,
-            country: 'United States',
-            crop_primary: 'Barley',
-            year: 2012
-        },
-        {
-            record_id: 3,
-            country: 'Canada',
-            crop_primary: 'Wheat',
-            year: 2012
-        },
-        {
-            record_id: 4,
-            country: 'Indonesia',
-            crop_primary: 'Sugarcane',
-            year: 2010
-        }
-    ];
+    getData();
 }]);;
 app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'leafletData', '$timeout', '$window', '$location', 'mappings', 'log', function ($scope, mapService, locationFactory, leafletData, $timeout, $window, $location, mappings, log) {
 
@@ -6698,121 +6819,56 @@ app.controller("ResetController", ['$location', '$scope', 'log', '$window', func
 //        $window.location.href = '/';
     }
 }]);;
-app.directive('blur', [function () {
-    return {
-        restrict: 'A',
-        link: function (scope, element) {
-            element.on('click', function () {
-                element.blur();
-            });
-        }
-    };
-}]);;
-app.directive('filter', ['locationFactory', 'log', '$q', '$timeout', 'mappings', function (locationFactory, log, $q, $timeout, mappings) {
-    function reset(scope, callback) {
-        log.info("Resetting Filters");
-
-        _.each(scope.years, function (year) {
-            year.selected = true; // select all years instead of year.label === 2016;
+app.directive('filter', ['log', '$q', '$timeout', 'mappings', 'DataService', function (log, $q, $timeout, mappings, DataService) {
+    function select(choices, value) {
+        _.each(choices, function (option) {
+            option.selected = value;
         });
-
-        _.each(scope.landUseType, function (type) {
-            type.selected = true;
-        });
-
-        _.each(scope.crops, function (crop) {
-            crop.selected = true;
-        });
-
-        _.each(scope.intensity, function (intensity) {
-            intensity.selected = true;
-        });
-
-        _.each(scope.water, function (water) {
-            water.selected = true;
-        });
-        if (callback) {
-            callback();
-        }
     }
-
-    function getSelectedFieldValues(field) {
-        return _.pluck(_.where(field, {selected: true}), 'id');
-    }
-
-    function apply(scope) {
-        log.info("Filtering Locations");
-
-        scope.$parent.busy = true;
-        $timeout(function () {
-            locationFactory.cf.dims.year.filterAll();
-            locationFactory.cf.dims.landUseType.filterAll();
-            locationFactory.cf.dims.crop.filterAll();
-            locationFactory.cf.dims.intensity.filterAll();
-            locationFactory.cf.dims.water.filterAll();
-
-            scope.activeFilters = {
-                years: getSelectedFieldValues(scope.years),
-                landUseType: getSelectedFieldValues(scope.landUseType),
-                crops: getSelectedFieldValues(scope.crops),
-                intensity: getSelectedFieldValues(scope.intensity),
-                water: getSelectedFieldValues(scope.water)
-            };
-
-            locationFactory.filters.years(_.indexBy(scope.years, 'label'));
-            locationFactory.filters.landUseType(_.indexBy(scope.landUseType, 'label'));
-            locationFactory.filters.crops(_.indexBy(scope.crops, 'label'));
-            locationFactory.filters.intensity(_.indexBy(scope.intensity, 'label'));
-            locationFactory.filters.water(_.indexBy(scope.water, 'label'));
-
-            locationFactory.returnMarkers();
-
-        }, 100);
-    }
-
 
     return {
         restrict: 'EA',
         scope: {
-            visible: '=visible',
-            activeFilters: '=activeFilters'
         },
         link: function (scope) {
-            scope.landUseType = angular.copy(mappings.landUseType.choices);
-            scope.crops = angular.copy(mappings.crop.choices);
-            scope.intensity = angular.copy(mappings.intensity.choices);
-            scope.water = angular.copy(mappings.water.choices);
-            scope.years = [];
+            scope.init = function (reset) {
+                scope.land_use_type = DataService.columns.land_use_type.choices;
+                scope.crop_primary = DataService.columns.crop_primary.choices;
+                scope.water = DataService.columns.water.choices;
+                scope.intensity = DataService.columns.intensity.choices;
+                scope.year = DataService.columns.year.choices;
+                scope.source_type = DataService.columns.source_type.choices;
 
-            var currentYear = new Date().getFullYear();
-            for (var i = 2000; i < currentYear + 1; i++) {
-                scope.years.push({label: i, id: i});
-            }
+                if (reset) {
+                    scope.defaultSelection();
+                }
+            };
 
-
-            // Listeners
-            scope.$on("locationFactory.markers.filtered", function () {
-                scope.countAll = locationFactory.getTotalRecordCount();
-                scope.countFiltered = locationFactory.getFilteredRecordCount();
-                scope.filters = locationFactory.filters.list;
-            });
-
-            scope.$on("locationFactory.markers.downloaded", function () {
-                apply(scope);
-            });
+            scope.defaultSelection = function () {
+                select(scope.land_use_type, true);
+                select(scope.crop_primary, true);
+                select(scope.water, true);
+                select(scope.intensity, true);
+                select(scope.year, true);
+                select(scope.source_type, true);
+            };
 
             // Scope Methods
             scope.reset = function () {
-                reset(scope);
+                DataService.reset();
+                scope.init(true);
             };
+
             scope.apply = function () {
-                apply(scope);
+                scope.$parent.busy = true;
+                scope.$evalAsync(DataService.load);
             };
 
             scope.allOptionsAreSelected = function (field) {
                 if (field === undefined) {
                     return false;
                 }
+
                 for (var i = 0; i < scope[field].length; i++) {
                     if (!scope[field][i].selected) {
                         return false;
@@ -6831,15 +6887,27 @@ app.directive('filter', ['locationFactory', 'log', '$q', '$timeout', 'mappings',
                 }
             };
 
-            // Initialized Default Filters
-            reset(scope, function () {
-                log.info("Applying filters to locations", true);
-                apply(scope);
+            scope.init(true);
+
+            scope.$on("DataService.load", function () {
+                scope.count = {
+                    total: DataService.count.total,
+                    filtered: DataService.count.filtered
+                };
             });
         },
         templateUrl: '/static/directives/filter.html'
     };
-
+}]);;
+app.directive('blur', [function () {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            element.on('click', function () {
+                element.blur();
+            });
+        }
+    };
 }]);;
 app.directive('forgotForm', ['user', 'log', '$timeout', function (user, log, $timeout) {
     return {

@@ -1,69 +1,84 @@
-app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafletData', '$window', 'locationFactory', function ($scope, $http, mapService, leafletData, $window, locationFactory) {
+app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafletData', '$window', 'DataService', '$timeout', function ($scope, $http, mapService, leafletData, $window, DataService, $timeout) {
 
     angular.extend($scope, {
         tableColumns: [
             {
-                id: 'record_id',
-                label: 'ID'
+                id: 'id',
+                label: 'ID',
+                visible: false
+            },
+            {
+                id: 'land_use_type',
+                label: 'Land Use Type',
+                visible: true
+
             },
             {
                 id: 'crop_primary',
-                label: 'Primary Crop'
+                label: 'Primary Crop',
+                visible: true
+            },
+            {
+                id: 'water',
+                label: 'Irrigation',
+                visible: true
+            },
+            {
+                id: 'intensity',
+                label: 'Intensity',
+                visible: true
             },
             {
                 id: 'year',
-                label: 'Year'
+                label: 'Year',
+                visible: true
             },
             {
                 id: 'country',
-                label: 'Country'
+                label: 'Country',
+                visible: false
+            },
+            {
+                id: 'source_type',
+                label: 'Source',
+                visible: true
             }
         ],
-        sort: {
-            reverse: false
-        }
+        ordering: DataService.ordering,
+        busy: false
+    });
+
+
+    function getData() {
+        $scope.busy = true;
+        $scope.$evalAsync(DataService.load);
+    }
+
+    $scope.$on("DataService.load", function (e, records) {
+        $scope.records = records;
+        $scope.$evalAsync(function () {
+            $scope.busy = false;
+        });
     });
 
     $scope.sortColumn = function (column) {
-        console.log(column);
-        if (column === $scope.sort.column) {
-            $scope.sort.reverse = !$scope.sort.reverse;
+        if (column === DataService.ordering.order_by) {
+            if (DataService.ordering.order_by_direction === 'asc') {
+                DataService.ordering.order_by_direction = 'desc';
+            } else {
+                DataService.ordering.order_by_direction = 'asc';
+            }
         } else {
-            $scope.sort = {
-                column: column,
-                reverse: false
-            };
+            DataService.ordering.order_by_direction = 'asc';
+            DataService.ordering.order_by = column;
         }
+
+        getData();
     };
 
     $scope.goToRecord = function (id) {
         $window.location.href = '/app/data/record?id=' + id;
     };
 
-    $scope.fakeData = [
-        {
-            record_id: 1,
-            country: 'Mali',
-            crop_primary: 'Wheat',
-            year: 2013
-        },
-        {
-            record_id: 2,
-            country: 'United States',
-            crop_primary: 'Barley',
-            year: 2012
-        },
-        {
-            record_id: 3,
-            country: 'Canada',
-            crop_primary: 'Wheat',
-            year: 2012
-        },
-        {
-            record_id: 4,
-            country: 'Indonesia',
-            crop_primary: 'Sugarcane',
-            year: 2010
-        }
-    ];
+    getData();
 }]);

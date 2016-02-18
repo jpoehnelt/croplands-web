@@ -33,47 +33,100 @@
 
     }
 
+    #spinner {
+        margin: 35px auto 0;
+        width: 70px;
+        text-align: center;
+    }
+
+    #spinner > div {
+        width: 16px;
+        height: 16px;
+        background-color: #ccc;
+
+        border-radius: 100%;
+        display: inline-block;
+        -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+        animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+    }
+
+    #spinner .bounce1 {
+        -webkit-animation-delay: -0.32s;
+        animation-delay: -0.32s;
+    }
+
+    #spinner .bounce2 {
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+    }
+
+    @-webkit-keyframes sk-bouncedelay {
+        0%, 80%, 100% {
+            -webkit-transform: scale(0)
+        }
+        40% {
+            -webkit-transform: scale(1.0)
+        }
+    }
+
+    @keyframes sk-bouncedelay {
+        0%, 80%, 100% {
+            -webkit-transform: scale(0);
+            transform: scale(0);
+        }
+        40% {
+            -webkit-transform: scale(1.0);
+            transform: scale(1.0);
+        }
+    }
+
 </style>
 <div class="container container-static-nav" style="margin-top: 60px;">
-        <div class="alert alert-warning">Page under construction... Old data coverage page here: <a href="/app/data">/app/data</a></div>
-
+    <div class="alert alert-warning">Page under construction.</div>
     <div class="row">
         <div class="col-sm-8 col-md-7">
 
-            <div class="row">
-                <div class="col-sm-10  no-gutter-right">
-                    <div id="filters" data-filter class="am-slide-right"
-                         data-visible="filters.visible"
-                         data-active-filters="filters.activeFilters"></div>
-                    <div class="padding-vertical">
-                        <table id="records" class="table table-condensed table-hover fill">
-                            <thead>
-                            <tr>
-                                <th ng-repeat="column in tableColumns"
-                                    ng-class="{selected: sort.column == column.id}"
-                                    ng-click="$parent.sortColumn(column.id);">{{ column.label }}
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr ng-repeat="record in fakeData | orderBy : sort.column : sort.reverse"
-                                ng-click="goToRecord(record.record_id)">
-                                <td ng-repeat="column in tableColumns">{{ record[column.id] }}</td>
-                            </tr>
-                            </tbody>
-                        </table>
+            <!--<div class="row">-->
+            <!--<div class="col-sm-10  no-gutter-right">-->
+            <div id="filters" filter class="am-slide-right"
+                 data-visible="filters.visible"
+                 data-active-filters="filters.activeFilters"></div>
+            <div class="padding-vertical">
+                <div class="table-container">
+                    <table id="records" class="table table-condensed table-hover fill">
+                        <thead>
+                        <tr>
+                            <th ng-repeat="column in tableColumns | filter: {visible:true}"
+                                ng-class="{selected: ordering.order_by == column.id}"
+                                ng-click="$parent.sortColumn(column.id);">{{ column.label }}
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody class="am-fade" ng-hide="busy">
+                        <tr ng-repeat="record in records"
+                            ng-click="goToRecord(record.id)">
+                            <td ng-repeat="column in tableColumns | filter: {visible:true}">{{
+                                record[column.id] | mappings: column.id}}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div id="spinner" class="am-fade" ng-show="busy">
+                        <div class="bounce1"></div>
+                        <div class="bounce2"></div>
+                        <div class="bounce3"></div>
                     </div>
                 </div>
-                <div class="col-sm-2 no-gutter-left search-controls">
-                    <button class="btn btn-success fill center">Apply Filters</button>
-                    <button class="btn btn-default fill center">Reset</button>
-                    <button class="btn btn-default fill center">Columns</button>
-                    <button class="btn btn-default fill center">Download</button>
-                    <button class="btn btn-default fill center">Definitions</button>
-                    <button class="btn btn-default fill center">Collect</button>
-                    <button class="btn btn-default fill center">Citation</button>
-                </div>
             </div>
+            <!--</div>-->
+            <!--<div class="col-sm-2 no-gutter-left search-controls">-->
+            <!--<button class="btn btn-default fill center">Columns</button>-->
+            <!--<button class="btn btn-default fill center">Download</button>-->
+            <!--<button class="btn btn-default fill center">Definitions</button>-->
+            <!--<button class="btn btn-default fill center">Collect</button>-->
+            <!--<button class="btn btn-default fill center">Citation</button>-->
+            <!--</div>-->
+            <!--</div>-->
         </div>
         <div class="col-sm-4 col-md-5">
             <div style="width:100%; height:400px;background-color: #cccccc;"></div>

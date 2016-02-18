@@ -208,11 +208,11 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
     l.returnMarkers = function () {
         l.markers = l.cf.dims.year.top(10000);
         log.info('Markers Filtered');
-        $rootScope.$broadcast("locationFactory.markers.filtered");
+        $rootScope.$broadcast("locationFactory.markers.filtered", l.markers);
 
     };
 // Download All Markers
-    l.getMarkers = function () {
+    l.getLocations = function () {
 
         // Remove all existing location
         l.clearAll();
@@ -220,19 +220,19 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
             file2 = $q.defer(),
             file3 = $q.defer();
 
-        $http({method: 'GET', url: 'https://data.croplands.org/json/records.p1.json'}).
+        $http({method: 'GET', url: 'https://s3.croplands.org/json/records.p1.json'}).
             success(function (data) {
                 l.addMarkers(data).then(function () {
                     file1.resolve();
                 });
             });
-        $http({method: 'GET', url: 'https://data.croplands.org/json/records.p2.json'}).
+        $http({method: 'GET', url: 'https://s3.croplands.org/json/records.p2.json'}).
             success(function (data) {
                 l.addMarkers(data).then(function () {
                     file2.resolve();
                 });
             });
-        $http({method: 'GET', url: 'https://data.croplands.org/json/records.p3.json'}).
+        $http({method: 'GET', url: 'https://s3.croplands.org/json/records.p3.json'}).
             success(function (data) {
                 l.addMarkers(data).then(function () {
                     file3.resolve();
@@ -240,10 +240,8 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
             });
         $q.all([file1.promise, file2.promise, file3.promise]).then(function () {
             $rootScope.$broadcast("locationFactory.markers.downloaded");
-            l.returnMarkers();
         }, function () {
             log.warn("Could not download locations.", true);
-            l.returnMarkers();
         });
     };
 
@@ -296,7 +294,7 @@ app.factory('locationFactory', ['mappings', '$http', '$rootScope', '$filter', '$
                     record[keys[i]] = data.objects[n][i];
                 }
 
-                l.setIcon(record);
+//                l.setIcon(record);
                 records.push(record);
             }
             allRecords = allRecords.concat(records);
