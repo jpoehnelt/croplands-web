@@ -5,7 +5,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             {
                 id: 'id',
                 label: 'ID',
-                visible: false
+                visible: true
             },
             {
                 id: 'land_use_type',
@@ -36,7 +36,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             {
                 id: 'country',
                 label: 'Country',
-                visible: false
+                visible: true
             },
             {
                 id: 'source_type',
