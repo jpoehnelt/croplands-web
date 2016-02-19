@@ -10,7 +10,7 @@
                 <div class="control" id="map-controls" class="form form-inline">
                     <div class="btn-group">
                         <button id="contentsBtn" type="button"
-                                class="btn btn-sm btn-success"
+                                class="btn btn-success"
                                 ng-class="{'active': $parent.tableOfContentsVisible}"
                                 ng-click="$parent.tableOfContentsVisible = !$parent.tableOfContentsVisible"
                                 data-title="Layers" bs-tooltip blur>
@@ -18,28 +18,28 @@
                         </button>
                         <button type="button"
                                 id="zoomToWorld"
-                                class="btn btn-sm btn-success"
+                                class="btn btn-success"
                                 data-title="Zoom to World" bs-tooltip blur
                                 ng-click="zoomExtent($event)">
                             <i class="fa fa-fw fa-globe"></i>
                         </button>
                         <button type="button"
                                 id="zoomInBtn"
-                                class="btn btn-sm btn-success"
+                                class="btn btn-success"
                                 ng-click="$parent.center.zoom = $parent.center.zoom + 1"
                                 data-title="Zoom In" bs-tooltip blur>
                             <i class="fa fa-fw fa-plus"></i>
                         </button>
                         <button type="button"
                                 id="zoomOutBtn"
-                                class="btn btn-sm btn-success"
+                                class="btn btn-success"
                                 ng-click="$parent.center.zoom = $parent.center.zoom - 1"
                                 data-title="Zoom Out" bs-tooltip blur>
                             <i class="fa fa-fw fa-minus"></i>
                         </button>
 
                         <button type="button"
-                                class="btn btn-sm btn-success"
+                                class="btn btn-success"
                                 ng-click="print($event)"
                                 data-title="Print"
                                 bs-tooltip blur>

@@ -4362,7 +4362,7 @@ a.list-group-item-transparent.active:focus {
   padding: 4px 6px;
 }
 .panel-heading {
-  padding: 4px 6px;
+  padding: 7px 6px;
   maring: -1px;
   border-bottom: 1px solid transparent;
   border-top-right-radius: -1;
@@ -4387,7 +4387,7 @@ a.list-group-item-transparent.active:focus {
   float: left;
 }
 .panel-footer {
-  padding: 4px 6px;
+  padding: 7px 6px;
   background-color: #f5f5f5;
   border-top: 1px solid #dddddd;
   border-bottom-right-radius: -1;
@@ -6934,22 +6934,6 @@ body,
   -webkit-border-radius: 0 !important;
   -moz-border-radius: 0 !important;
   border-radius: 0 !important;
-}
-.panel-heading,
-.panel-body,
-.panel-footer {
-  padding: 4px 6px !important;
-}
-.panel,
-.panel-body {
-  background-color: rgba(255, 255, 255, 0.85);
-}
-.panel-group .panel,
-.panel-group .panel + .panel {
-  margin-top: 3px;
-}
-.panel-group .panel-title {
-  font-weight: normal;
 }
 .panel-lighter {
   background-color: rgba(255, 255, 255, 0.3);

@@ -4458,6 +4458,60 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
         'https://hwstatic.croplands.org/**']);
 }]);
 ;
+app.factory('DataRecord', ['mappings', '$http', '$rootScope', '$q', 'DataService', 'log', 'User', '$location', function (mappings, $http, $rootScope, $q, DataService, log, User, $location) {
+    var _baseUrl = 'https://api.croplands.org',
+        record = {
+            paging: {},
+            current: {}
+        };
+
+    record.paging.hasNext = function () {
+        return DataService.records.length > record.index + 1;
+    };
+
+    record.paging.hasPrevious = function () {
+        return record.index > 0;
+    };
+
+    record.paging.next = function () {
+        if (record.paging.hasNext()) {
+            record.goTo(++record.index);
+        }
+        return record.index;
+    };
+
+    record.paging.previous = function () {
+        if (record.paging.hasPrevious()) {
+            record.goTo(--record.index);
+        }
+    };
+
+    record.get = function (id) {
+        var deferred = $q.defer();
+        $http({
+            method: 'GET',
+            url: _baseUrl + '/api/records/' + String(id)
+        }).then(function (response) {
+            deferred.resolve(response.data);
+        }, function (error) {
+            deferred.reject(error);
+        });
+        return deferred.promise;
+    };
+
+    record.goTo = function (index) {
+        if (index !== undefined) {
+            record.index = index;
+        }
+
+        record.current = DataService.records[index];
+
+        $location.path('/app/data/record').search('id', record.current.id);
+    };
+
+    return record;
+}]);
+;
 app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout', 'log', 'User', function (mappings, $http, $rootScope, $q, $timeout, log, User) {
     var _baseUrl = 'https://api.croplands.org',
         data = {
@@ -4469,8 +4523,15 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
                 page: 1,
                 page_size: 200
             },
-            busy: false
+            busy: false,
+            is_initialized: false
         };
+
+    function select(choices, value) {
+        _.each(choices, function (option) {
+            option.selected = value;
+        });
+    }
 
     function getParams() {
         var filters = {};
@@ -4508,14 +4569,27 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
         return results;
     }
 
+    data.setDefault = function () {
+        select(data.columns.land_use_type, true);
+        select(data.columns.crop_primary, true);
+        select(data.columns.water, true);
+        select(data.columns.intensity, true);
+        select(data.columns.year, true);
+        select(data.columns.source_type, true);
+    };
+
     data.reset = function () {
-        data.filters = angular.copy(mappings);
+        log.info("[DataService] Reset");
+        data.setDefault();
+        data.load();
     };
 
     // load data from server
     data.load = function () {
+        log.info("[DataService] Load");
         var deferred = $q.defer();
         data.busy = true;
+        data.is_initialized = true;
 
         $http({
             url: _baseUrl + '/data/search',
@@ -4548,6 +4622,18 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
 
         return deferred.promise;
     };
+
+    data.init = function () {
+        log.info("[DataService] Init");
+        if (!data.is_initialized) {
+            data.setDefault();
+            data.load();
+            data.is_initialized = true;
+        }
+    };
+
+    data.init();
+
     return data;
 }]);
 ;
@@ -6456,7 +6542,27 @@ app.controller("DataController", ['$scope', '$http', 'mapService', 'leafletData'
 
 
 }]);;
-app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafletData', '$window', 'DataService', '$timeout', function ($scope, $http, mapService, leafletData, $window, DataService, $timeout) {
+app.controller("DataRecordController", ['$scope', '$http', 'mapService', 'leafletData', '$location', 'DataRecord', function ($scope, $http, mapService, leafletData, $location, DataRecord) {
+
+    angular.extend($scope, {
+        id: $location.search().id,
+        paging: {
+            hasNext: DataRecord.paging.hasNext,
+            hasPrevious: DataRecord.paging.hasPrevious,
+            next: DataRecord.paging.next,
+            previous: DataRecord.paging.previous
+        }
+    });
+
+    DataRecord.get($scope.id).then(function (record) {
+        $scope.record = record;
+        console.l
+    }, function (e) {
+        console.log(e);
+    });
+
+}]);;
+app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafletData', '$location', 'DataService', 'DataRecord', function ($scope, $http, mapService, leafletData, $location, DataService, DataRecord) {
 
     angular.extend($scope, {
         tableColumns: [
@@ -6507,13 +6613,26 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     });
 
 
+    ////////// Helpers //////////
+    function init() {
+        if (DataService.is_initialized) {
+            $scope.records = DataService.records;
+        } else {
+            DataService.init();
+        }
+    }
+
     function getData() {
         $scope.busy = true;
         $scope.$evalAsync(DataService.load);
     }
 
-    $scope.$on("DataService.load", function (e, records) {
-        $scope.records = records;
+    ////////// End Helpers //////////
+
+
+    ////////// Methods //////////
+    $scope.$on("DataService.load", function (e) {
+        $scope.records = DataService.records;
         $scope.$evalAsync(function () {
             $scope.busy = false;
         });
@@ -6534,13 +6653,27 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
         getData();
     };
 
-    $scope.goToRecord = function (id) {
-        $window.location.href = '/app/data/record?id=' + id;
+    $scope.goToRecord = function (index) {
+        DataRecord.goTo(index);
     };
+    ////////// End Methods //////////
 
-    getData();
+
+    ////////// Events //////////
+    $scope.$on("DataService.load", function (e) {
+        $scope.records = DataService.records;
+        $scope.$evalAsync(function () {
+            $scope.busy = false;
+        });
+    });
+    ////////// End Events //////////
+
+    ////////// Init //////////
+    init();
+    ////////// Init //////////
+
 }]);;
-app.controller("MapController", ['$scope', 'mapService', 'locationFactory', 'leafletData', '$timeout', '$window', '$location', 'mappings', 'log', function ($scope, mapService, locationFactory, leafletData, $timeout, $window, $location, mappings, log) {
+app.controller("MapController", ['$scope', 'mapService', 'DataService', 'leafletData', '$timeout', '$window', '$location', 'mappings', 'log', function ($scope, mapService, DataService, leafletData, $timeout, $window, $location, mappings, log) {
 
     ///////////
     // Utils //
@@ -6820,44 +6953,24 @@ app.controller("ResetController", ['$location', '$scope', 'log', '$window', func
     }
 }]);;
 app.directive('filter', ['log', '$q', '$timeout', 'mappings', 'DataService', function (log, $q, $timeout, mappings, DataService) {
-    function select(choices, value) {
-        _.each(choices, function (option) {
-            option.selected = value;
-        });
-    }
-
     return {
         restrict: 'EA',
         scope: {
         },
         link: function (scope) {
-            scope.init = function (reset) {
-                scope.land_use_type = DataService.columns.land_use_type.choices;
-                scope.crop_primary = DataService.columns.crop_primary.choices;
-                scope.water = DataService.columns.water.choices;
-                scope.intensity = DataService.columns.intensity.choices;
-                scope.year = DataService.columns.year.choices;
-                scope.source_type = DataService.columns.source_type.choices;
-
-                if (reset) {
-                    scope.defaultSelection();
+            angular.extend(scope, {
+                    land_use_type: DataService.columns.land_use_type.choices,
+                    crop_primary: DataService.columns.crop_primary.choices,
+                    water: DataService.columns.water.choices,
+                    intensity: DataService.columns.intensity.choices,
+                    year: DataService.columns.year.choices,
+                    source_type: DataService.columns.source_type.choices,
+                    count: DataService.count
                 }
-            };
-
-            scope.defaultSelection = function () {
-                select(scope.land_use_type, true);
-                select(scope.crop_primary, true);
-                select(scope.water, true);
-                select(scope.intensity, true);
-                select(scope.year, true);
-                select(scope.source_type, true);
-            };
+            );
 
             // Scope Methods
-            scope.reset = function () {
-                DataService.reset();
-                scope.init(true);
-            };
+//            scope.reset = DataService.reset;
 
             scope.apply = function () {
                 scope.$parent.busy = true;
@@ -6887,14 +7000,10 @@ app.directive('filter', ['log', '$q', '$timeout', 'mappings', 'DataService', fun
                 }
             };
 
-            scope.init(true);
-
-            scope.$on("DataService.load", function () {
-                scope.count = {
-                    total: DataService.count.total,
-                    filtered: DataService.count.filtered
-                };
+            scope.$on("DataService.load", function (e) {
+                scope.count = DataService.count;
             });
+
         },
         templateUrl: '/static/directives/filter.html'
     };

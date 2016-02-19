@@ -1,90 +1,110 @@
 <style>
-    .search-controls button {
-        display: block;
-        text-align: center;
-        margin: 0 0 2px 7px;
-    }
-
-    #filters {
+    #record {
         width: 100%;
-        padding: 5px;
-        border: 1px solid #cccccc;
-        background-color: #f4f4f4;
-        min-height: 40px;
-    }
-
-    #records thead tr {
-        background-color: #f4f4f4;
-        border: 1px solid #cccccc;
-        font-weight: 500;
-    }
-
-    .selected {
-        /*text-decoration: underline;*/
-       /*font-weight: 700;*/
-        background-color: #eaeaea !important;
-    }
-
-    #records tbody tr {
-        border: 1px solid #cccccc;
-        background-color: #ffffff;
-
-    }
-
-    .tall-button {
-        min-height: 40px;
+        /*border: 1px solid #cccccc;*/
+        background-color: #f5f5f5;
     }
 </style>
-<div class="container container-static-nav" style="margin-top: 60px;">
+<div class="container container-static-nav" style="margin-top: 50px;">
     <div class="row">
-        <div class="col-sm-8 col-md-7">
+        <div class="col-sm-12">
+                <div class="alert alert-warning">Page under construction.</div>
 
-            <div class="row">
-                <div class="col-sm-10  no-gutter-right">
-                    <div id="filters">
-                        <button class="btn btn-default">id=123</button>
-                        <button class="btn btn-primary">id=123</button>
-                        <button class="btn btn-primary">id=123</button>
-                        <button class="btn btn-primary">id=123</button>
-                    </div>
+            <a class="btn btn-warning"
+               href="/app/data/search">Back to Search
+            </a>
+            <button class="btn btn-warning"
+                    data-ng-disabled="!paging.hasPrevious()"
+                    data-ng-click="paging.previous()">Previous
+            </button>
+            <button class="btn btn-warning"
+                    data-ng-disabled="!paging.hasNext()"
+                    data-ng-click="paging.next()">Next
+            </button>
+        </div>
+    </div>
+    <div class="row padding-vertical">
+        <div class="col-sm-12 col-md-12">
+        <!--<div class="col-sm-8 col-md-7">-->
+            <div id="record" class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title clearfix">
+                        <span class="pull-left">Record #{{ id }}</span>
+                        <span class="pull-right">{{ record.month | monthName }} of {{ record.year }}</span>
+                    </h3>
                 </div>
+                <div class="panel-body">
 
-                <div class="col-sm-2 no-gutter-left search-controls">
-                    <button class="btn btn-success tall-button fill center">Add Filter</button>
-                </div>
-            </div>
-
-            <div class="row padding-vertical">
-                <div class="col-sm-10  no-gutter-right">
-
-                    <table id="records" class="table table-hover fill">
+                    <table class="table">
                         <thead>
                         <tr>
-                            <th ng-repeat="column in tableColumns" ng-class="{selected: sort.column == column.id}" ng-click="$parent.sortColumn(column.id);">{{ column.label }}</th>
+                            <th>Land Use Type</th>
+                            <th>Primary Crop</th>
+                            <th>Secondary Crop</th>
+                            <th>Irrigation</th>
+                            <th>Intensity</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="record in fakeData | orderBy : sort.column : sort.reverse" ng-click="goToRecord(record.record_id)">
-                            <td ng-repeat="column in tableColumns">{{ record[column.id] }}</td>
+                        <tr>
+                            <td>{{ record.land_use_type | mappings: 'land_use_type'}}</td>
+                            <td>{{ record.crop_primary | mappings: 'crop_primary'}}</td>
+                            <td>{{ record.crop_secondary | mappings: 'crop_secondary'}}</td>
+                            <td>{{ record.water | mappings: 'water'}}</td>
+                            <td>{{ record.intensity | mappings: 'intensity'}}</td>
                         </tr>
-
                         </tbody>
                     </table>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th ng-if="record.source_description">Source</th>
+                            <th ng-if="record.source_id">Source ID</th>
+                            <th ng-if="record.source_class">Source Class</th>
+                            <th ng-if="record.source_type">Source Type</th>
 
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td ng-if="record.source_description">{{ record.source_description }}
+                            </td>
+                            <td ng-if="record.source_id">{{ record.source_id }}</td>
+                            <td ng-if="record.source_class">{{ record.source_class }}</td>
+                            <td ng-if="record.source_type">{{ record.source_type }}</td>
+
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
-
-                <div class="col-sm-2 no-gutter-left search-controls">
-                    <button class="btn btn-default fill center">Columns</button>
-                    <button class="btn btn-default fill center">Download</button>
-                    <button class="btn btn-default fill center">Definitions</button>
-                    <button class="btn btn-default fill center">Collect</button>
-                    <button class="btn btn-default fill center">Citation</button>
-
+                <div class="panel-footer">
+                    Country: {{ record.location.country }}
+                    <span class="padding-horizontal">{{ record.location.lat }}, {{ record.location.lon }}</span>
                 </div>
             </div>
-        </div>
-        <div class="col-sm-4 col-md-5">
-            <div style="width:100%; height:400px;background-color: #cccccc;"></div>
+        <!--</div>-->
+        <!--<div class="col-sm-4 col-md-5">-->
+            <!--<div style="width:100%; height:400px;background-color: #f4f4f4;"></div>-->
+            <h3>Discuss the Record</h3>
+
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                /* * * CONFIGURATION VARIABLES * * */
+                var disqus_shortname = 'croplands2';
+
+                /* * * DON'T EDIT BELOW THIS LINE * * */
+                (function () {
+                    var dsq = document.createElement('script');
+                    dsq.type = 'text/javascript';
+                    dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a
+                    href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by
+                Disqus.</a></noscript>
+
         </div>
     </div>
 </div>

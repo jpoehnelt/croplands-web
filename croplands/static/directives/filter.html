@@ -4,7 +4,7 @@
     </div>
     <div class="panel-body">
         <div class="padding-vertical-half">
-            <button class="btn btn-sm btn-danger btn-filter"
+            <button class="btn btn-danger btn-filter"
                     ng-click="toggleAllOptions('land_use_type')"
                     ng-class="{'active': allOptionsAreSelected('land_use_type')}"
                     blur>
@@ -16,21 +16,21 @@
             <button type="button"
                     ng-click="type.selected = !type.selected"
                     ng-class="{'active': type.selected}"
-                    class="btn btn-sm btn-danger btn-filter"
+                    class="btn btn-danger btn-filter"
                     ng-repeat="type in land_use_type"
                     blur>
                 {{ type.label }}
             </button>
         </div>
         <div class="padding-vertical-half">
-            <button class="btn btn-sm btn-primary btn-filter"
+            <button class="btn btn-primary btn-filter"
                     ng-click="toggleAllOptions('year')"
                     ng-class="{'active': allOptionsAreSelected('year')}"
                     blur>
                 <i class="fa fa-fw fa-square-o" ng-show="!allOptionsAreSelected('year')"></i>
                 <i class="fa fa-fw fa-check-square-o" ng-show="allOptionsAreSelected('year')"></i>
             </button>
-            <button class="btn btn-sm btn-primary btn-filter"
+            <button class="btn btn-primary btn-filter"
                     ng-class="{'active': y.selected}"
                     ng-repeat="y in year"
                     ng-click="y.selected = !y.selected"
@@ -38,7 +38,7 @@
             </button>
         </div>
         <div class="padding-vertical-half">
-            <button class="btn btn-sm btn-warning btn-filter"
+            <button class="btn btn-warning btn-filter"
                     ng-class="{'active': allOptionsAreSelected('intensity')}"
                     ng-click="toggleAllOptions('intensity')"
                     blur>
@@ -50,14 +50,14 @@
             <button type="button"
                     ng-click="intensityLevel.selected = !intensityLevel.selected"
                     ng-class="{'active': intensityLevel.selected}"
-                    class="btn btn-sm btn-warning btn-filter"
+                    class="btn btn-warning btn-filter"
                     ng-repeat="intensityLevel in intensity"
                     blur>
                 {{ intensityLevel.label }}
             </button>
         </div>
         <div class="padding-vertical-half">
-            <button class="btn btn-sm btn-info btn-filter"
+            <button class="btn btn-info btn-filter"
                     ng-class="{'active': allOptionsAreSelected('water')}"
                     ng-click="toggleAllOptions('water')"
                     blur>
@@ -69,14 +69,14 @@
             <button type="button"
                     ng-click="waterUseType.selected = !waterUseType.selected"
                     ng-class="{'active': waterUseType.selected}"
-                    class="btn btn-sm btn-info btn-filter"
+                    class="btn btn-info btn-filter"
                     ng-repeat="waterUseType in water"
                     blur>
                 {{ waterUseType.label }}
             </button>
         </div>
         <div class="padding-vertical-half">
-            <button class="btn btn-sm btn-success btn-filter"
+            <button class="btn btn-success btn-filter"
                     ng-class="{'active': allOptionsAreSelected('crop_primary')}"
                     ng-click="toggleAllOptions('crop_primary')"
                     blur>
@@ -85,7 +85,7 @@
                 <i class="fa fa-fw fa-check-square-o"
                    ng-show="allOptionsAreSelected('crop_primary')"></i>
             </button>
-            <button class="btn btn-sm btn-success btn-filter"
+            <button class="btn btn-success btn-filter"
                     ng-class="{'active': crop.selected}"
                     ng-repeat="crop in crop_primary"
                     ng-click="crop.selected = !crop.selected"
@@ -93,7 +93,7 @@
             </button>
         </div>
         <div class="padding-vertical-half">
-            <button class="btn btn-sm btn-info btn-filter"
+            <button class="btn btn-info btn-filter"
                     ng-class="{'active': allOptionsAreSelected('source_type')}"
                     ng-click="toggleAllOptions('source_type')"
                     blur>
@@ -105,7 +105,7 @@
             <button type="button"
                     ng-click="sourceType.selected = !sourceType.selected"
                     ng-class="{'active': sourceType.selected}"
-                    class="btn btn-sm btn-info btn-filter"
+                    class="btn btn-info btn-filter"
                     ng-repeat="sourceType in source_type"
                     blur>
                 {{ sourceType.label }}

@@ -1,4 +1,4 @@
-app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafletData', '$window', 'DataService', '$timeout', function ($scope, $http, mapService, leafletData, $window, DataService, $timeout) {
+app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafletData', '$location', 'DataService', 'DataRecord', function ($scope, $http, mapService, leafletData, $location, DataService, DataRecord) {
 
     angular.extend($scope, {
         tableColumns: [
@@ -49,13 +49,26 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     });
 
 
+    ////////// Helpers //////////
+    function init() {
+        if (DataService.is_initialized) {
+            $scope.records = DataService.records;
+        } else {
+            DataService.init();
+        }
+    }
+
     function getData() {
         $scope.busy = true;
         $scope.$evalAsync(DataService.load);
     }
 
-    $scope.$on("DataService.load", function (e, records) {
-        $scope.records = records;
+    ////////// End Helpers //////////
+
+
+    ////////// Methods //////////
+    $scope.$on("DataService.load", function (e) {
+        $scope.records = DataService.records;
         $scope.$evalAsync(function () {
             $scope.busy = false;
         });
@@ -76,9 +89,23 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
         getData();
     };
 
-    $scope.goToRecord = function (id) {
-        $window.location.href = '/app/data/record?id=' + id;
+    $scope.goToRecord = function (index) {
+        DataRecord.goTo(index);
     };
+    ////////// End Methods //////////
 
-    getData();
+
+    ////////// Events //////////
+    $scope.$on("DataService.load", function (e) {
+        $scope.records = DataService.records;
+        $scope.$evalAsync(function () {
+            $scope.busy = false;
+        });
+    });
+    ////////// End Events //////////
+
+    ////////// Init //////////
+    init();
+    ////////// Init //////////
+
 }]);

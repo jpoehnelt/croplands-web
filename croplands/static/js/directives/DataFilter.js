@@ -1,42 +1,22 @@
 app.directive('filter', ['log', '$q', '$timeout', 'mappings', 'DataService', function (log, $q, $timeout, mappings, DataService) {
-    function select(choices, value) {
-        _.each(choices, function (option) {
-            option.selected = value;
-        });
-    }
-
     return {
         restrict: 'EA',
         scope: {
         },
         link: function (scope) {
-            scope.init = function (reset) {
-                scope.land_use_type = DataService.columns.land_use_type.choices;
-                scope.crop_primary = DataService.columns.crop_primary.choices;
-                scope.water = DataService.columns.water.choices;
-                scope.intensity = DataService.columns.intensity.choices;
-                scope.year = DataService.columns.year.choices;
-                scope.source_type = DataService.columns.source_type.choices;
-
-                if (reset) {
-                    scope.defaultSelection();
+            angular.extend(scope, {
+                    land_use_type: DataService.columns.land_use_type.choices,
+                    crop_primary: DataService.columns.crop_primary.choices,
+                    water: DataService.columns.water.choices,
+                    intensity: DataService.columns.intensity.choices,
+                    year: DataService.columns.year.choices,
+                    source_type: DataService.columns.source_type.choices,
+                    count: DataService.count
                 }
-            };
-
-            scope.defaultSelection = function () {
-                select(scope.land_use_type, true);
-                select(scope.crop_primary, true);
-                select(scope.water, true);
-                select(scope.intensity, true);
-                select(scope.year, true);
-                select(scope.source_type, true);
-            };
+            );
 
             // Scope Methods
-            scope.reset = function () {
-                DataService.reset();
-                scope.init(true);
-            };
+//            scope.reset = DataService.reset;
 
             scope.apply = function () {
                 scope.$parent.busy = true;
@@ -66,14 +46,10 @@ app.directive('filter', ['log', '$q', '$timeout', 'mappings', 'DataService', fun
                 }
             };
 
-            scope.init(true);
-
-            scope.$on("DataService.load", function () {
-                scope.count = {
-                    total: DataService.count.total,
-                    filtered: DataService.count.filtered
-                };
+            scope.$on("DataService.load", function (e) {
+                scope.count = DataService.count;
             });
+
         },
         templateUrl: '/static/directives/filter.html'
     };
