@@ -4459,7 +4459,7 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
 }]);
 ;
 app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout', 'log', 'User', function (mappings, $http, $rootScope, $q, $timeout, log, User) {
-    var _baseUrl = 'http://data.croplands.org',
+    var _baseUrl = 'https://api.croplands.org',
         data = {
             records: [],
             count: {},
@@ -5915,7 +5915,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
             id: 'australiaACCA250m',
             name: 'Australia GCE 250m Cropland Products 2000 to Present from ACCA ',
             type: 'wms',
-            url: 'http://wms.croplands.org/geoserver/Products/wms',
+            url: 'https://wms.croplands.org/geoserver/Products/wms',
             visible: true,
             layerOptions: {
                 bounds: L.latLngBounds(L.latLng(-9.83464522447101, 110.000125), L.latLng(-45.00754522447101, 158.961625)),
@@ -5955,7 +5955,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
         gfsad1000v00: {
             name: 'Global GCE 1km Cropland Dominance and Other Products',
             type: 'wms',
-            url: 'http://wms.croplands.org/geoserver/Products/wms',
+            url: 'https://wms.croplands.org/geoserver/Products/wms',
             layerOptions: {
                 layers: 'Products:GCE 1km Crop Dominance year2000',
                 format: 'image/png',
@@ -5980,7 +5980,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
         gfsad1000v10: {
             name: 'Global GCE 1km Multi-study Cropland Mask Product',
             type: 'wms',
-            url: 'http://wms.croplands.org/geoserver/Products/wms',
+            url: 'https://wms.croplands.org/geoserver/Products/wms',
             layerOptions: {
                 layers: 'Products:GCE 1km Crop Mask year2000',
                 format: 'image/png',
@@ -6002,7 +6002,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
         us250v201512y2008: {
             name: 'United States GCE 250m Croplands 2008 from ACCA',
             type: 'wms',
-            url: 'http://wms.croplands.org/geoserver/Products/wms',
+            url: 'https://wms.croplands.org/geoserver/Products/wms',
             visible: true,
             layerOptions: {
                 layers: 'Products:United States ACCA 250m v201512 year2008',
@@ -6027,7 +6027,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
         southAsia250v201601y2010: {
             name: 'South Asia 250m Croplands 2010-2011 from ACCA',
             type: 'wms',
-            url: 'http://wms.croplands.org/geoserver/Products/wms',
+            url: 'https://wms.croplands.org/geoserver/Products/wms',
             visible: true,
             layerOptions: {
                 layers: 'Products:south_asia_250m',
@@ -6066,7 +6066,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
         africaL4250v201512y2014: new WMSCollection({
             name: 'Africa GCE 250m Cropland Products 2014 from ACCA',
             type: 'wms',
-            url: 'http://wms.croplands.org/geoserver/Products/wms',
+            url: 'https://wms.croplands.org/geoserver/Products/wms',
             visible: true,
             layerOptions: {
                 bounds: L.latLngBounds(L.latLng(37.3494, -25.3695), L.latLng(-34.83026000000001, 63.50536000000001)),
@@ -6130,7 +6130,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
         southamerica30v201512: {
             name: 'South America GCE 30m Cropland Mask Product 2014',
             type: 'wms',
-            url: 'http://wms.croplands.org/geoserver/Products/wms',
+            url: 'https://wms.croplands.org/geoserver/Products/wms',
             visible: true,
             layerOptions: {
                 layers: 'Products:South America Extent 30m v201512',
@@ -6149,7 +6149,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
         egypt30mv201512y2014: new WMSCollection({
             name: 'Egypt GCE 30m Cropland Products 2014',
             type: 'wms',
-            url: 'http://wms.croplands.org/geoserver/Products/wms',
+            url: 'https://wms.croplands.org/geoserver/Products/wms',
             layerOptions: {
                 bounds: L.latLngBounds(L.latLng(37.3494, 24.3695), L.latLng(21.9, 36)),
                 layers: 'Products:Egypt Extent 30m v201512 year2014',
