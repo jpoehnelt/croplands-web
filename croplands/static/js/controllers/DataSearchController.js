@@ -87,6 +87,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     function init() {
         if (DataService.is_initialized) {
             $scope.records = DataService.records;
+            $scope.markers = buildMarkers($scope.records);
             $scope.ndvi = getNDVI(DataService.getParams());
             $scope.busy = false;
         } else {
