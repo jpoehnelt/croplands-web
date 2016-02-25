@@ -12,7 +12,8 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
             controller: 'DataController'
         }).when('/app/data/search', {
             templateUrl: '/static/templates/data/search.html',
-            controller: 'DataSearchController'
+            controller: 'DataSearchController',
+            reloadOnSearch: false
         }).when('/app/data/record', {
             templateUrl: '/static/templates/data/record.html',
             controller: 'DataRecordController'
@@ -43,10 +44,11 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
         placement: 'bottom',
         container: 'body'
     });
-//    $sceDelegateProvider.resourceUrlWhitelist([
-//        // Allow same origin resource loads.ot
-//        'self',
-//        // Allow loading from our assets domain.  Notice the difference between * and **.
-//        'http://cache.croplands.org/static/**',
-//        'https://hwstatic.croplands.org/**']);
+    $sceDelegateProvider.resourceUrlWhitelist([
+        // Allow same origin resource loads.ot
+        'self',
+        // Allow loading from our assets domain.  Notice the difference between * and **.
+        'http://127.0.0.1:8000/**',
+        'https://api.croplands.org/**'
+    ]);
 }]);

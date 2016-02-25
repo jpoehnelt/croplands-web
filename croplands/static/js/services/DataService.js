@@ -10,29 +10,15 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
                 page_size: 200
             },
             busy: false,
+            bounds: false,
             is_initialized: false
-        };
+        }, canceler = $q.defer();
+
 
     function select(choices, value) {
         _.each(choices, function (option) {
             option.selected = value;
         });
-    }
-
-    function getParams() {
-        var filters = {};
-        _.each(data.columns, function (column, key) {
-            var values = [];
-            _.each(column.choices, function (option) {
-                if (option.selected) {
-                    values.push(option.id);
-                }
-            });
-
-            filters[key] = values;
-        });
-
-        return _.assign(filters, data.ordering, data.paging);
     }
 
     function csvToJSON(csv, types) {
@@ -55,13 +41,33 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
         return results;
     }
 
+    data.getParams = function () {
+        var filters = {};
+        _.each(data.columns, function (column, key) {
+            var values = [];
+            _.each(column.choices, function (option) {
+                if (option.selected) {
+                    values.push(option.id);
+                }
+            });
+            filters[key] = values;
+        });
+
+        if (data.bounds) {
+            filters.southWestBounds = data.bounds.southWest.lat + ',' + data.bounds.southWest.lng;
+            filters.northEastBounds = data.bounds.northEast.lat + ',' + data.bounds.northEast.lng;
+        }
+
+        return _.assign(filters, data.ordering, data.paging);
+    };
+
     data.setDefault = function () {
-        select(data.columns.land_use_type, true);
-        select(data.columns.crop_primary, true);
-        select(data.columns.water, true);
-        select(data.columns.intensity, true);
-        select(data.columns.year, true);
-        select(data.columns.source_type, true);
+        select(data.columns.land_use_type.choices, false);
+        select(data.columns.crop_primary.choices, false);
+        select(data.columns.water.choices, false);
+        select(data.columns.intensity.choices, false);
+        select(data.columns.year.choices, false);
+        select(data.columns.source_type.choices, false);
     };
 
     data.reset = function () {
@@ -77,10 +83,14 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
         data.busy = true;
         data.is_initialized = true;
 
+        canceler.resolve();
+        canceler = $q.defer();
+
         $http({
             url: _baseUrl + '/data/search',
             method: "GET",
-            params: getParams()
+            params: data.getParams(),
+            timeout: canceler.promise
         }).then(function (response) {
             data.records = csvToJSON(response.data, {
                 id: parseInt,
@@ -98,7 +108,6 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
             var headers = response.headers();
             data.count.total = headers['query-count-total'];
             data.count.filtered = headers['query-count-filtered'];
-            console.log(data.count);
             deferred.resolve(response);
             $rootScope.$broadcast("DataService.load", data.records);
             data.busy = false;
@@ -117,8 +126,6 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
             data.is_initialized = true;
         }
     };
-
-    data.init();
 
     return data;
 }]);

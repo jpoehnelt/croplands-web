@@ -16,7 +16,7 @@ app.directive('filter', ['log', '$q', '$timeout', 'mappings', 'DataService', fun
             );
 
             // Scope Methods
-//            scope.reset = DataService.reset;
+            scope.reset = DataService.reset;
 
             scope.apply = function () {
                 scope.$parent.busy = true;

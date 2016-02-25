@@ -4416,7 +4416,8 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
             controller: 'DataController'
         }).when('/app/data/search', {
             templateUrl: '/static/templates/data/search.html',
-            controller: 'DataSearchController'
+            controller: 'DataSearchController',
+            reloadOnSearch: false
         }).when('/app/data/record', {
             templateUrl: '/static/templates/data/record.html',
             controller: 'DataRecordController'
@@ -4447,12 +4448,13 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
         placement: 'bottom',
         container: 'body'
     });
-//    $sceDelegateProvider.resourceUrlWhitelist([
-//        // Allow same origin resource loads.ot
-//        'self',
-//        // Allow loading from our assets domain.  Notice the difference between * and **.
-//        'http://cache.croplands.org/static/**',
-//        'https://hwstatic.croplands.org/**']);
+    $sceDelegateProvider.resourceUrlWhitelist([
+        // Allow same origin resource loads.ot
+        'self',
+        // Allow loading from our assets domain.  Notice the difference between * and **.
+        'http://127.0.0.1:8000/**',
+        'https://api.croplands.org/**'
+    ]);
 }]);
 ;
 app.factory('DataRecord', ['mappings', '$http', '$rootScope', '$q', 'DataService', 'log', 'User', '$location', function (mappings, $http, $rootScope, $q, DataService, log, User, $location) {
@@ -4521,29 +4523,15 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
                 page_size: 200
             },
             busy: false,
+            bounds: false,
             is_initialized: false
-        };
+        }, canceler = $q.defer();
+
 
     function select(choices, value) {
         _.each(choices, function (option) {
             option.selected = value;
         });
-    }
-
-    function getParams() {
-        var filters = {};
-        _.each(data.columns, function (column, key) {
-            var values = [];
-            _.each(column.choices, function (option) {
-                if (option.selected) {
-                    values.push(option.id);
-                }
-            });
-
-            filters[key] = values;
-        });
-
-        return _.assign(filters, data.ordering, data.paging);
     }
 
     function csvToJSON(csv, types) {
@@ -4566,13 +4554,33 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
         return results;
     }
 
+    data.getParams = function () {
+        var filters = {};
+        _.each(data.columns, function (column, key) {
+            var values = [];
+            _.each(column.choices, function (option) {
+                if (option.selected) {
+                    values.push(option.id);
+                }
+            });
+            filters[key] = values;
+        });
+
+        if (data.bounds) {
+            filters.southWestBounds = data.bounds.southWest.lat + ',' + data.bounds.southWest.lng;
+            filters.northEastBounds = data.bounds.northEast.lat + ',' + data.bounds.northEast.lng;
+        }
+
+        return _.assign(filters, data.ordering, data.paging);
+    };
+
     data.setDefault = function () {
-        select(data.columns.land_use_type, true);
-        select(data.columns.crop_primary, true);
-        select(data.columns.water, true);
-        select(data.columns.intensity, true);
-        select(data.columns.year, true);
-        select(data.columns.source_type, true);
+        select(data.columns.land_use_type.choices, false);
+        select(data.columns.crop_primary.choices, false);
+        select(data.columns.water.choices, false);
+        select(data.columns.intensity.choices, false);
+        select(data.columns.year.choices, false);
+        select(data.columns.source_type.choices, false);
     };
 
     data.reset = function () {
@@ -4588,10 +4596,14 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
         data.busy = true;
         data.is_initialized = true;
 
+        canceler.resolve();
+        canceler = $q.defer();
+
         $http({
             url: _baseUrl + '/data/search',
             method: "GET",
-            params: getParams()
+            params: data.getParams(),
+            timeout: canceler.promise
         }).then(function (response) {
             data.records = csvToJSON(response.data, {
                 id: parseInt,
@@ -4609,7 +4621,6 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
             var headers = response.headers();
             data.count.total = headers['query-count-total'];
             data.count.filtered = headers['query-count-filtered'];
-            console.log(data.count);
             deferred.resolve(response);
             $rootScope.$broadcast("DataService.load", data.records);
             data.busy = false;
@@ -4628,8 +4639,6 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
             data.is_initialized = true;
         }
     };
-
-    data.init();
 
     return data;
 }]);
@@ -5756,7 +5765,7 @@ app.controller("DataRecordController", ['$scope', '$http', 'mapService', 'leafle
     });
 
 }]);;
-app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafletData', '$location', 'DataService', 'DataRecord', function ($scope, $http, mapService, leafletData, $location, DataService, DataRecord) {
+app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafletData', '$location', 'DataService', 'DataRecord', 'leafletData', function ($scope, $http, mapService, leafletData, $location, DataService, DataRecord, leafletData) {
 
     angular.extend($scope, {
         tableColumns: [
@@ -5803,16 +5812,55 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             }
         ],
         ordering: DataService.ordering,
-        busy: false
+        busy: true,
+        bounds: {
+            southWest: {
+                lat: -90,
+                lng: -180
+            },
+            northEast: {
+                lat: 90,
+                lng: 180
+            }
+
+        },
+        center: {
+            lat: 0,
+            lng: 0,
+            zoom: 2
+        },
+        searchInMap: false,
+        layers: angular.copy(mapService.layers),
+        markers: {},
+        events: {
+            map: {
+                enable: [],
+                logic: 'emit'
+            }
+        }
     });
 
+    _.each($scope.layers.overlays, function (layer) {
+        layer.visible = false;
+    });
+
+    $scope.layers.overlays.markers = {
+        name: 'markers',
+        visible: true,
+        type: 'group'
+    };
 
     ////////// Helpers //////////
     function init() {
         if (DataService.is_initialized) {
+            console.log('dataservice already initialized');
             $scope.records = DataService.records;
+            $scope.ndvi = getNDVI(DataService.getParams());
+            $scope.busy = false;
         } else {
-            DataService.init();
+            console.log('dataservice not initialized');
+            applyParams($location.search());
+            DataService.load();
         }
     }
 
@@ -5821,17 +5869,104 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
         $scope.$evalAsync(DataService.load);
     }
 
+    function applyBounds(bounds) {
+        console.log(bounds, DataService.bounds);
+        if (DataService.bounds !== bounds) {
+            DataService.bounds = bounds;
+            getData();
+        }
+    }
+
+    function buildMarkers(rows) {
+        var records = {};
+
+        _.each(rows, function (row) {
+            records["m_" + row.id.toString()] = {
+                lat: parseFloat(row.lat),
+                lng: parseFloat(row.lon),
+                layer: 'markers',
+//                properties: row
+
+            };
+        });
+        return records;
+    }
+
+    function getNDVI(params) {
+        var url = 'https://api.croplands.org/data/image?';
+        _.each(params, function (val, key) {
+            if (key === 'southWestBounds' || key === 'northEastBounds') {
+                return;
+            }
+            if (val.length) {
+                _.each(val, function (v) {
+                    url += key + "=" + v.toString() + "&";
+                });
+            }
+        });
+
+        if (params.southWestBounds && params.northEastBounds) {
+            url += "southWestBounds=" + params.southWestBounds + "&";
+            url += "northEastBounds=" + params.northEastBounds + "&";
+        }
+
+        return url;
+    }
+
+    function applyParams(params) {
+        _.each(params, function (val, key) {
+            console.log(key, val);
+            if (DataService.columns[key] && key !== 'year') {
+                if (Array.isArray(val)) {
+                    _.each(val, function (idx) {
+                        DataService.columns[key].choices[parseInt(idx, 10)].selected = true;
+                    });
+                } else {
+                    DataService.columns[key].choices[parseInt(val, 10)].selected = true;
+                }
+            } else if (key === 'year') {
+                if (Array.isArray(val)) {
+                    _.each(val, function (year) {
+                        DataService.columns.year.choices[parseInt(year, 10) - 2000].selected = true;
+                    });
+                } else {
+                    DataService.columns.year.choices[parseInt(val, 10) - 2000].selected = true;
+                }
+            } else if (key === 'southWestBounds') {
+                var boundsSouthWest = val.split(',');
+                DataService.bounds = {
+                    southWest: {},
+                    northEast: {}
+                };
+                DataService.bounds.southWest.lat = boundsSouthWest[0];
+                DataService.bounds.southWest.lng = boundsSouthWest[1];
+            } else if (key === 'northEastBounds') {
+                var boundsNorthEast = val.split(',');
+                DataService.bounds.northEast.lat = boundsNorthEast[0];
+                DataService.bounds.northEast.lng = boundsNorthEast[1];
+            } else if (key === 'page') {
+                DataService.paging.page = parseInt(val, 10);
+            } else if (key === 'page_size') {
+                DataService.paging.page_size = parseInt(val, 10);
+            }
+
+            if (DataService.bounds) {
+                $scope.bounds = DataService.bounds;
+                leafletData.getMap('map').then(function (map) {
+                    map.fitBounds([
+                        [$scope.bounds.southWest.lat, $scope.bounds.southWest.lng],
+                        [$scope.bounds.northEast.lat, $scope.bounds.northEast.lng]
+                    ]);
+                    $scope.searchInMap = true;
+                });
+            }
+        });
+    }
+
     ////////// End Helpers //////////
 
 
     ////////// Methods //////////
-    $scope.$on("DataService.load", function (e) {
-        $scope.records = DataService.records;
-        $scope.$evalAsync(function () {
-            $scope.busy = false;
-        });
-    });
-
     $scope.sortColumn = function (column) {
         if (column === DataService.ordering.order_by) {
             if (DataService.ordering.order_by_direction === 'asc') {
@@ -5850,15 +5985,44 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     $scope.goToRecord = function (index) {
         DataRecord.goTo(index);
     };
+
+    $scope.zoomExtent = function () {
+        $scope.center.lat = 0;
+        $scope.center.lng = 0;
+        $scope.center.zoom = 2;
+    };
     ////////// End Methods //////////
 
 
     ////////// Events //////////
     $scope.$on("DataService.load", function (e) {
         $scope.records = DataService.records;
+        $location.search(DataService.getParams());
+        $scope.markers = buildMarkers($scope.records);
         $scope.$evalAsync(function () {
             $scope.busy = false;
         });
+
+        $scope.ndvi = getNDVI(DataService.getParams());
+        $scope.count = DataService.count;
+    });
+
+    $scope.$watch('bounds', _.debounce(function () {
+        if ($scope.searchInMap) {
+            applyBounds($scope.bounds);
+        }
+    }, 800));
+
+    $scope.$watch('searchInMap', function (val, prev) {
+        if (val === prev) {
+            return;
+        }
+
+        if (val) {
+            applyBounds($scope.bounds);
+        } else {
+            applyBounds(false);
+        }
     });
     ////////// End Events //////////
 
@@ -6164,7 +6328,7 @@ app.directive('filter', ['log', '$q', '$timeout', 'mappings', 'DataService', fun
             );
 
             // Scope Methods
-//            scope.reset = DataService.reset;
+            scope.reset = DataService.reset;
 
             scope.apply = function () {
                 scope.$parent.busy = true;
