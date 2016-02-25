@@ -86,12 +86,10 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     ////////// Helpers //////////
     function init() {
         if (DataService.is_initialized) {
-            console.log('dataservice already initialized');
             $scope.records = DataService.records;
             $scope.ndvi = getNDVI(DataService.getParams());
             $scope.busy = false;
         } else {
-            console.log('dataservice not initialized');
             applyParams($location.search());
             DataService.load();
         }
@@ -103,7 +101,6 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     }
 
     function applyBounds(bounds) {
-        console.log(bounds, DataService.bounds);
         if (DataService.bounds !== bounds) {
             DataService.bounds = bounds;
             getData();
@@ -148,8 +145,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
 
     function applyParams(params) {
         _.each(params, function (val, key) {
-            console.log(key, val);
-            if (DataService.columns[key] && key !== 'year') {
+            if (DataService.columns[key] && key !== 'year' && key !== 'source_type') {
                 if (Array.isArray(val)) {
                     _.each(val, function (idx) {
                         DataService.columns[key].choices[parseInt(idx, 10)].selected = true;
@@ -157,7 +153,22 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
                 } else {
                     DataService.columns[key].choices[parseInt(val, 10)].selected = true;
                 }
-            } else if (key === 'year') {
+            } else if (key === 'source_type') {
+                var mappings = {};
+
+                _.each(DataService.columns.source_type.choices, function (v,i) {
+                    mappings[v.id] = i;
+                });
+
+                if (Array.isArray(val)) {
+                    _.each(val, function (type) {
+                        DataService.columns.source_type.choices[mappings[type]].selected = true;
+                    });
+                } else {
+                        DataService.columns.source_type.choices[mappings[val]].selected = true;
+                }
+            }
+            else if (key === 'year') {
                 if (Array.isArray(val)) {
                     _.each(val, function (year) {
                         DataService.columns.year.choices[parseInt(year, 10) - 2000].selected = true;
