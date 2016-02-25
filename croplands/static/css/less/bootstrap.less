@@ -43,13 +43,14 @@
 @import "angular-motion";
 // Components w/ JavaScript
 @import "modals";
+@import "map";
 @import "tooltip";
+@import "spinner";
 //@import "popovers.less";
 //@import "carousel";
 // Utility classes
 @import "utilities";
 @import "responsive-utilities";
-@import "map";
 
 [ng-click],
 [data-ng-click],
@@ -88,70 +89,6 @@
 }
 
 
-/* control positioning */
-
-.control {
-  position: relative;
-  padding: 5px;
-  z-index: 7;
-  //    max-width: 500px;
-}
-
-.control-top,
-.control-bottom {
-  position: absolute;
-  z-index: 1000;
-}
-
-.control-top {
-  top: 50px;
-}
-
-.control-right {
-  right: 0;
-}
-
-.control-bottom {
-  bottom: 0;
-}
-
-.control-left {
-  left: 0;
-}
-
-.control-center-top {
-  position: absolute;
-  top: 50px;
-  left: 40%;
-  width: 30%;
-  z-index: 1000;
-}
-
-.control-control {
-  float: left;
-  clear: both;
-}
-
-.control-right .control-control {
-  float: right;
-}
-
-.control-top .control-control {
-  margin-top: 8px;
-}
-
-.control-bottom .control-control {
-  margin-bottom: 12px;
-}
-
-.control-left .control-control {
-  margin-left: 8px;
-}
-
-.control-right .control-control {
-  margin-right: 8px;
-}
-
 .modal .panel .fa-close, .control .panel .fa-close, .control .panel .fa-sort-down {
   float: right;
   display: inline;
@@ -170,15 +107,6 @@
 /* BREAK HERE */
 html, body, .container-fluid, .fill {
   width: 100%;
-}
-
-#map {
-  position: absolute;
-  padding-top: 40px;
-  left: 0;
-  width: 100%;
-  height: 100%;
-
 }
 
 .leaflet-control, .leaflet-control-layers, .leaflet-control-layers.leaflet-control, .leaflet-control-zoom {
@@ -228,17 +156,6 @@ label {
   font-size: 14px;
 }
 
-@media print {
-  #app-controls {
-    display: none;
-  }
-
-  #map {
-    width: 100%;
-
-  }
-}
-
 .range input {
   vertical-align: middle;
 }
@@ -255,8 +172,6 @@ input[type="range"] {
 .account-form {
   margin-top: 40px;
 }
-
-
 
 //Data Search
 .btn-filter {
