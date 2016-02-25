@@ -90,9 +90,21 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             $scope.markers = buildMarkers($scope.records);
             $scope.ndvi = getNDVI(DataService.getParams());
             $scope.busy = false;
+
         } else {
             applyParams($location.search());
             DataService.load();
+        }
+
+        if (DataService.bounds) {
+            $scope.bounds = DataService.bounds;
+            leafletData.getMap('searchMap').then(function (map) {
+                map.fitBounds([
+                    [$scope.bounds.southWest.lat, $scope.bounds.southWest.lng],
+                    [$scope.bounds.northEast.lat, $scope.bounds.northEast.lng]
+                ]);
+                $scope.searchInMap = true;
+            });
         }
     }
 
@@ -157,7 +169,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             } else if (key === 'source_type') {
                 var mappings = {};
 
-                _.each(DataService.columns.source_type.choices, function (v,i) {
+                _.each(DataService.columns.source_type.choices, function (v, i) {
                     mappings[v.id] = i;
                 });
 
@@ -166,7 +178,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
                         DataService.columns.source_type.choices[mappings[type]].selected = true;
                     });
                 } else {
-                        DataService.columns.source_type.choices[mappings[val]].selected = true;
+                    DataService.columns.source_type.choices[mappings[val]].selected = true;
                 }
             }
             else if (key === 'year') {
@@ -193,17 +205,6 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
                 DataService.paging.page = parseInt(val, 10);
             } else if (key === 'page_size') {
                 DataService.paging.page_size = parseInt(val, 10);
-            }
-
-            if (DataService.bounds) {
-                $scope.bounds = DataService.bounds;
-                leafletData.getMap('map').then(function (map) {
-                    map.fitBounds([
-                        [$scope.bounds.southWest.lat, $scope.bounds.southWest.lng],
-                        [$scope.bounds.northEast.lat, $scope.bounds.northEast.lng]
-                    ]);
-                    $scope.searchInMap = true;
-                });
             }
         });
     }
