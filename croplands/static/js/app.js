@@ -4458,7 +4458,7 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
 }]);
 ;
 app.factory('DataRecord', ['mappings', '$http', '$rootScope', '$q', 'DataService', 'log', 'User', '$location', function (mappings, $http, $rootScope, $q, DataService, log, User, $location) {
-    var _baseUrl = 'http://127.0.0.1:8000',
+    var _baseUrl = 'https://api.croplands.org',
         record = {
             paging: {},
             current: {}
@@ -4512,7 +4512,7 @@ app.factory('DataRecord', ['mappings', '$http', '$rootScope', '$q', 'DataService
 }]);
 ;
 app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout', 'log', 'User', function (mappings, $http, $rootScope, $q, $timeout, log, User) {
-    var _baseUrl = 'http://127.0.0.1:8000',
+    var _baseUrl = 'https://api.croplands.org',
         data = {
             records: [],
             count: {},
@@ -6008,7 +6008,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     }
 
     function getNDVI(params) {
-        var url = 'http://127.0.0.1:8000/data/image?';
+        var url = 'https://api.croplands.org/data/image?';
         _.each(params, function (val, key) {
             if (key === 'southWestBounds' || key === 'northEastBounds' || key === 'ndvi_limit_upper' || key === 'ndvi_limit_lower') {
                 return;

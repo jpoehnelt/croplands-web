@@ -1,5 +1,5 @@
 app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout', 'log', 'User', function (mappings, $http, $rootScope, $q, $timeout, log, User) {
-    var _baseUrl = 'http://127.0.0.1:8000',
+    var _baseUrl = 'https://api.croplands.org',
         data = {
             records: [],
             count: {},
