@@ -58,7 +58,9 @@ app.factory('mappings', [function () {
                 {'id': 20, 'label': 'Others', 'description': ''},
                 {'id': 21, 'label': 'Plantations', 'description': 'Plantations or other continuous crops'},
                 {'id': 22, 'label': 'Fallow', 'description': ''},
-                {'id': 23, 'label': 'Tef', 'description': ''}
+                {'id': 23, 'label': 'Tef', 'description': ''},
+                {'id': 24, 'label': 'Pasture', 'description': 'May be managed'},
+                {'id': 25, 'label': 'Oats', 'description': ''}
             ]
         },
         lat: {
