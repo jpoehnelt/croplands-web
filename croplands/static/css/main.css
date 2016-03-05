@@ -6647,6 +6647,12 @@ button.close {
   padding-top: 8px;
   padding-bottom: 5px;
 }
+.padding-top {
+  padding-top: 8px;
+}
+.padding-bottom {
+  padding-bottom: 5px;
+}
 .padding-horizontal {
   padding-left: 8px;
   padding-right: 8px;

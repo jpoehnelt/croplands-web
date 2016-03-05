@@ -37,8 +37,9 @@
     }
 
     #ndvi svg {
-        width:100%; /* Safari Fix */
-      }
+        width: 100%; /* Safari Fix */
+    }
+
     #ndvi .paths {
         stroke: #237c28;
         stroke-opacity: 0.3;
@@ -50,13 +51,32 @@
         stroke: #999999;
     }
 
+    #temporal-selection-bounds {
+        fill: #f09e23;
+        fill-opacity: 0.25;
+    }
+
+    .temporal-selection-point {
+        fill: #f09e23;
+        cursor: ns-resize;
+        stroke: black;
+        stroke-opacity: 0;
+        stroke-width: 35px;
+    }
+
+    .temporal-selection-limits {
+        cursor: ns-resize;
+        fill: #f09e23;
+        stroke: black;
+        font-size: 50px;
+        stroke-opacity: 0;
+        stroke-width: 80px;
+    }
+
 </style>
 <div class="container container-static-nav" style="margin-top: 60px;">
     <div class="row">
         <div class="col-sm-7">
-
-            <!--<div class="row">-->
-            <!--<div class="col-sm-10  no-gutter-right">-->
             <div id="filters" filter class="am-slide-right"
                  data-visible="filters.visible"
                  data-active-filters="filters.activeFilters"></div>
@@ -73,7 +93,8 @@
                         </thead>
                         <tbody class="am-fade" ng-hide="busy">
                         <tr ng-repeat="record in records">
-                            <td ng-repeat="column in tableColumns | filter: {visible:true}">{{
+                            <td ng-repeat="column in tableColumns | filter: {visible:true}"
+                                    ng-click="goToRecord($parent.$index)">{{
                                 record[column.id] | mappings: column.id}}
                             </td>
                         </tr>
@@ -86,15 +107,6 @@
                     </div>
                 </div>
             </div>
-            <!--</div>-->
-            <!--<div class="col-sm-2 no-gutter-left search-controls">-->
-            <!--<button class="btn btn-default fill center">Columns</button>-->
-            <!--<button class="btn btn-default fill center">Download</button>-->
-            <!--<button class="btn btn-default fill center">Definitions</button>-->
-            <!--<button class="btn btn-default fill center">Collect</button>-->
-            <!--<button class="btn btn-default fill center">Citation</button>-->
-            <!--</div>-->
-            <!--</div>-->
         </div>
         <div class="col-sm-5">
             <div id="map-container">
@@ -107,8 +119,6 @@
                          class="full full-height">
                 </leaflet>
                 <div class="control-full" ng-show="busy">
-                    <!--<div style="background-color: rgba(255,255,255,0.5); position:absolute;"-->
-                         <!--class="full full-height"></div>-->
                     <div class="spinner am-fade" style="margin-top: 150px;">
                         <div class="bounce1"></div>
                         <div class="bounce2"></div>
@@ -159,16 +169,16 @@
             </div>
             <div class="panel panel-success" id="ndvi" class="padding" ng-if="ndvi">
                 <div class="panel-heading clearfix">
-                    <h5 class="panel-title">NDVI Phenology</h5>
+                    <h5 class="panel-title">NDVI Temporal Profile</h5>
                 </div>
-                <div class="panel-body">
-                    <div class="padding">
-                        <div ng-include="ndvi"></div>
-                    </div>
+                <div class="panel-body padding-top">
+                        <div id="temporalProfile" ng-include="ndvi"></div>
                 </div>
                 <div class="panel-footer">Data extracted from <a
                         href="https://explorer.earthengine.google.com/#detail/MODIS%2FMOD13Q1"
-                        target="_blank"> MODIS/MOD13Q1</a> 250m 16 day NDVI.</div>
+                        target="_blank"> MODIS/MOD13Q1</a> 250m 16 day NDVI. Limited to 1000
+                    randomly selected profiles.
+                </div>
             </div>
         </div>
     </div>

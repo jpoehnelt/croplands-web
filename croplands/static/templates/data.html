@@ -20,65 +20,14 @@
     }
 
 </style>
-
-<div class="container container-static-nav" style="margin-top: 40px;">
-    <h3>Reference Data</h3>
-
-    <div class="well well-sm">
-        <div class="row">
-
-
-            <div class="col-md-6">
-                <div class="padding">
-                    <h4>Help Us Reach our Goal</h4>
-
-                    <p>Collect reference data on cropland with our mobile application. It
-                        is simple to use and creates the most benefit for the project. Available for
-                        IOS
-                        and Android devices.</p>
-
-                    <p><a class="btn btn-danger" href="/mobile" target="_self" role="button">Get the
-                        Mobile App &raquo;</a>
-                    </p>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="padding">
-
-                    <svg version="
-            1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1"
-            xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1024 200" xml:space="preserve">
-
-
-            <rect fill="#ffffff" width="896" height="200"/>
-            <line fill="none" x1="260" y1="4" x2="260" y2="196"/>
-            <line fill="none" stroke="#f8f8f8" stroke-width="1" x1="128" y1="4" x2="128" y2="196"/>
-            <line fill="none" stroke="#f8f8f8" stroke-width="1" x1="256" y1="4" x2="256" y2="196"/>
-            <line fill="none" stroke="#f8f8f8" stroke-width="1" x1="384" y1="4" x2="384" y2="196"/>
-            <line fill="none" stroke="#f8f8f8" stroke-width="1" x1="512" y1="4" x2="512" y2="196"/>
-            <line fill="none" stroke="#f8f8f8" stroke-width="1" x1="640" y1="4" x2="640" y2="196"/>
-            <line fill="none" stroke="#f8f8f8" stroke-width="1" x1="768" y1="4" x2="768" y2="196"/>
-            <line fill="none" stroke="#f8f8f8" stroke-width="1" x1="896" y1="4" x2="896" y2="196"/>
-            <rect id="goal-fill" fill="#d92f25" cloak width="50" height="200"/>
-            <text transform="matrix(1 0 0 1 896 110)">
-                <tspan x="15" y="0" font-size="30" fill="#999999">500,000</tspan>
-            </text>
-            <text transform="matrix(1 0 0 1 600 190)">
-                <tspan x="15" y="0" font-size="15" fill="#999999">Number of reference data sample units.</tspan>
-            </text>
-            </svg>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="container container-static-nav" style="margin-top: 60px;">
     <div class="row">
-        <div class="col-sm-6 col-md-4">
-            <h3>Purpose</h3>
+        <div class="col-sm-7">
+            <h3 style="margin-top: 0px;">Data Purpose</h3>
 
-            <p class="lead">Reference data is needed to produce and validate our products. Within
-                our project
-                we carefully track which data has been used for training and which data has been
-                used for validation.</p>
+            <p>Reference data is needed to produce and validate our products. Within
+                our project, we carefully track which data has been used for training and which data
+                has been used for validation.</p>
 
             <p>A key issue is collecting a sufficient amount of reference data across many different
                 landscapes and crop types. The map below shows the current state of reference data
@@ -87,9 +36,19 @@
             <p>View our reference data definitions <a
                     href="https://d2bol3etyblasz.cloudfront.net/docs/Croplands-definitions-1d.pdf"
                     target="blank">here</a>.</p>
-        </div>
 
-        <div class="col-md-4">
+            <div class="well well-sm">
+
+                <h4>Help Us Reach our Goal</h4>
+
+                <p>Collect reference data on cropland with our mobile application. It
+                    is simple to use and creates the most benefit for the project. Available for
+                    IOS and Android devices.</p>
+
+                <p><a class="btn btn-danger" href="/mobile" target="_self" role="button">Get the
+                    Mobile App &raquo;</a>
+                </p>
+            </div>
             <h3>Sources</h3>
 
             <p>The project is attempting to collect reference data from a variety of sources. Useful
@@ -103,8 +62,6 @@
                 <li>Secondary Sources from Projects or Research</li>
                 <li>Statistical Data for Area Comparisons</li>
             </ul>
-        </div>
-        <div class="col-md-4">
             <h3>Ground Data Form</h3>
 
             <p>This standard ground data form is designed and developed by Dr. Russell G. Congalton.
@@ -116,56 +73,45 @@
             <p>Ideally, sample locations are identified based on stratified random sampling
                 (stratified by road network, and randomized by locating points every few minutes of
                 drive or certain distance travelled).</p>
-
         </div>
+        <div class="col-sm-5">
+            <h3 style="margin-top: 0px;">Data Coverage</h3>
 
-    </div>
-    <hr/>
-    <div class="row">
-        <div class="col-md-7" style="padding-bottom: 30px;">
-            <leaflet style="width: 100%;height:500px;"
+            <leaflet style="width: 100%;height:300px;"
                      center="center"
                      layers="layers">
             </leaflet>
 
-        </div>
-        <div class="col-md-5">
-            <div class="well well-sm">
-                <h3 style="margin-top: 5px;">Reference Data Coverage</h3>
-
-                <div class="legend_color gradient clearfix"
-                     style="width: 100%;margin: 5px 0; color: white; padding: 5px;">
-                    <div class="left">1:50,000</div>
-                    <div class="right">1:500</div>
-                </div>
-                <p>Ratio is the count of reference data with crop type to cultivated area in
-                    km<sup>2</sup>
-                </p>
-
-                <table class="table-striped table-bordered" style="width: 100%">
-                    <thead>
-
-                    <tr>
-                        <th ng-click="sortColumn('properties.adm0_name')">Country</th>
-                        <th ng-click="sortColumn('properties.cultivated_area_km2')">Cultivated
-                            Area km<sup>2</sup></th>
-                        <th ng-click="sortColumn('properties.crop_type')">Count</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr ng-repeat="country in countries | orderBy : sort.column : sort.reverse"
-                        ng-if="country.properties.visible">
-                        <td ng-click="moveToCountry(country.properties.bounds);">{{
-                            country.properties.adm0_name}}
-                        </td>
-                        <td>{{ country.properties.cultivated_area_km2 }}</td>
-                        <td>{{ country.properties.crop_type}}</td>
-                    </tr>
-                    </tbody>
-                </table>
-                <small>Cultivated area from FAO via <a href="http://www.fao.org/nr/water/aquastat/data/query/index.html" target="_blank">AQUAStat Query</a>.</small>
+            <div class="legend_color gradient clearfix"
+                 style="width: 100%;margin: 5px 0; color: white; padding: 5px;">
+                <div class="left">Poor</div>
+                <div class="right">Good</div>
             </div>
+            <table class="table-striped table-bordered" style="width: 100%">
+                <thead>
 
+                <tr>
+                    <th ng-click="sortColumn('properties.adm0_name')">Country</th>
+                    <th ng-click="sortColumn('properties.cultivated_area_km2')">Cultivated
+                        Area km<sup>2</sup></th>
+                    <th ng-click="sortColumn('properties.crop_type')">Count</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="country in countries | orderBy : sort.column : sort.reverse"
+                    ng-if="country.properties.visible">
+                    <td ng-click="moveToCountry(country.properties.bounds);">{{
+                        country.properties.adm0_name}}
+                    </td>
+                    <td>{{ country.properties.cultivated_area_km2 }}</td>
+                    <td>{{ country.properties.crop_type}}</td>
+                </tr>
+                </tbody>
+            </table>
+            <small>Cultivated area from FAO via <a
+                    href="http://www.fao.org/nr/water/aquastat/data/query/index.html"
+                    target="_blank">AQUAStat Query</a>.
+            </small>
         </div>
     </div>
 </div>

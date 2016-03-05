@@ -1,5 +1,5 @@
 app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout', 'log', 'User', function (mappings, $http, $rootScope, $q, $timeout, log, User) {
-    var _baseUrl = 'https://api.croplands.org',
+    var _baseUrl = 'http://127.0.0.1:8000',
         data = {
             records: [],
             count: {},
@@ -11,6 +11,7 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
             },
             busy: false,
             bounds: false,
+            ndviLimits: false,
             is_initialized: false
         }, canceler = $q.defer();
 
@@ -56,6 +57,11 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
         if (data.bounds) {
             filters.southWestBounds = data.bounds.southWest.lat + ',' + data.bounds.southWest.lng;
             filters.northEastBounds = data.bounds.northEast.lat + ',' + data.bounds.northEast.lng;
+        }
+
+        if (data.ndviLimits) {
+            filters.ndvi_limit_upper = data.ndviLimits.upper.join(",");
+            filters.ndvi_limit_lower = data.ndviLimits.lower.join(",");
         }
 
         return _.assign(filters, data.ordering, data.paging);

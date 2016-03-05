@@ -92,6 +92,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             $scope.busy = false;
 
         } else {
+            console.log('not initialized');
             applyParams($location.search());
             DataService.load();
         }
@@ -109,6 +110,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     }
 
     function getData() {
+        console.log(DataService.temporalBounds);
         $scope.busy = true;
         $scope.$evalAsync(DataService.load);
     }
@@ -136,9 +138,9 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     }
 
     function getNDVI(params) {
-        var url = 'https://api.croplands.org/data/image?';
+        var url = 'http://127.0.0.1:8000/data/image?';
         _.each(params, function (val, key) {
-            if (key === 'southWestBounds' || key === 'northEastBounds') {
+            if (key === 'southWestBounds' || key === 'northEastBounds' || key === 'ndvi_limit_upper' || key === 'ndvi_limit_lower') {
                 return;
             }
             if (val.length) {
@@ -152,11 +154,15 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             url += "southWestBounds=" + params.southWestBounds + "&";
             url += "northEastBounds=" + params.northEastBounds + "&";
         }
-
+        if (params.ndvi_limit_upper && params.ndvi_limit_lower) {
+            url += "ndvi_limit_upper=" + params.ndvi_limit_upper + "&";
+            url += "ndvi_limit_lower=" + params.ndvi_limit_lower + "&";
+        }
         return url;
     }
 
     function applyParams(params) {
+        console.log(params);
         _.each(params, function (val, key) {
             if (DataService.columns[key] && key !== 'year' && key !== 'source_type') {
                 if (Array.isArray(val)) {
@@ -206,7 +212,21 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             } else if (key === 'page_size') {
                 DataService.paging.page_size = parseInt(val, 10);
             }
+            else if (key === 'ndvi_limit_upper') {
+                if (!DataService.ndviLimits) {
+                    DataService.ndviLimits = {};
+                }
+                DataService.ndviLimits.upper = val.split(',');
+            }
+            else if (key === 'ndvi_limit_lower') {
+                if (!DataService.ndviLimits) {
+                    DataService.ndviLimits = {};
+                }
+                DataService.ndviLimits.lower = val.split(',');
+            }
         });
+
+        console.log(DataService.ndviLimits);
     }
 
     ////////// End Helpers //////////
@@ -228,21 +248,26 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
         getData();
     };
 
-    $scope.goToRecord = function (index) {
-        DataRecord.goTo(index);
-    };
+    $scope.goToRecord = DataRecord.goTo;
 
     $scope.zoomExtent = function () {
         $scope.center.lat = 0;
         $scope.center.lng = 0;
         $scope.center.zoom = 2;
     };
+
+//    $scope.enableTemporalBounds = function () {
+//        var svg = angular.element('#temporalProfile').find('svg');
+//        console.log(svg);
+//
+//    };
     ////////// End Methods //////////
 
 
     ////////// Events //////////
-    $scope.$on("DataService.load", function (e) {
+    $scope.$on("DataService.load", function () {
         $scope.records = DataService.records;
+        console.log(DataService.getParams());
         $location.search(DataService.getParams());
         $scope.markers = buildMarkers($scope.records);
         $scope.$evalAsync(function () {
@@ -270,6 +295,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             applyBounds(false);
         }
     });
+
     ////////// End Events //////////
 
     ////////// Init //////////

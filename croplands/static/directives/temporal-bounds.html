@@ -1,0 +1,29 @@
+<g ng-mouseup="mouseUp($event)" ng-mousemove="mouseMove($event)">
+    <polygon id="temporal-selection-bounds" fill="red" ng-attr-points="{{selectionPoints()}}"/>
+    <circle class="temporal-selection-point"
+            ng-attr-cx="{{ pt.x }}" ng-attr-cy="{{ pt.y }}" ng-attr-r="{{ pt.r}}"
+            ng-mousedown="mouseDown($event, $index, 'upper')"
+            ng-mouseover="mouseOver($event, $index, 'upper')"
+            ng-mouseout="mouseOut($event, $index, 'upper')"
+            ng-repeat="pt in bounds.upper"
+            />
+    <circle class="temporal-selection-point"
+            ng-attr-cx="{{ pt.x }}" ng-attr-cy="{{ pt.y }}" ng-attr-r="{{ pt.r}}"
+            ng-mousedown="mouseDown($event, $index, 'lower')"
+            ng-mouseover="mouseOver($event, $index, 'lower')"
+            ng-mouseout="mouseOut($event, $index, 'lower')"
+            ng-repeat="pt in bounds.lower"
+            />
+    <g class="y bounds">
+        <text class="temporal-selection-limits" x="1220" ng-attr-y="{{ bounds.max + padding }}"
+              alignment-baseline="middle"
+              ng-mousedown="mouseDown($event, null, 'max')"
+                >- Max
+        </text>
+        <text class="temporal-selection-limits" x="1220" ng-attr-y="{{ bounds.min + padding }}"
+              alignment-baseline="middle"
+              ng-mousedown="mouseDown($event, null, 'min')"
+                >- Min
+        </text>
+    </g>
+</g>

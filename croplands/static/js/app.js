@@ -4458,7 +4458,7 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
 }]);
 ;
 app.factory('DataRecord', ['mappings', '$http', '$rootScope', '$q', 'DataService', 'log', 'User', '$location', function (mappings, $http, $rootScope, $q, DataService, log, User, $location) {
-    var _baseUrl = 'https://api.croplands.org',
+    var _baseUrl = 'http://127.0.0.1:8000',
         record = {
             paging: {},
             current: {}
@@ -4505,14 +4505,14 @@ app.factory('DataRecord', ['mappings', '$http', '$rootScope', '$q', 'DataService
 
         record.current = DataService.records[index];
 
-        $location.path('/app/data/record').search('id', record.current.id);
+        $location.path('/app/data/record').search({'id': record.current.id});
     };
 
     return record;
 }]);
 ;
 app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout', 'log', 'User', function (mappings, $http, $rootScope, $q, $timeout, log, User) {
-    var _baseUrl = 'https://api.croplands.org',
+    var _baseUrl = 'http://127.0.0.1:8000',
         data = {
             records: [],
             count: {},
@@ -4524,6 +4524,7 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
             },
             busy: false,
             bounds: false,
+            ndviLimits: false,
             is_initialized: false
         }, canceler = $q.defer();
 
@@ -4569,6 +4570,11 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
         if (data.bounds) {
             filters.southWestBounds = data.bounds.southWest.lat + ',' + data.bounds.southWest.lng;
             filters.northEastBounds = data.bounds.northEast.lat + ',' + data.bounds.northEast.lng;
+        }
+
+        if (data.ndviLimits) {
+            filters.ndvi_limit_upper = data.ndviLimits.upper.join(",");
+            filters.ndvi_limit_lower = data.ndviLimits.lower.join(",");
         }
 
         return _.assign(filters, data.ordering, data.paging);
@@ -4945,6 +4951,11 @@ app.factory('geoHelperService', [ function () {
     function destination(latlon, bearing, distance) {
         var R = 6378.1, lat, lon, latDest, lonDest;
 
+        // check values
+        if (!distance || bearing === -1) {
+            return [latlon.lat, latlon.lng];
+        }
+
         // convert to radians
         lat = latlon[0] * (Math.PI / 180);
         lon = latlon[1] * (Math.PI / 180);
@@ -5156,7 +5167,9 @@ app.factory('mappings', [function () {
                 {'id': 20, 'label': 'Others', 'description': ''},
                 {'id': 21, 'label': 'Plantations', 'description': 'Plantations or other continuous crops'},
                 {'id': 22, 'label': 'Fallow', 'description': ''},
-                {'id': 23, 'label': 'Tef', 'description': ''}
+                {'id': 23, 'label': 'Tef', 'description': ''},
+                {'id': 24, 'label': 'Pasture', 'description': 'May be managed'},
+                {'id': 25, 'label': 'Oats', 'description': ''}
             ]
         },
         lat: {
@@ -5745,7 +5758,9 @@ app.controller("DataController", ['$scope', '$http', 'mapService', 'leafletData'
 
 
 }]);;
-app.controller("DataRecordController", ['$scope', '$http', 'mapService', 'leafletData', '$location', 'DataRecord', function ($scope, $http, mapService, leafletData, $location, DataRecord) {
+app.controller("DataRecordController", ['$scope', 'mapService', 'leafletData', '$location', 'DataRecord', '$q', 'geoHelperService', function ($scope, mapService, leafletData, $location, DataRecord, $q, geoHelperService) {
+    var gridImageURL = "/static/imgs/icons/grid.png",
+        shapes = {};
 
     angular.extend($scope, {
         id: $location.search().id,
@@ -5754,16 +5769,104 @@ app.controller("DataRecordController", ['$scope', '$http', 'mapService', 'leafle
             hasPrevious: DataRecord.paging.hasPrevious,
             next: DataRecord.paging.next,
             previous: DataRecord.paging.previous
+        },
+        center: {
+            lat: 0,
+            lng: 0,
+            zoom: 2
+        },
+        layers: angular.copy(mapService.layers),
+        markers: {},
+        events: {
+            map: {
+                enable: [],
+                logic: 'emit'
+            }
         }
     });
 
+    _.each($scope.layers.overlays, function (layer) {
+        layer.visible = false;
+    });
+
+    function buildShapes() {
+        var bearingDistance = 0,
+            bearingSpread = 7.5,
+            record = $scope.record,
+            latlng = {
+                lat: record.location.lat,
+                lng: record.location.lon
+            },
+            originalLatlng = {
+                lat: record.location.original_lat,
+                lng: record.location.original_lon
+            };
+
+        leafletData.getMap('recordMap').then(function (map) {
+            _.forOwn(shapes, function (shape) {
+                map.removeLayer(shape);
+            });
+            shapes = {};            var circle250 = L.circle(latlng, 125);
+            shapes.locationAreaGrid = L.imageOverlay(gridImageURL, circle250.getBounds());
+
+            shapes.locationMarker = L.marker(latlng, {
+                zIndexOffset: 1000,
+                draggable: false
+            });
+
+//            shapes.locationMarker.on('dragend', function (event) {
+//                log.info('[Location] Dragged marker: ' + event.distance + ' meters');
+//                scope.buildGrid(shapes.locationMarker.getLatLng());
+//                latLng = shapes.locationMarker.getLatLng();
+//                scope.location.lat = latLng.lat;
+//                scope.location.lon = latLng.lng;
+//            });
+
+            if (record.location.distance !== undefined) {
+                bearingDistance = record.location.distance / 1000;
+            }
+
+            if (record.location.bearing && record.location.bearing >= 0) {
+                console.log(geoHelperService.destination(originalLatlng, record.location.bearing + bearingSpread, bearingDistance));
+                console.log(geoHelperService.destination(originalLatlng, record.location.bearing - bearingSpread, bearingDistance));
+
+                shapes.polygon = L.polygon([
+                    originalLatlng,
+                    geoHelperService.destination(originalLatlng, record.location.bearing - bearingSpread, bearingDistance),
+                    geoHelperService.destination(originalLatlng, record.location.bearing + bearingSpread, bearingDistance)
+                ], {
+                    color: '#00FF00',
+                    stroke: false
+                });
+            }
+            _.forOwn(shapes, function (shape) {
+                shape.addTo(map);
+            });
+
+        }, function (e) {
+            console.log(e);
+        });
+    }
+
+    $scope.imageURL = function (url) {
+        return "https://images.croplands.org/" + url.replace("images/", "");
+    };
+
     DataRecord.get($scope.id).then(function (record) {
         $scope.record = record;
-        console.l
+//        $scope.history = _.map(record.history, function (state) {
+//            state = angular.fromJson(state);
+//            state.date_edited = new Date(state.date_edited);
+//            state.data = angular.fromJson(state.data);
+//            return state;
+//        });
+        $scope.center.lat = record.location.lat;
+        $scope.center.lng = record.location.lon;
+        $scope.center.zoom = 17;
+        buildShapes();
     }, function (e) {
         console.log(e);
     });
-
 }]);;
 app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafletData', '$location', 'DataService', 'DataRecord', 'leafletData', function ($scope, $http, mapService, leafletData, $location, DataService, DataRecord, leafletData) {
 
@@ -5859,6 +5962,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             $scope.busy = false;
 
         } else {
+            console.log('not initialized');
             applyParams($location.search());
             DataService.load();
         }
@@ -5876,6 +5980,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     }
 
     function getData() {
+        console.log(DataService.temporalBounds);
         $scope.busy = true;
         $scope.$evalAsync(DataService.load);
     }
@@ -5903,9 +6008,9 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     }
 
     function getNDVI(params) {
-        var url = 'https://api.croplands.org/data/image?';
+        var url = 'http://127.0.0.1:8000/data/image?';
         _.each(params, function (val, key) {
-            if (key === 'southWestBounds' || key === 'northEastBounds') {
+            if (key === 'southWestBounds' || key === 'northEastBounds' || key === 'ndvi_limit_upper' || key === 'ndvi_limit_lower') {
                 return;
             }
             if (val.length) {
@@ -5919,11 +6024,15 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             url += "southWestBounds=" + params.southWestBounds + "&";
             url += "northEastBounds=" + params.northEastBounds + "&";
         }
-
+        if (params.ndvi_limit_upper && params.ndvi_limit_lower) {
+            url += "ndvi_limit_upper=" + params.ndvi_limit_upper + "&";
+            url += "ndvi_limit_lower=" + params.ndvi_limit_lower + "&";
+        }
         return url;
     }
 
     function applyParams(params) {
+        console.log(params);
         _.each(params, function (val, key) {
             if (DataService.columns[key] && key !== 'year' && key !== 'source_type') {
                 if (Array.isArray(val)) {
@@ -5973,7 +6082,21 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             } else if (key === 'page_size') {
                 DataService.paging.page_size = parseInt(val, 10);
             }
+            else if (key === 'ndvi_limit_upper') {
+                if (!DataService.ndviLimits) {
+                    DataService.ndviLimits = {};
+                }
+                DataService.ndviLimits.upper = val.split(',');
+            }
+            else if (key === 'ndvi_limit_lower') {
+                if (!DataService.ndviLimits) {
+                    DataService.ndviLimits = {};
+                }
+                DataService.ndviLimits.lower = val.split(',');
+            }
         });
+
+        console.log(DataService.ndviLimits);
     }
 
     ////////// End Helpers //////////
@@ -5995,21 +6118,26 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
         getData();
     };
 
-    $scope.goToRecord = function (index) {
-        DataRecord.goTo(index);
-    };
+    $scope.goToRecord = DataRecord.goTo;
 
     $scope.zoomExtent = function () {
         $scope.center.lat = 0;
         $scope.center.lng = 0;
         $scope.center.zoom = 2;
     };
+
+//    $scope.enableTemporalBounds = function () {
+//        var svg = angular.element('#temporalProfile').find('svg');
+//        console.log(svg);
+//
+//    };
     ////////// End Methods //////////
 
 
     ////////// Events //////////
-    $scope.$on("DataService.load", function (e) {
+    $scope.$on("DataService.load", function () {
         $scope.records = DataService.records;
+        console.log(DataService.getParams());
         $location.search(DataService.getParams());
         $scope.markers = buildMarkers($scope.records);
         $scope.$evalAsync(function () {
@@ -6037,6 +6165,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             applyBounds(false);
         }
     });
+
     ////////// End Events //////////
 
     ////////// Init //////////
@@ -6514,6 +6643,26 @@ app.directive('loginForm', ['user', 'log', '$timeout', function (user, log, $tim
     };
 
 }]);;
+app.directive('ndvi', ['$http', '$log', '$q',
+    function () {
+        return {
+            restrict: 'E',
+            scope: {
+                pts: '=pts'
+            },
+            link: function (scope) {
+                scope.$watch('pts', function () {
+                    scope.points = _.map(scope.pts, function (v, i) {
+                        var x = i * 52.17, y = 1000 - Math.max(3, Math.min(v, 1000));
+                        return x.toString() + ',' + y.toString();
+                    }).join(" ");
+                });
+            },
+            templateUrl: '/static/directives/ndvi.html'
+        };
+
+    }
+]);;
 app.directive('passwordConfirm', ['$window', function ($window) {
     var obvious = ['crops', 'cropland', 'rice', 'usgs', 'nasa', 'corn', 'wheat', 'landsat', 'modis'];
 
@@ -6659,3 +6808,202 @@ app.directive('tableOfContentsLayer', [function () {
 }
 ]);
 
+;
+app.directive('temporalBounds', ['DataService', function (DataService) {
+    var bounds = {
+        upper: [],
+        lower: [],
+        max: 0,
+        min: 1000,
+        init: false
+    }, radius = 12;
+
+    return {
+        scope: {
+        },
+        link: function (scope, element, attributes) {
+            var svg, activeBoundsInterval, activeBoundsSide, x, y, scale;
+
+
+            var numIntervals = parseInt(attributes.intervals, 10);
+            var intervalWidth = parseFloat(attributes.intervalWidth);
+            scope.padding = 20;
+            svg = element[0].viewportElement;
+            scale = svg.clientWidth / svg.viewBox.baseVal.width;
+
+            function initBounds() {
+                if (!bounds.init) {
+
+                    if (DataService.ndviLimits) {
+                        for (var i = 0; i < numIntervals; i++) {
+                            bounds.upper.push({x: i * intervalWidth + scope.padding, y: 1000 - DataService.ndviLimits.upper[i] + scope.padding, r: radius});
+                            bounds.lower.push({x: i * intervalWidth + scope.padding, y: 1000 - DataService.ndviLimits.lower[i] + scope.padding, r: radius});
+                        }
+                    } else {
+                        for (var i = 0; i < numIntervals; i++) {
+                            bounds.upper.push({x: i * intervalWidth + scope.padding, y: bounds.max + scope.padding, r: radius});
+                            bounds.lower.push({x: i * intervalWidth + scope.padding, y: bounds.min + scope.padding, r: radius});
+                        }
+                    }
+
+                    bounds.init = true;
+                }
+
+                scope.bounds = bounds;
+            }
+
+            function limitBounds() {
+                _.each(scope.bounds.upper, function (pt) {
+
+                    if (!pt.adjusted || pt.y < bounds.max + scope.padding) {
+                        pt.y = bounds.max + scope.padding;
+                        pt.adjusted = false;
+                    }
+
+                });
+
+                _.each(scope.bounds.lower, function (pt) {
+                    if (!pt.adjusted || pt.y > bounds.min + scope.padding) {
+                        pt.y = bounds.min + scope.padding;
+                        pt.adjusted = false;
+                    }
+                });
+            }
+
+            function mouseMove(e) {
+                if (e.stopPropagation) e.stopPropagation();
+                if (e.preventDefault) e.preventDefault();
+
+                if (activeBoundsInterval !== null) {
+                    scope.bounds[activeBoundsSide][activeBoundsInterval].y = Math.min(Math.max((e.clientY - y) / scale, bounds.max + scope.padding), bounds.min + scope.padding);
+                    scope.bounds[activeBoundsSide][activeBoundsInterval].adjusted = true;
+                    scope.$apply();
+                } else {
+                    if (activeBoundsSide === 'max') {
+                        scope.bounds.max = Math.min(Math.max((e.clientY - y) / scale, 0), 1000);
+                    }
+                    if (activeBoundsSide === 'min') {
+                        scope.bounds.min = Math.max(Math.min((e.clientY - y) / scale, 1000), 0);
+                    }
+                    limitBounds();
+                    scope.$apply();
+                }
+            }
+
+            function mouseUp(e) {
+                if (activeBoundsSide === 'max' || activeBoundsSide === 'min') {
+                    limitBounds();
+                }
+
+                DataService.ndviLimits = {
+                    upper: _.map(scope.bounds.upper, function (pt) {
+                        return Math.round(1000 - pt.y) + scope.padding;
+                    }),
+                    lower: _.map(scope.bounds.lower, function (pt) {
+                        return Math.round(1000 - pt.y) + scope.padding;
+                    })
+                };
+
+                scope.$apply();
+
+                activeBoundsInterval = null;
+                activeBoundsSide = null;
+                disableEvents();
+            }
+
+
+            function enableEvents() {
+                angular.element(svg).on('mousemove', mouseMove);
+                angular.element(svg).on('mouseup', mouseUp);
+//                angular.element(svg).on('mouseout', disableEvents);
+            }
+
+            function disableEvents() {
+                angular.element(svg).off('mousemove', mouseMove);
+                angular.element(svg).off('mouseup', mouseUp);
+//                angular.element(svg).off('mouseout', disableEvents);
+            }
+
+            scope.mouseDown = function (e, index, side) {
+                if (e.stopPropagation) e.stopPropagation();
+                activeBoundsInterval = index;
+                activeBoundsSide = side;
+
+                y = svg.getBoundingClientRect().top;
+
+                enableEvents();
+            };
+
+            scope.mouseOver = function (e, index, side) {
+                scope.bounds[side][index].r = radius * 2;
+            };
+
+            scope.mouseOut = function (e, index, side) {
+                scope.bounds[side][index].r = radius;
+            };
+
+
+            scope.selectionPoints = function () {
+                var upper = _.map(scope.bounds.upper, function (v) {
+                    return v.x.toString() + ',' + v.y.toString();
+                });
+                var lower = _.map(scope.bounds.lower, function (v) {
+                    return v.x.toString() + ',' + v.y.toString();
+                });
+
+                return _.concat(upper, lower.reverse()).join(" ");
+            };
+
+
+            initBounds();
+
+        },
+        templateUrl: '/static/directives/temporal-bounds.html'
+    };
+}]);;
+app.directive('draggableBounds', ['$document', function ($document) {
+    return {
+        restrict: 'EA',
+        scope: {
+            x: '=x',
+            y: '=y'
+        },
+        link: function (scope, element, attributes) {
+
+
+            angular.extend(scope, {
+                radius: 20
+            });
+
+            var circle = element[0].children[0];
+            circle.attr('cx', scope.x);
+            circle.attr('cy', scope.y);
+
+            circle.removeAttr('ng-attr-cx');
+            circle.removeAttr('ng-attr-cy');
+
+            var startY, y = angular.copy(scope.y);
+
+            function mouseMove(e){
+                y +=  (e.pageY - startY)/4;
+                circle.attr('cy', y);
+                console.log(element);
+            }
+
+            function mouseUp(){
+                $document.off('mousemove', mouseMove);
+                $document.off('mouseup', mouseUp);
+//                scope.y = y;
+            }
+
+//            scope.mouseDown = function (e) {
+//                e.stopPropagation();
+//                $document.on('mousemove', mouseMove);
+//                $document.on('mouseup', mouseUp);
+//                startY = e.pageY;
+//            };
+
+        },
+        template: '<circle ng-mousedown="mouseDown($event)" ng-attr-cx="{{ x }}" ng-attr-cy="{{ y }}" ng-attr-r="{{ radius }}" fill="red" />'
+    };
+}]);

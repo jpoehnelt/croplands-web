@@ -1,5 +1,5 @@
 app.factory('DataRecord', ['mappings', '$http', '$rootScope', '$q', 'DataService', 'log', 'User', '$location', function (mappings, $http, $rootScope, $q, DataService, log, User, $location) {
-    var _baseUrl = 'https://api.croplands.org',
+    var _baseUrl = 'http://127.0.0.1:8000',
         record = {
             paging: {},
             current: {}
@@ -46,7 +46,7 @@ app.factory('DataRecord', ['mappings', '$http', '$rootScope', '$q', 'DataService
 
         record.current = DataService.records[index];
 
-        $location.path('/app/data/record').search('id', record.current.id);
+        $location.path('/app/data/record').search({'id': record.current.id});
     };
 
     return record;
