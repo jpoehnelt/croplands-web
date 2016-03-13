@@ -4731,14 +4731,13 @@ app.factory('RatingService', ['$http', '$rootScope', 'log', 'User', '$q','locati
 }]);;
 app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope', function ($http, $window, $q, log, $rootScope) {
     var _user = {},
-      _baseUrl = 'http://127.0.0.1:8000';
-
-//      _baseUrl = 'http://api.croplands.org';
+      _baseUrl = 'http://api.croplands.org';
 
     function getUser() {
         return _user;
     }
 
+    
     function getRole() {
         var role;
         if (_user.role) {
