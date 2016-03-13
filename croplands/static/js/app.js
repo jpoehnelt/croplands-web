@@ -5006,7 +5006,7 @@ app.factory('geoHelperService', [ function () {
         var R = 6378.1, lat, lon, latDest, lonDest;
 
         // check values
-        if (!distance || bearing === -1) {
+        if (distance <= 10 || bearing === -1) {
             return [latlon.lat, latlon.lng];
         }
 
@@ -5880,10 +5880,7 @@ app.controller("DataRecordController", ['$scope', 'mapService', 'leafletData', '
                 bearingDistance = record.location.distance / 1000;
             }
 
-            if (record.location.bearing && record.location.bearing >= 0) {
-                console.log(geoHelperService.destination(originalLatlng, record.location.bearing + bearingSpread, bearingDistance));
-                console.log(geoHelperService.destination(originalLatlng, record.location.bearing - bearingSpread, bearingDistance));
-
+            if (record.location.bearing) {
                 shapes.polygon = L.polygon([
                     originalLatlng,
                     geoHelperService.destination(originalLatlng, record.location.bearing - bearingSpread, bearingDistance),

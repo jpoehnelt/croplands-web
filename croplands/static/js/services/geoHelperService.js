@@ -10,7 +10,7 @@ app.factory('geoHelperService', [ function () {
         var R = 6378.1, lat, lon, latDest, lonDest;
 
         // check values
-        if (!distance || bearing === -1) {
+        if (distance <= 10 || bearing === -1) {
             return [latlon.lat, latlon.lng];
         }
 
