@@ -18,13 +18,7 @@ app.controller("LoginController", ['$scope', 'log', 'User', '$timeout', '$locati
             $scope.busy = false;
             $scope.email = '';
             $scope.password = '';
-
-            var next = JSON.parse(window.atob(decodeURIComponent($location.search().n)));
-            if (next) {
-                $location.path(next.path).search(next.params);
-            } else {
-                $location.path('/app').search();
-            }
+            User.goNext();
 
         }, function (response) {
             if (response.description) {

@@ -4729,7 +4729,7 @@ app.factory('RatingService', ['$http', '$rootScope', 'log', 'User', '$q','locati
         getRecordRatings: getRecordRatings
     };
 }]);;
-app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope', function ($http, $window, $q, log, $rootScope) {
+app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location', function ($http, $window, $q, log, $rootScope, $location) {
     var _user = {},
       _baseUrl = 'https://api.croplands.org';
 
@@ -4767,6 +4767,17 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope', function ($h
         }
 
         return false;
+    }
+
+    function goNext() {
+        var next;
+        try {
+            next = JSON.parse(window.atob(decodeURIComponent($location.search().n)));
+            $location.path(next.path).search(next.params);
+        }
+        catch (e) {
+            $location.path('/').search();
+        }
     }
 
     function changePassword(token, password) {
@@ -4936,7 +4947,8 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope', function ($h
         register: register,
         forgot: forgot,
         reset: reset,
-        get: getUser
+        get: getUser,
+        goNext:goNext
     };
 
 }]);;
@@ -6408,13 +6420,7 @@ app.controller("LoginController", ['$scope', 'log', 'User', '$timeout', '$locati
             $scope.busy = false;
             $scope.email = '';
             $scope.password = '';
-
-            var next = JSON.parse(window.atob(decodeURIComponent($location.search().n)));
-            if (next) {
-                $location.path(next.path).search(next.params);
-            } else {
-                $location.path('/app').search();
-            }
+            User.goNext();
 
         }, function (response) {
             if (response.description) {
@@ -6430,16 +6436,12 @@ app.controller("LoginController", ['$scope', 'log', 'User', '$timeout', '$locati
 }]);;
 app.controller("LogoutController", ['$scope', 'User', '$location', function ($scope, User, $location) {
     User.logout();
-
-    var next = JSON.parse(window.atob(decodeURIComponent($location.search().n)));
-    if (next) {
-        $location.path(next.path).search(next.params);
-    }
+    User.goNext();
 }]);;
-app.controller("RegisterController", ['User', 'countries', '$scope','$location', function (User, countries, $scope, $location) {
+app.controller("RegisterController", ['User', 'countries', '$scope', '$location', 'log', function (User, countries, $scope, $location, log) {
 
     if (User.isLoggedIn()) {
-         var n = encodeURIComponent(window.btoa(JSON.stringify({
+        var n = encodeURIComponent(window.btoa(JSON.stringify({
             path: $location.path(),
             params: $location.search()
         })));
@@ -6466,6 +6468,7 @@ app.controller("RegisterController", ['User', 'countries', '$scope','$location',
             .then(function (response) {
                 $scope.busy = false;
                 setMessage(response.description, true);
+                User.goNext();
 
             }, function (response) {
                 if (response) {
@@ -6560,52 +6563,6 @@ app.directive('blur', [function () {
         }
     };
 }]);;
-app.directive('forgotForm', ['user', 'log', '$timeout', function (user, log, $timeout) {
-    return {
-        restrict: 'E',
-        scope: {
-        },
-        link: function (scope) {
-            function setMessage(message, success) {
-                scope.success = success;
-                scope.message = message;
-            }
-
-            scope.forgot = function () {
-                scope.login.busy = true;
-                user.forgot(scope.email).then(function (response) {
-                    setMessage(response.description, true);
-                    scope.busy = false;
-                    scope.email = '';
-                }, function (response) {
-                    if (response.description) {
-                        setMessage(response.description, false);
-                    }
-                    else {
-                        setMessage('Something went wrong', false);
-                    }
-                    scope.busy = false;
-                });
-            };
-
-            scope.login = function () {
-                scope.$emit('user.forgot', false);
-                scope.$emit('user.login', true);
-            };
-
-            scope.register = function () {
-                scope.$emit('user.forgot', false);
-                scope.$emit('user.register', true);
-            };
-
-            scope.close = function () {
-                scope.$emit('user.forgot', false);
-            };
-        },
-        templateUrl: '/static/directives/forgot.html'
-    };
-
-}]);;
 app.directive('legend', [function () {
     return {
         restrict: 'E',
@@ -6629,62 +6586,6 @@ app.directive('log', ['log', function (log) {
     };
 }]);
 ;
-app.directive('loginForm', ['user', 'log', '$timeout', function (user, log, $timeout) {
-    return {
-        restrict: 'E',
-        $scope: {
-        },
-        link: function ($scope) {
-            function setMessage(message, success) {
-                $scope.success = success;
-                $scope.message = message;
-                $timeout(function () {
-                    $scope.success = '';
-                    $scope.message = '';
-                }, 4000);
-            }
-
-            $scope.login = function (valid) {
-                $scope.login.busy = true;
-                if (!valid) {
-                    setMessage('Invalid Data', false);
-                    return;
-                }
-                user.login($scope.email, $scope.password).then(function (response) {
-                    setMessage(response.description, true);
-                    $scope.busy = false;
-                    $scope.$emit('user.login', false);
-                    $scope.email = '';
-                    $scope.password = '';
-                }, function (response) {
-                    if (response.description) {
-                        setMessage(response.description, false);
-                    }
-                    else {
-                        setMessage('Something went wrong', false);
-                    }
-                    $scope.busy = false;
-                });
-            };
-
-            $scope.forgot = function () {
-                $scope.$emit('user.login', false);
-                $scope.$emit('user.forgot', true);
-            };
-
-            $scope.register = function () {
-                $scope.$emit('user.login', false);
-                $scope.$emit('user.register', true);
-            };
-
-            $scope.loginClose = function () {
-                $scope.$emit('user.login', false);
-            };
-        },
-        templateUrl: '/static/directives/login.html'
-    };
-
-}]);;
 app.directive('ndvi', ['$http', '$log', '$q',
     function () {
         return {
@@ -6705,95 +6606,6 @@ app.directive('ndvi', ['$http', '$log', '$q',
 
     }
 ]);;
-app.directive('passwordConfirm', ['$window', function ($window) {
-    var obvious = ['crops', 'cropland', 'rice', 'usgs', 'nasa', 'corn', 'wheat', 'landsat', 'modis'];
-
-    return {
-        restrict: 'EA',
-        scope: {
-            valid: '=valid',
-            minEntropy: '=minEntropy',
-            password: '=password'
-        },
-        link: function (scope) {
-            if (scope.minEntropy === undefined) {
-                scope.minEntropy = 20;
-            }
-
-            // init values
-            scope.entropy = 0;
-
-            scope.passwordsMatch = function () {
-                return scope.password === scope.confirm;
-            };
-
-            scope.passwordIsStrong = function () {
-                return scope.entropy > scope.minEntropy;
-            };
-
-            scope.$watch('password', function (pass) {
-                if ($window.zxcvbn === undefined) {
-                    scope.entropy = 0;
-                    return;
-                }
-
-                if (pass && pass.length >= 8) {
-                    scope.entropy = zxcvbn(pass, obvious).entropy;
-                }
-                else {
-                    scope.entropy = 0;
-                }
-            });
-
-            scope.$watch(function () {
-                return scope.passwordIsStrong() && scope.passwordsMatch();
-            }, function (val) {
-                scope.valid = val;
-            });
-        },
-        templateUrl: '/static/directives/password-confirm.html'
-    };
-
-}]);
-
-;
-app.directive('resetForm', ['User', '$window', '$timeout', function (User, $window, $timeout) {
-    return {
-        restrict: 'E',
-        scope: {
-            token: '=token'
-        },
-        link: function (scope) {
-            function setMessage(message, success) {
-                scope.success = success;
-                scope.message = message;
-            }
-
-            scope.reset = function () {
-                scope.busy = true;
-                User.reset(scope.password, scope.token).then(function (response) {
-                    setMessage(response.description, true);
-                    scope.busy = false;
-                    scope.close();
-                }, function (response) {
-                    if (response.description) {
-                        setMessage(response.description, false);
-                    }
-                    else {
-                        setMessage('Something went wrong', false);
-                    }
-                    scope.busy = false;
-                });
-            };
-
-            scope.close = function () {
-                $window.location.href='/';
-            };
-        },
-        templateUrl: '/static/directives/reset.html'
-    };
-
-}]);;
 app.directive('tableOfContents', ['mapService', 'leafletData', function (mapService, leafletData) {
     return {
         templateUrl: '/static/directives/table-of-contents.html',

@@ -1,4 +1,4 @@
-app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope', function ($http, $window, $q, log, $rootScope) {
+app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location', function ($http, $window, $q, log, $rootScope, $location) {
     var _user = {},
       _baseUrl = 'https://api.croplands.org';
 
@@ -36,6 +36,17 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope', function ($h
         }
 
         return false;
+    }
+
+    function goNext() {
+        var next;
+        try {
+            next = JSON.parse(window.atob(decodeURIComponent($location.search().n)));
+            $location.path(next.path).search(next.params);
+        }
+        catch (e) {
+            $location.path('/').search();
+        }
     }
 
     function changePassword(token, password) {
@@ -205,7 +216,8 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope', function ($h
         register: register,
         forgot: forgot,
         reset: reset,
-        get: getUser
+        get: getUser,
+        goNext:goNext
     };
 
 }]);

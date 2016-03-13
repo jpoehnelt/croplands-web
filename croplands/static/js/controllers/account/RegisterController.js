@@ -1,7 +1,7 @@
-app.controller("RegisterController", ['User', 'countries', '$scope','$location', function (User, countries, $scope, $location) {
+app.controller("RegisterController", ['User', 'countries', '$scope', '$location', 'log', function (User, countries, $scope, $location, log) {
 
     if (User.isLoggedIn()) {
-         var n = encodeURIComponent(window.btoa(JSON.stringify({
+        var n = encodeURIComponent(window.btoa(JSON.stringify({
             path: $location.path(),
             params: $location.search()
         })));
@@ -28,6 +28,7 @@ app.controller("RegisterController", ['User', 'countries', '$scope','$location',
             .then(function (response) {
                 $scope.busy = false;
                 setMessage(response.description, true);
+                User.goNext();
 
             }, function (response) {
                 if (response) {
