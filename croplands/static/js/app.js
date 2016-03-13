@@ -4776,7 +4776,7 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location', 
             $location.path(next.path).search(next.params);
         }
         catch (e) {
-            $location.path('/').search();
+            $window.location.href = "/";
         }
     }
 
@@ -4785,9 +4785,9 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location', 
         $http.post("https://api.croplands.org/auth/reset", {
             token: token,
             password: password
-        }).then(function (response) {
+        }).then(function () {
             deferred.resolve(true);
-        }, function (error) {
+        }, function () {
             deferred.resolve(false);
         });
         return deferred.promise;
@@ -4926,7 +4926,7 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location', 
         }
 
         // Watch for changes in other tabs
-        angular.element($window).on('storage', function (event) {
+        angular.element($window).on('storage', function () {
             if ($window.localStorage.user) {
                 getFromStorage();
             } else {
