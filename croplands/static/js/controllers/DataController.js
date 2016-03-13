@@ -30,6 +30,10 @@ app.controller("DataController", ['$scope', '$http', 'mapService', 'leafletData'
         }
     });
 
+    _.each($scope.layers.overlays, function (layer) {
+        layer.visible = false;
+    });
+
 
     function getColor(properties) {
 
@@ -44,7 +48,7 @@ app.controller("DataController", ['$scope', '$http', 'mapService', 'leafletData'
 
         var color, ratio, scale, red, green, blue;
 
-        ratio = properties.ratio;
+        ratio = properties.ratio*10;
         scale = Math.max(Math.min((ratio - 500) / 50000, 1), 0);
 
         red = Math.round(255 * scale);

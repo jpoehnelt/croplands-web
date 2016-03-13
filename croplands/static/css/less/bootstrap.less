@@ -25,11 +25,11 @@
 @import "pager";
 //@import "labels.less";
 //@import "badges.less";
-@import "jumbotron";
+//@import "jumbotron";
 @import "thumbnails";
 @import "alerts";
 @import "progress-bars";
-@import "media";
+//@import "media";
 @import "list-group";
 @import "panels";
 @import "responsive-embed";
@@ -43,13 +43,14 @@
 @import "angular-motion";
 // Components w/ JavaScript
 @import "modals";
+@import "map";
 @import "tooltip";
+@import "spinner";
 //@import "popovers.less";
-@import "carousel";
+//@import "carousel";
 // Utility classes
 @import "utilities";
 @import "responsive-utilities";
-@import "map";
 
 [ng-click],
 [data-ng-click],
@@ -62,13 +63,8 @@
   display: none !important;
 }
 
-// Home Page
-.jumbotron-banner {
-  padding-top: 20px;
-  color: #ffffff;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-image: url('http://static.croplands.org/images/map.jpg');
+#layers {
+  width: 450px;
 }
 
 .partners {
@@ -92,81 +88,6 @@
   height: 100%;
 }
 
-#layers, #filters {
-  width: 350px;
-}
-
-.filter-tags .btn {
-  margin: 2px;
-}
-
-.filter-tags .btn i {
-  line-height: inherit;
-}
-
-/* control positioning */
-
-.control {
-  position: relative;
-  padding: 5px;
-  z-index: 7;
-  //    max-width: 500px;
-}
-
-.control-top,
-.control-bottom {
-  position: absolute;
-  z-index: 1000;
-}
-
-.control-top {
-  top: 50px;
-}
-
-.control-right {
-  right: 0;
-}
-
-.control-bottom {
-  bottom: 0;
-}
-
-.control-left {
-  left: 0;
-}
-
-.control-center-top {
-  position: absolute;
-  top: 50px;
-  left: 40%;
-  width: 30%;
-  z-index: 1000;
-}
-
-.control-control {
-  float: left;
-  clear: both;
-}
-
-.control-right .control-control {
-  float: right;
-}
-
-.control-top .control-control {
-  margin-top: 8px;
-}
-
-.control-bottom .control-control {
-  margin-bottom: 12px;
-}
-
-.control-left .control-control {
-  margin-left: 8px;
-}
-
-.control-right .control-control {
-  margin-right: 8px;
-}
 
 .modal .panel .fa-close, .control .panel .fa-close, .control .panel .fa-sort-down {
   float: right;
@@ -188,15 +109,6 @@ html, body, .container-fluid, .fill {
   width: 100%;
 }
 
-#map {
-  position: absolute;
-  padding-top: 40px;
-  left: 0;
-  width: 100%;
-  height: 100%;
-
-}
-
 .leaflet-control, .leaflet-control-layers, .leaflet-control-layers.leaflet-control, .leaflet-control-zoom {
   display: none !important;
   visibility: hidden;
@@ -216,25 +128,8 @@ html, body, .container-fluid, .fill {
   border-radius: 0 !important;
 }
 
-.panel-heading, .panel-body, .panel-footer {
-  padding: 4px 6px !important;
-}
-
-.panel, .panel-body {
-  background-color: rgba(255, 255, 255, 0.85);
-}
-
-.panel-group .panel, .panel-group .panel + .panel {
-  margin-top: 3px;
-}
-
-.panel-group .panel-title {
-  font-weight: normal;
-}
-
 .panel-lighter {
   background-color: rgba(255, 255, 255, 0.3);
-
 }
 
 /* Add xs inputs */
@@ -253,49 +148,12 @@ input.input-xs {
   margin-bottom: 7px;
 }
 
-#data-properties > .panel {
-  display: inline;
-  float: left;
-}
-
-#data-properties > .panel > .panel-body {
-  min-height: 345px;
-  min-width: 360px;
-}
-
-#data-properties .properties, #data-properties .images, #data-properties .history, #data-properties .chart, #data-properties .comments, #data-properties .records, #data-properties .help {
-  //    margin-left: 40px;
-  //    max-width: 300px;
-  overflow: hidden;
-}
-
-#data-properties .nav-pills {
-  position: absolute;
-  width: 30px;
-}
-
-#data-properties .nav-pills .list-group-item {
-  text-align: center;
-  padding: 3px;
-}
-
 label {
   font-weight: normal;
 }
 
 #accordion .panel-title {
   font-size: 14px;
-}
-
-@media print {
-  #app-controls {
-    display: none;
-  }
-
-  #map {
-    width: 100%;
-
-  }
 }
 
 .range input {
@@ -310,37 +168,12 @@ input[type="range"] {
 .left {
   text-align: left !important;
 }
-.time-series > g > polyline {
-  stroke-width: 3px;
-  fill: none;
-  opacity: 1;
-
-}
-
-.time-series > g > .active {
-  stroke-width: 5px;
-  stroke: #000000;
-  opacity: 1;
-}
-
-.time-series > g > .inactive {
-  opacity: 0.2;
-
-}
-
-.year-label .inactive {
-  color: #dddddd;
-}
-
-#filters {
-  width: 440px;
-}
-
-.btn-crop {
-  margin: 1px;
-}
 
 .account-form {
   margin-top: 40px;
 }
 
+//Data Search
+.btn-filter {
+  margin: 0 1px 1px 1px;
+}

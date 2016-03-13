@@ -1,0 +1,185 @@
+<style>
+    .search-controls button {
+        display: block;
+        text-align: center;
+        margin: 0 0 2px 7px;
+    }
+
+    #filters .panel-body, #filters, .panel {
+        background-color: #f4f4f4;
+        margin: 0;
+    }
+
+    #records thead tr {
+        background-color: #f4f4f4;
+        font-weight: 500;
+    }
+
+    #records tbody tr {
+        border-top: 1px solid #cccccc;
+        border-bottom: 1px solid #cccccc;
+        background-color: #ffffff;
+
+    }
+
+    #searchMap {
+        height: 350px;
+    }
+
+    .control-top, .control-left {
+        top: 10px;
+        left: 25px;
+    }
+
+    #ndvi {
+        margin-top: 15px;
+        background-color: #f4f4f4;
+    }
+
+    #ndvi svg {
+        width: 100%; /* Safari Fix */
+    }
+
+    #ndvi .paths {
+        stroke: #237c28;
+        stroke-opacity: 0.3;
+        stroke-width: 6px;
+    }
+
+    #ndvi .axis {
+        stroke-width: 5px;
+        stroke: #999999;
+    }
+
+    #temporal-selection-bounds {
+        fill: #f09e23;
+        fill-opacity: 0.25;
+    }
+
+    .temporal-selection-point {
+        fill: #f09e23;
+        cursor: ns-resize;
+        stroke: black;
+        stroke-opacity: 0;
+        stroke-width: 35px;
+    }
+
+    .temporal-selection-limits {
+        cursor: ns-resize;
+        fill: #f09e23;
+        stroke: black;
+        font-size: 50px;
+        stroke-opacity: 0;
+        stroke-width: 80px;
+    }
+
+</style>
+<div class="container container-static-nav" style="margin-top: 60px;">
+    <div class="row">
+        <div class="col-sm-7">
+            <div id="filters" filter class="am-slide-right"
+                 data-visible="filters.visible"
+                 data-active-filters="filters.activeFilters"></div>
+            <div class="padding-vertical">
+                <div class="table-container">
+                    <table id="records" class="table table-condensed table-hover fill">
+                        <thead>
+                        <tr>
+                            <th ng-repeat="column in tableColumns | filter: {visible:true}"
+                                ng-class="{selected: ordering.order_by == column.id}"
+                                ng-click="$parent.sortColumn(column.id);">{{ column.label }}
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody class="am-fade" ng-hide="busy">
+                        <tr ng-repeat="record in records">
+                            <td ng-repeat="column in tableColumns | filter: {visible:true}"
+                                    ng-click="goToRecord($parent.$index)">{{
+                                record[column.id] | mappings: column.id}}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="spinner am-fade" ng-show="busy">
+                        <div class="bounce1"></div>
+                        <div class="bounce2"></div>
+                        <div class="bounce3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-5">
+            <div id="map-container">
+                <leaflet id="searchMap"
+                         center="center"
+                         bounds="bounds"
+                         markers="markers"
+                         event-broadcast="events"
+                         layers="layers"
+                         class="full full-height">
+                </leaflet>
+                <div class="control-full" ng-show="busy">
+                    <div class="spinner am-fade" style="margin-top: 150px;">
+                        <div class="bounce1"></div>
+                        <div class="bounce2"></div>
+                        <div class="bounce3"></div>
+                    </div>
+                </div>
+                <div class="control-top control-left">
+                    <div class="control">
+                        <div class="btn-group">
+                            <button type="button"
+                                    id="zoomToWorld"
+                                    class="btn btn-success"
+                                    data-title="Zoom to World" bs-tooltip blur
+                                    ng-click="zoomExtent()">
+                                <i class="fa fa-fw fa-globe"></i>
+                            </button>
+                            <button type="button"
+                                    id="zoomInBtn"
+                                    class="btn btn-success"
+                                    ng-click="$parent.center.zoom = $parent.center.zoom + 1"
+                                    data-title="Zoom In" bs-tooltip blur>
+                                <i class="fa fa-fw fa-plus"></i>
+                            </button>
+                            <button type="button"
+                                    id="zoomOutBtn"
+                                    class="btn btn-success"
+                                    ng-click="$parent.center.zoom = $parent.center.zoom - 1"
+                                    data-title="Zoom Out" bs-tooltip blur>
+                                <i class="fa fa-fw fa-minus"></i>
+                            </button>
+                        </div>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-success">Search in Map</button>
+                            <button class="btn btn-success btn-filter"
+                                    ng-click="searchInMap = !searchInMap"
+                                    blur>
+                                <i class="fa fa-fw fa-square-o"
+                                   ng-show="!searchInMap"></i>
+                                <i class="fa fa-fw fa-check-square-o"
+                                   ng-show="searchInMap"></i>
+                            </button>
+                        </div>
+                        <button type="button" class="btn btn-danger"
+                                ng-show="count.filtered >= 200">Marker Limit Reached
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-success" id="ndvi" class="padding" ng-if="ndvi">
+                <div class="panel-heading clearfix">
+                    <h5 class="panel-title">NDVI Temporal Profile</h5>
+                </div>
+                <div class="panel-body padding-top">
+                        <div id="temporalProfile" ng-include="ndvi"></div>
+                </div>
+                <div class="panel-footer">Data extracted from <a
+                        href="https://explorer.earthengine.google.com/#detail/MODIS%2FMOD13Q1"
+                        target="_blank"> MODIS/MOD13Q1</a> 250m 16 day NDVI. Limited to 1000
+                    randomly selected profiles.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

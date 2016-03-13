@@ -10,6 +10,13 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
         }).when('/app/data', {
             templateUrl: '/static/templates/data.html',
             controller: 'DataController'
+        }).when('/app/data/search', {
+            templateUrl: '/static/templates/data/search.html',
+            controller: 'DataSearchController',
+            reloadOnSearch: false
+        }).when('/app/data/record', {
+            templateUrl: '/static/templates/data/record.html',
+            controller: 'DataRecordController'
         }).when('/app/a/login', {
             templateUrl: '/static/templates/account/login.html',
             controller: 'LoginController'
@@ -25,9 +32,6 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
         }).when('/app/a/logout', {
             templateUrl: '/static/templates/account/logout.html',
             controller: 'LogoutController'
-        }).when('/app/classify', {
-            templateUrl: '/static/templates/classify.html',
-            controller: 'ClassifyController'
         }).otherwise({
             templateUrl: '/static/templates/404.html'
         });
@@ -44,6 +48,7 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
         // Allow same origin resource loads.ot
         'self',
         // Allow loading from our assets domain.  Notice the difference between * and **.
-        'http://cache.croplands.org/static/**',
-        'https://hwstatic.croplands.org/**']);
+        'http://127.0.0.1:8000/**',
+        'https://api.croplands.org/**'
+    ]);
 }]);

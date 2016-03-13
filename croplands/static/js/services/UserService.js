@@ -112,7 +112,7 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope', function ($h
             deferred = $q.defer(),
             headers = { Accept: 'application/json', 'Content-Type': 'application/json'};
 
-        $http.post("https://api.croplands.org/auth/forgot", data, headers).then(function (r) {
+        $http.post(_baseUrl + "/auth/forgot", data, headers).then(function (r) {
                 log.info("[User] Sending reset email.");
                 deferred.resolve(r.data);
             },
@@ -134,7 +134,7 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope', function ($h
             deferred = $q.defer(),
             headers = { Accept: 'application/json', 'Content-Type': 'application/json'};
 
-        $http.post("https://api.croplands.org/auth/reset", data, headers).then(function (r) {
+        $http.post(_baseUrl + "/auth/reset", data, headers).then(function (r) {
                 log.info("[User] Changing password.");
                 if (r.data.data.token) {
                     loadFromToken(r.data.data.token);

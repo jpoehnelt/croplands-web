@@ -1,96 +1,122 @@
-<div class="control" id="filters">
-    <div class="panel panel-success am-slide-left">
-        <div class="panel-heading clearfix">
-            <i class="fa fa-close" ng-click="visible = !visible"></i>
-            <h5 class="panel-title"> <i class="fa fa-fw fa-filter"></i> Map Filters</h5>
+<div class="panel panel-success">
+    <div class="panel-heading clearfix">
+        <h5 class="panel-title"><i class="fa fa-fw fa-filter"></i> Data Filters</h5>
+    </div>
+    <div class="panel-body">
+        <div class="padding-vertical-half">
+            <button class="btn btn-danger btn-filter"
+                    ng-click="toggleAllOptions('land_use_type')"
+                    ng-class="{'active': allOptionsAreSelected('land_use_type')}"
+                    blur>
+                <i class="fa fa-fw fa-square-o"
+                   ng-show="!allOptionsAreSelected('land_use_type')"></i>
+                <i class="fa fa-fw fa-check-square-o"
+                   ng-show="allOptionsAreSelected('land_use_type')"></i>
+            </button>
+            <button type="button"
+                    ng-click="type.selected = !type.selected"
+                    ng-class="{'active': type.selected}"
+                    class="btn btn-danger btn-filter"
+                    ng-repeat="type in land_use_type"
+                    blur>
+                {{ type.label }}
+            </button>
         </div>
-        <div class="panel-body">
-
-            <div class="well well-xs">
-                <div class="btn-group btn-group-justified" role="group" aria-label="...">
-                    <div class="btn-group" role="group" ng-repeat="type in landUseType">
-                        <button type="button"
-                                ng-click="type.selected = !type.selected"
-                                ng-class="{'active': type.selected}"
-                                class="btn btn-danger btn-xs "
-                                blur>
-                            {{ type.label }}
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="well well-xs">
-                <button class="btn btn-primary btn-xs btn-crop"
-                        ng-click="toggleAllOptions('years')"
-                        blur>
-                    <i class="fa fa-fw fa-square-o" ng-show="!allOptionsAreSelected('years')"></i>
-                    <i class="fa fa-fw fa-check-square-o" ng-show="allOptionsAreSelected('years')"></i>
-                </button>
-                <button class="btn btn-primary btn-xs btn-crop"
-                        ng-class="{'active': year.selected}"
-                        ng-repeat="year in years"
-                        ng-click="year.selected = !year.selected"
-                        blur>{{ year.label }}</button>
-            </div>
-            <div class="well well-xs">
-                <div class="btn-group btn-group-justified" role="group" aria-label="...">
-
-                    <div class="btn-group" role="group" ng-repeat="intensityLevel in intensity">
-                        <button type="button"
-                                ng-click="intensityLevel.selected = !intensityLevel.selected"
-                                ng-class="{'active': intensityLevel.selected}"
-                                class="btn btn-warning btn-xs "
-                                blur>
-                            {{ intensityLevel.label }}
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="well well-xs">
-                <div class="btn-group btn-group-justified" role="group" aria-label="...">
-                    <div class="btn-group" role="group" ng-repeat="waterUseType in water">
-                        <button type="button"
-                                ng-click="waterUseType.selected = !waterUseType.selected"
-                                ng-class="{'active': waterUseType.selected}"
-                                class="btn btn-info btn-xs "
-                                blur>
-                            {{ waterUseType.label }}
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="well well-xs">
-
-                <button class="btn btn-success btn-xs btn-crop"
-                        ng-click="toggleAllOptions('crops')"
-                        blur>
-                    <i class="fa fa-fw fa-square-o" ng-show="!allOptionsAreSelected('crops')"></i>
-                    <i class="fa fa-fw fa-check-square-o" ng-show="allOptionsAreSelected('crops')"></i>
-
-                </button>
-
-                <button class="btn btn-success btn-xs btn-crop"
-                        ng-class="{'active': crop.selected}"
-                        ng-repeat="crop in crops"
-                        ng-click="crop.selected = !crop.selected"
-                        blur>{{ crop.label }}</button>
-            </div>
-
+        <div class="padding-vertical-half">
+            <button class="btn btn-primary btn-filter"
+                    ng-click="toggleAllOptions('year')"
+                    ng-class="{'active': allOptionsAreSelected('year')}"
+                    blur>
+                <i class="fa fa-fw fa-square-o" ng-show="!allOptionsAreSelected('year')"></i>
+                <i class="fa fa-fw fa-check-square-o" ng-show="allOptionsAreSelected('year')"></i>
+            </button>
+            <button class="btn btn-primary btn-filter"
+                    ng-class="{'active': y.selected}"
+                    ng-repeat="y in year"
+                    ng-click="y.selected = !y.selected"
+                    blur>{{ y.label }}
+            </button>
         </div>
-        <div class="panel-footer" style="text-align: right">
-            <small style="margin-right: 20px;">Total: {{ countAll | number }} &nbsp;
-                Filtered: {{ countFiltered | number }}
-                <i class="fa fa-exclamation-triangle"
-                   ng-show="filteredRecords > filteredMarkers"
-                   data-title="Max of 10,000"
-                   data-placement="left"
-                   bs-tooltip></i></small>
-            <button class="btn btn-default btn-xs" ng-click="reset()" blur>Reset</button>
-            <button class="btn btn-primary btn-xs" ng-click="apply()" blur>Apply</button>
+        <div class="padding-vertical-half">
+            <button class="btn btn-warning btn-filter"
+                    ng-class="{'active': allOptionsAreSelected('intensity')}"
+                    ng-click="toggleAllOptions('intensity')"
+                    blur>
+                <i class="fa fa-fw fa-square-o"
+                   ng-show="!allOptionsAreSelected('intensity')"></i>
+                <i class="fa fa-fw fa-check-square-o"
+                   ng-show="allOptionsAreSelected('intensity')"></i>
+            </button>
+            <button type="button"
+                    ng-click="intensityLevel.selected = !intensityLevel.selected"
+                    ng-class="{'active': intensityLevel.selected}"
+                    class="btn btn-warning btn-filter"
+                    ng-repeat="intensityLevel in intensity"
+                    blur>
+                {{ intensityLevel.label }}
+            </button>
         </div>
+        <div class="padding-vertical-half">
+            <button class="btn btn-info btn-filter"
+                    ng-class="{'active': allOptionsAreSelected('water')}"
+                    ng-click="toggleAllOptions('water')"
+                    blur>
+                <i class="fa fa-fw fa-square-o"
+                   ng-show="!allOptionsAreSelected('water')"></i>
+                <i class="fa fa-fw fa-check-square-o"
+                   ng-show="allOptionsAreSelected('water')"></i>
+            </button>
+            <button type="button"
+                    ng-click="waterUseType.selected = !waterUseType.selected"
+                    ng-class="{'active': waterUseType.selected}"
+                    class="btn btn-info btn-filter"
+                    ng-repeat="waterUseType in water"
+                    blur>
+                {{ waterUseType.label }}
+            </button>
+        </div>
+        <div class="padding-vertical-half">
+            <button class="btn btn-success btn-filter"
+                    ng-class="{'active': allOptionsAreSelected('crop_primary')}"
+                    ng-click="toggleAllOptions('crop_primary')"
+                    blur>
+                <i class="fa fa-fw fa-square-o"
+                   ng-show="!allOptionsAreSelected('crop_primary')"></i>
+                <i class="fa fa-fw fa-check-square-o"
+                   ng-show="allOptionsAreSelected('crop_primary')"></i>
+            </button>
+            <button class="btn btn-success btn-filter"
+                    ng-class="{'active': crop.selected}"
+                    ng-repeat="crop in crop_primary"
+                    ng-click="crop.selected = !crop.selected"
+                    blur>{{ crop.label }}
+            </button>
+        </div>
+        <div class="padding-vertical-half">
+            <button class="btn btn-info btn-filter"
+                    ng-class="{'active': allOptionsAreSelected('source_type')}"
+                    ng-click="toggleAllOptions('source_type')"
+                    blur>
+                <i class="fa fa-fw fa-square-o"
+                   ng-show="!allOptionsAreSelected('source_type')"></i>
+                <i class="fa fa-fw fa-check-square-o"
+                   ng-show="allOptionsAreSelected('source_type')"></i>
+            </button>
+            <button type="button"
+                    ng-click="sourceType.selected = !sourceType.selected"
+                    ng-class="{'active': sourceType.selected}"
+                    class="btn btn-info btn-filter"
+                    ng-repeat="sourceType in source_type"
+                    blur>
+                {{ sourceType.label }}
+            </button>
+        </div>
+    </div>
+    <div class="panel-footer" style="text-align: right">
+        <small> Total: {{ count.total | number }} &nbsp;
+            Filtered: {{ count.filtered | number }}
+        </small>
+        <button class="btn btn-default" ng-click="reset()" blur>Reset</button>
+        <button class="btn btn-success" ng-click="apply()" blur>Apply</button>
     </div>
 </div>

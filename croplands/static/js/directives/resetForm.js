@@ -1,4 +1,4 @@
-app.directive('resetForm', ['user', '$window', '$timeout', function (user, $window, $timeout) {
+app.directive('resetForm', ['User', '$window', '$timeout', function (User, $window, $timeout) {
     return {
         restrict: 'E',
         scope: {
@@ -12,7 +12,7 @@ app.directive('resetForm', ['user', '$window', '$timeout', function (user, $wind
 
             scope.reset = function () {
                 scope.busy = true;
-                user.reset(scope.password, scope.token).then(function (response) {
+                User.reset(scope.password, scope.token).then(function (response) {
                     setMessage(response.description, true);
                     scope.busy = false;
                     scope.close();

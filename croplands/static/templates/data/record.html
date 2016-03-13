@@ -1,0 +1,136 @@
+<style>
+    .panel-dark-back {
+        width: 100%;
+        /*border: 1px solid #cccccc;*/
+        background-color: #f5f5f5;
+    }
+</style>
+<div class="container container-static-nav" style="margin-top: 50px;">
+    <div class="row">
+        <div class="col-sm-12">
+            <a class="btn btn-warning"
+               href="/app/data/search">Back to Search
+            </a>
+            <button class="btn btn-warning"
+                    data-ng-disabled="!paging.hasPrevious()"
+                    data-ng-click="paging.previous()">Previous
+            </button>
+            <button class="btn btn-warning"
+                    data-ng-disabled="!paging.hasNext()"
+                    data-ng-click="paging.next()">Next
+            </button>
+        </div>
+    </div>
+    <div class="row padding-vertical">
+        <div class="col-sm-5">
+            <div id="record" class="panel panel-success panel-dark-back">
+                <div class="panel-heading">
+                    <h3 class="panel-title clearfix">
+                        <span class="pull-left">Record #{{ id }}</span>
+                        <span class="pull-right"><span ng-if="record.month">{{ record.month | monthName }} of </span>{{ record.year }}</span>
+                    </h3>
+                </div>
+                <div class="panel-body padding-vertical">
+
+                    <dl class="dl-horizontal">
+                        <dt>Land Use Type</dt>
+                        <dd>{{ record.land_use_type | mappings: 'land_use_type'}}</dd>
+                       <span ng-show="record.land_use_type === 1">
+                           <dt>Primary Crop</dt>
+                            <dd>{{ record.crop_primary | mappings: 'crop_primary'}}</dd>
+                            <dt>Secondary Crop</dt>
+                            <dd>{{ record.crop_secondary | mappings: 'crop_secondary'}}</dd>
+                            <dt>Irrigation</dt>
+                            <dd>{{ record.water | mappings: 'water'}}</dd>
+                            <dt>Intensity</dt>
+                            <dd>{{ record.intensity | mappings: 'intensity'}}</dd>
+                       </span>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>Source Type</dt>
+                        <dd>{{ record.source_type }}</dd>
+                        <dt>Source</dt>
+                        <dd>{{ record.source_description.replace("_"," ") }}</dd>
+                        <dt>Source ID</dt>
+                        <dd>{{ record.source_id }}</dd>
+                        <dt>Source Class</dt>
+                        <dd>{{ record.source_class }}</dd>
+                    </dl>
+                    <dl class="dl-horizontal">
+                        <dt>Country</dt>
+                        <dd>{{ record.location.country }}</dd>
+                        <dt>Latitude</dt>
+                        <dd>{{ record.location.lat }}</dd>
+                        <dt>Longitude</dt>
+                        <dd>{{ record.location.lon }}</dd>
+                    </dl>
+                </div>
+
+            </div>
+            <div class="panel panel-success panel-dark-back padding visible-sm visible-md visible-lg">
+                <div class="panel-body">
+                    <div id="disqus_thread"></div>
+                    <script type="text/javascript">
+                        /* * * CONFIGURATION VARIABLES * * */
+                        var disqus_shortname = 'croplands2';
+
+                        /* * * DON'T EDIT BELOW THIS LINE * * */
+                        (function () {
+                            var dsq = document.createElement('script');
+                            dsq.type = 'text/javascript';
+                            dsq.async = true;
+                            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                        })();
+                    </script>
+                    <noscript>Please enable JavaScript to view the <a
+                            href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered
+                        by
+                        Disqus.</a></noscript>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-7">
+            <leaflet id="recordMap"
+                     center="center"
+                     markers="markers"
+                     event-broadcast="events"
+                     layers="layers"
+                     style="min-height: 350px;margin-bottom: 10px;"
+                     class="full full-height">
+            </leaflet>
+
+            <div class="row padding-vertical">
+                <div class="col-md-6">
+                    <div class="panel panel-success panel-dark-back">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                NDVI Temporal Profile (MOD13Q1)
+                            </h3>
+                        </div>
+                        <div class="panel-body padding-vertical">
+                            <ndvi pts="record.ndvi"></ndvi>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel panel-success panel-dark-back">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                Images </h3>
+                        </div>
+                        <div class="panel-body">
+                            <div ng-repeat="image in record.images"><img
+                                    ng-src="{{ imageURL(image.url) }}" class="fill"/>
+
+                                <p>{{ image.date_acquired | date : 'short' }}</p>
+                            </div>
+                            <p ng-hide="record.images.length">No images available.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

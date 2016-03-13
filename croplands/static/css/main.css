@@ -301,9 +301,7 @@ img {
 }
 .img-responsive,
 .thumbnail > img,
-.thumbnail a > img,
-.carousel-inner > .item > img,
-.carousel-inner > .item > a > img {
+.thumbnail a > img {
   display: block;
   width: 100% \9;
   max-width: 100%;
@@ -3907,48 +3905,6 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
   background-color: #ffffff;
   cursor: not-allowed;
 }
-.jumbotron {
-  padding: 20px;
-  margin-bottom: 20px;
-  color: inherit;
-  background-color: #eeeeee;
-}
-.jumbotron h1,
-.jumbotron .h1 {
-  color: inherit;
-}
-.jumbotron p {
-  margin-bottom: 10px;
-  font-size: 14px;
-  font-weight: 175;
-}
-.jumbotron > hr {
-  border-top-color: #d5d5d5;
-}
-.container .jumbotron {
-  border-radius: 0;
-}
-.jumbotron .container {
-  max-width: 100%;
-}
-@media screen and (min-width: 768px) {
-  .jumbotron {
-    padding-top: 32px;
-    padding-bottom: 32px;
-  }
-  .container .jumbotron {
-    padding-left: 40px;
-    padding-right: 40px;
-  }
-  .jumbotron h1,
-  .jumbotron .h1 {
-    font-size: 63px;
-  }
-}
-.jumbotron-sm {
-  padding: 10px;
-  margin-bottom: 10px;
-}
 .thumbnail {
   display: block;
   padding: 4px;
@@ -4163,34 +4119,6 @@ photos .col-sm-3 {
   background-image: -webkit-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
   background-image: -o-linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
   background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
-}
-.media,
-.media-body {
-  overflow: hidden;
-  zoom: 1;
-}
-.media,
-.media .media {
-  margin-top: 15px;
-}
-.media:first-child {
-  margin-top: 0;
-}
-.media-object {
-  display: block;
-}
-.media-heading {
-  margin: 0 0 5px;
-}
-.media > .pull-left {
-  margin-right: 10px;
-}
-.media > .pull-right {
-  margin-left: 10px;
-}
-.media-list {
-  padding-left: 0;
-  list-style: none;
 }
 .list-group {
   margin-bottom: 20px;
@@ -4434,7 +4362,7 @@ a.list-group-item-transparent.active:focus {
   padding: 4px 6px;
 }
 .panel-heading {
-  padding: 4px 6px;
+  padding: 7px 6px;
   maring: -1px;
   border-bottom: 1px solid transparent;
   border-top-right-radius: -1;
@@ -4459,7 +4387,7 @@ a.list-group-item-transparent.active:focus {
   float: left;
 }
 .panel-footer {
-  padding: 4px 6px;
+  padding: 7px 6px;
   background-color: #f5f5f5;
   border-top: 1px solid #dddddd;
   border-bottom-right-radius: -1;
@@ -4848,6 +4776,7 @@ button.close {
 .leaflet-container {
   overflow: hidden;
   -ms-touch-action: none;
+  touch-action: none;
 }
 .leaflet-tile,
 .leaflet-marker-icon,
@@ -6381,9 +6310,7 @@ button.close {
   }
   .img-responsive,
   .thumbnail > img,
-  .thumbnail a > img,
-  .carousel-inner > .item > img,
-  .carousel-inner > .item > a > img {
+  .thumbnail a > img {
     max-height: 460.8px;
   }
 }
@@ -6393,20 +6320,72 @@ button.close {
   }
   .img-responsive,
   .thumbnail > img,
-  .thumbnail a > img,
-  .carousel-inner > .item > img,
-  .carousel-inner > .item > a > img {
+  .thumbnail a > img {
     max-height: 595.2px;
   }
 }
 @media (min-width: 1200px) {
   .img-responsive,
   .thumbnail > img,
-  .thumbnail a > img,
-  .carousel-inner > .item > img,
-  .carousel-inner > .item > a > img {
+  .thumbnail a > img {
     max-height: 720px;
   }
+}
+.control {
+  position: relative;
+  padding: 5px;
+  z-index: 7;
+}
+.control-top,
+.control-bottom {
+  position: absolute;
+  z-index: 1000;
+}
+.control-top {
+  top: 50px;
+}
+.control-right {
+  right: 0;
+}
+.control-bottom {
+  bottom: 0;
+}
+.control-left {
+  left: 0;
+}
+.control-center-top {
+  position: absolute;
+  top: 50px;
+  left: 40%;
+  width: 30%;
+  z-index: 1000;
+}
+.control-control {
+  float: left;
+  clear: both;
+}
+.control-right .control-control {
+  float: right;
+}
+.control-top .control-control {
+  margin-top: 8px;
+}
+.control-bottom .control-control {
+  margin-bottom: 12px;
+}
+.control-left .control-control {
+  margin-left: 8px;
+}
+.control-right .control-control {
+  margin-right: 8px;
+}
+.control-full {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
 }
 .tooltip {
   position: absolute;
@@ -6506,193 +6485,48 @@ button.close {
   border-width: 0 5px 5px;
   border-bottom-color: #000000;
 }
-.carousel {
-  position: relative;
-}
-.carousel-inner {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-}
-.carousel-inner > .item {
-  display: none;
-  position: relative;
-  -webkit-transition: 0.6s ease-in-out left;
-  -o-transition: 0.6s ease-in-out left;
-  transition: 0.6s ease-in-out left;
-}
-.carousel-inner > .item > img,
-.carousel-inner > .item > a > img {
-  line-height: 1;
-}
-.carousel-inner > .active,
-.carousel-inner > .next,
-.carousel-inner > .prev {
-  display: block;
-}
-.carousel-inner > .active {
-  left: 0;
-}
-.carousel-inner > .next,
-.carousel-inner > .prev {
-  position: absolute;
-  top: 0;
-  width: 100%;
-}
-.carousel-inner > .next {
-  left: 100%;
-}
-.carousel-inner > .prev {
-  left: -100%;
-}
-.carousel-inner > .next.left,
-.carousel-inner > .prev.right {
-  left: 0;
-}
-.carousel-inner > .active.left {
-  left: -100%;
-}
-.carousel-inner > .active.right {
-  left: 100%;
-}
-.carousel-control {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 15%;
-  opacity: 0.5;
-  filter: alpha(opacity=50);
-  font-size: 20px;
-  color: #ffffff;
+.spinner {
+  margin: 35px auto 0;
+  width: 70px;
   text-align: center;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
-.carousel-control.left {
-  background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.0001) 100%);
-  background-image: -o-linear-gradient(left, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.0001) 100%);
-  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.0001) 100%);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80000000', endColorstr='#00000000', GradientType=1);
-}
-.carousel-control.right {
-  left: auto;
-  right: 0;
-  background-image: -webkit-linear-gradient(left, rgba(0, 0, 0, 0.0001) 0%, rgba(0, 0, 0, 0.5) 100%);
-  background-image: -o-linear-gradient(left, rgba(0, 0, 0, 0.0001) 0%, rgba(0, 0, 0, 0.5) 100%);
-  background-image: linear-gradient(to right, rgba(0, 0, 0, 0.0001) 0%, rgba(0, 0, 0, 0.5) 100%);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#80000000', GradientType=1);
-}
-.carousel-control:hover,
-.carousel-control:focus {
-  outline: 0;
-  color: #ffffff;
-  text-decoration: none;
-  opacity: 0.9;
-  filter: alpha(opacity=90);
-}
-.carousel-control .icon-prev,
-.carousel-control .icon-next,
-.carousel-control .glyphicon-chevron-left,
-.carousel-control .glyphicon-chevron-right {
-  position: absolute;
-  top: 50%;
-  z-index: 5;
+.spinner > div {
+  width: 16px;
+  height: 16px;
+  background-color: #ccc;
+  border-radius: 100%;
   display: inline-block;
+  -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+  animation: sk-bouncedelay 1.4s infinite ease-in-out both;
 }
-.carousel-control .icon-prev,
-.carousel-control .glyphicon-chevron-left {
-  left: 50%;
-  margin-left: -10px;
+.spinner .bounce1 {
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
 }
-.carousel-control .icon-next,
-.carousel-control .glyphicon-chevron-right {
-  right: 50%;
-  margin-right: -10px;
+.spinner .bounce2 {
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
 }
-.carousel-control .icon-prev,
-.carousel-control .icon-next {
-  width: 20px;
-  height: 20px;
-  margin-top: -10px;
-  font-family: serif;
-}
-.carousel-control .icon-prev:before {
-  content: '\2039';
-}
-.carousel-control .icon-next:before {
-  content: '\203a';
-}
-.carousel-indicators {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  z-index: 15;
-  width: 60%;
-  margin-left: -30%;
-  padding-left: 0;
-  list-style: none;
-  text-align: center;
-}
-.carousel-indicators li {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  margin: 1px;
-  text-indent: -999px;
-  border: 1px solid #ffffff;
-  border-radius: 10px;
-  cursor: pointer;
-  background-color: #000 \9;
-  background-color: rgba(0, 0, 0, 0);
-}
-.carousel-indicators .active {
-  margin: 0;
-  width: 12px;
-  height: 12px;
-  background-color: #ffffff;
-}
-.carousel-caption {
-  position: absolute;
-  left: 15%;
-  right: 15%;
-  bottom: 20px;
-  z-index: 10;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  color: #ffffff;
-  text-align: center;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-}
-.carousel-caption .btn {
-  text-shadow: none;
-}
-@media screen and (min-width: 768px) {
-  .carousel-control .glyphicon-chevron-left,
-  .carousel-control .glyphicon-chevron-right,
-  .carousel-control .icon-prev,
-  .carousel-control .icon-next {
-    width: 30px;
-    height: 30px;
-    margin-top: -15px;
-    font-size: 30px;
+@-webkit-keyframes sk-bouncedelay {
+  0%,
+  80%,
+  100% {
+    -webkit-transform: scale(0);
   }
-  .carousel-control .glyphicon-chevron-left,
-  .carousel-control .icon-prev {
-    margin-left: -15px;
+  40% {
+    -webkit-transform: scale(1);
   }
-  .carousel-control .glyphicon-chevron-right,
-  .carousel-control .icon-next {
-    margin-right: -15px;
+}
+@keyframes sk-bouncedelay {
+  0%,
+  80%,
+  100% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
   }
-  .carousel-caption {
-    left: 20%;
-    right: 20%;
-    padding-bottom: 30px;
-  }
-  .carousel-indicators {
-    bottom: 20px;
+  40% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
   }
 }
 .clearfix:before,
@@ -6813,6 +6647,12 @@ button.close {
   padding-top: 8px;
   padding-bottom: 5px;
 }
+.padding-top {
+  padding-top: 8px;
+}
+.padding-bottom {
+  padding-bottom: 5px;
+}
 .padding-horizontal {
   padding-left: 8px;
   padding-right: 8px;
@@ -6826,10 +6666,39 @@ button.close {
 .padding {
   padding: 8px;
 }
+.padding-vertical-half {
+  padding-top: 4px;
+  padding-bottom: 2.5px;
+}
+.padding-horizontal-half {
+  padding-left: 4px;
+  padding-right: 4px;
+}
+.padding-left-half {
+  padding-left: 4px;
+}
+.padding-right-half {
+  padding-right: 4px;
+}
+.padding-half {
+  padding: 4px;
+}
 .shadow {
   -webkit-box-shadow: 0px 10px 8px -4px rgba(0, 0, 0, 0.36);
   -moz-box-shadow: 0px 10px 8px -4px rgba(0, 0, 0, 0.36);
   box-shadow: 0px 10px 8px -4px rgba(0, 0, 0, 0.36);
+}
+.no-gutter-right {
+  padding-right: 0;
+}
+.no-gutter-left {
+  padding-left: 0;
+}
+.full {
+  width: 100%;
+}
+.full-height {
+  height: 100%;
 }
 @-ms-viewport {
   width: device-width;
@@ -7041,22 +6910,6 @@ button.close {
     display: none !important;
   }
 }
-.map-record {
-  font-size: 12px;
-  background-color: #ffffff;
-  padding: 4px;
-  margin: 3px 0;
-  border: 1px solid #e3e3e3;
-  border-radius: 0;
-}
-.map-record.active {
-  border-color: #d6e9c6;
-  background-color: #dff0d8;
-}
-.map-record.new {
-  border-style: dashed;
-  opacity: 0.5;
-}
 [ng-click],
 [data-ng-click],
 [ng-mouseover],
@@ -7068,12 +6921,8 @@ button,
 [ng-cloak] {
   display: none !important;
 }
-.jumbotron-banner {
-  padding-top: 20px;
-  color: #ffffff;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-image: url('http://static.croplands.org/images/map.jpg');
+#layers {
+  width: 450px;
 }
 .partners {
   height: 40px;
@@ -7091,65 +6940,6 @@ button,
   margin: 50px -15px 0 -15px;
   width: 100%;
   height: 100%;
-}
-#layers,
-#filters {
-  width: 350px;
-}
-.filter-tags .btn {
-  margin: 2px;
-}
-.filter-tags .btn i {
-  line-height: inherit;
-}
-/* control positioning */
-.control {
-  position: relative;
-  padding: 5px;
-  z-index: 7;
-}
-.control-top,
-.control-bottom {
-  position: absolute;
-  z-index: 1000;
-}
-.control-top {
-  top: 50px;
-}
-.control-right {
-  right: 0;
-}
-.control-bottom {
-  bottom: 0;
-}
-.control-left {
-  left: 0;
-}
-.control-center-top {
-  position: absolute;
-  top: 50px;
-  left: 40%;
-  width: 30%;
-  z-index: 1000;
-}
-.control-control {
-  float: left;
-  clear: both;
-}
-.control-right .control-control {
-  float: right;
-}
-.control-top .control-control {
-  margin-top: 8px;
-}
-.control-bottom .control-control {
-  margin-bottom: 12px;
-}
-.control-left .control-control {
-  margin-left: 8px;
-}
-.control-right .control-control {
-  margin-right: 8px;
 }
 .modal .panel .fa-close,
 .control .panel .fa-close,
@@ -7173,13 +6963,6 @@ body,
 .container-fluid,
 .fill {
   width: 100%;
-}
-#map {
-  position: absolute;
-  padding-top: 40px;
-  left: 0;
-  width: 100%;
-  height: 100%;
 }
 .leaflet-control,
 .leaflet-control-layers,
@@ -7206,22 +6989,6 @@ body,
   -moz-border-radius: 0 !important;
   border-radius: 0 !important;
 }
-.panel-heading,
-.panel-body,
-.panel-footer {
-  padding: 4px 6px !important;
-}
-.panel,
-.panel-body {
-  background-color: rgba(255, 255, 255, 0.85);
-}
-.panel-group .panel,
-.panel-group .panel + .panel {
-  margin-top: 3px;
-}
-.panel-group .panel-title {
-  font-weight: normal;
-}
 .panel-lighter {
   background-color: rgba(255, 255, 255, 0.3);
 }
@@ -7244,44 +7011,11 @@ input.input-xs {
 .panel-group {
   margin-bottom: 7px;
 }
-#data-properties > .panel {
-  display: inline;
-  float: left;
-}
-#data-properties > .panel > .panel-body {
-  min-height: 345px;
-  min-width: 360px;
-}
-#data-properties .properties,
-#data-properties .images,
-#data-properties .history,
-#data-properties .chart,
-#data-properties .comments,
-#data-properties .records,
-#data-properties .help {
-  overflow: hidden;
-}
-#data-properties .nav-pills {
-  position: absolute;
-  width: 30px;
-}
-#data-properties .nav-pills .list-group-item {
-  text-align: center;
-  padding: 3px;
-}
 label {
   font-weight: normal;
 }
 #accordion .panel-title {
   font-size: 14px;
-}
-@media print {
-  #app-controls {
-    display: none;
-  }
-  #map {
-    width: 100%;
-  }
 }
 .range input {
   vertical-align: middle;
@@ -7294,28 +7028,9 @@ input[type="range"] {
 .left {
   text-align: left !important;
 }
-.time-series > g > polyline {
-  stroke-width: 3px;
-  fill: none;
-  opacity: 1;
-}
-.time-series > g > .active {
-  stroke-width: 5px;
-  stroke: #000000;
-  opacity: 1;
-}
-.time-series > g > .inactive {
-  opacity: 0.2;
-}
-.year-label .inactive {
-  color: #dddddd;
-}
-#filters {
-  width: 440px;
-}
-.btn-crop {
-  margin: 1px;
-}
 .account-form {
   margin-top: 40px;
+}
+.btn-filter {
+  margin: 0 1px 1px 1px;
 }
