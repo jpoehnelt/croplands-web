@@ -6375,7 +6375,6 @@ app.controller("NavbarController", ['$scope', 'User', '$location', function ($sc
     };
 }]);;
 app.controller("ConfirmController", ['$scope', 'log', function ($scope, log) {
-
 }]);;
 app.controller("ForgotController", ['$scope', 'User', function ($scope, User) {
     function setMessage(message, success) {
