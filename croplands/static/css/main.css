@@ -4343,8 +4343,8 @@ a.list-group-item-transparent.active:focus {
   margin-bottom: 20px;
   background-color: rgba(255, 255, 255, 0.9);
   border-radius: 0;
-  -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 .panel.panel-success .panel-heading,
 .panel.panel-danger .panel-heading,
@@ -4695,7 +4695,6 @@ a.list-group-item-transparent.active:focus {
   padding: 19px;
   margin-bottom: 20px;
   background-color: #f5f5f5;
-  border: 1px solid #e3e3e3;
   border-radius: 0;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);

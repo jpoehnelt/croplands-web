@@ -4511,8 +4511,9 @@ app.factory('DataRecord', ['mappings', '$http', '$rootScope', '$q', 'DataService
     return record;
 }]);
 ;
-app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout', 'log', 'User', function (mappings, $http, $rootScope, $q, $timeout, log, User) {
-    var _baseUrl = 'https://api.croplands.org',
+app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout', 'log', 'User', '$window', function (mappings, $http, $rootScope, $q, $timeout, log, User, $window) {
+//    var _baseUrl = 'https://api.croplands.org',
+    var _baseUrl = 'http://127.0.0.1:8000',
         data = {
             records: [],
             count: {},
@@ -4592,7 +4593,6 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
     data.reset = function () {
         log.info("[DataService] Reset");
         data.setDefault();
-        data.load();
     };
 
     // load data from server
@@ -4632,6 +4632,27 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
             data.busy = false;
         }, function (e) {
             deferred.reject(e);
+        });
+
+        return deferred.promise;
+    };
+
+    data.download = function () {
+        var deferred = $q.defer(),
+            params = data.getParams();
+        params.page_size = 100000;
+        log.info("[DataService] Download");
+        $http({
+            url: _baseUrl + '/data/link',
+            method: "GET",
+            params: params
+        }).then(function (response) {
+            $window.open(_baseUrl + '/data/download' + '?token=' + response.data.token);
+            console.log(response.data);
+            deferred.resolve(response.data);
+        }, function () {
+            deferred.reject();
+            log.info("[DataService] Download Failure at Link");
         });
 
         return deferred.promise;
@@ -4731,7 +4752,8 @@ app.factory('RatingService', ['$http', '$rootScope', 'log', 'User', '$q','locati
 }]);;
 app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location', function ($http, $window, $q, log, $rootScope, $location) {
     var _user = {},
-      _baseUrl = 'https://api.croplands.org';
+//      _baseUrl = 'https://api.croplands.org';
+      _baseUrl = 'http://127.0.0.1:8000';
 
     function getUser() {
         return _user;
@@ -4755,9 +4777,7 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location', 
         _user.token = token;
         $window.localStorage.user = JSON.stringify(_user);
         // save token for future requests
-        $http.defaults.headers.post.authorization = 'bearer ' + _user.token;
-        $http.defaults.headers.put.authorization = 'bearer ' + _user.token;
-        $http.defaults.headers.patch.authorization = 'bearer ' + _user.token;
+        $http.defaults.headers.common.authorization = 'bearer ' + _user.token;
     }
 
     function isLoggedIn() {
@@ -4904,6 +4924,8 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location', 
         }
 
         _user = {};
+
+        delete $http.defaults.headers.common.authorization;
         delete $http.defaults.headers.post.authorization;
         delete $http.defaults.headers.put.authorization;
         delete $http.defaults.headers.patch.authorization;
@@ -6031,7 +6053,6 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     }
 
     function getData() {
-        console.log(DataService.temporalBounds);
         $scope.busy = true;
         $scope.$evalAsync(DataService.load);
     }
@@ -6059,7 +6080,8 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     }
 
     function getNDVI(params) {
-        var url = 'https://api.croplands.org/data/image?';
+//        var url = 'https://api.croplands.org/data/image?';
+        var url = 'http://127.0.0.1:8000/data/image?';
         _.each(params, function (val, key) {
             if (key === 'southWestBounds' || key === 'northEastBounds' || key === 'ndvi_limit_upper' || key === 'ndvi_limit_lower') {
                 return;
@@ -6169,12 +6191,26 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
         getData();
     };
 
+    $scope.download = DataService.download;
     $scope.goToRecord = DataRecord.goTo;
+
+    $scope.reset = function() {
+        DataService.reset();
+        getData();
+    };
+
+    $scope.apply = getData;
 
     $scope.zoomExtent = function () {
         $scope.center.lat = 0;
         $scope.center.lng = 0;
         $scope.center.zoom = 2;
+    };
+
+    $scope.percentage = function (){
+        if ($scope.count.total && $scope.count.filtered) {
+            return $scope.count.filtered / $scope.count.total;
+        }
     };
 
 //    $scope.enableTemporalBounds = function () {
@@ -6197,6 +6233,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
 
         $scope.ndvi = getNDVI(DataService.getParams());
         $scope.count = DataService.count;
+        $scope.percentage = $scope.count.filtered / $scope.count.total * 100;
     });
 
     $scope.$watch('bounds', _.debounce(function () {
@@ -6602,6 +6639,59 @@ app.directive('ndvi', ['$http', '$log', '$q',
 
     }
 ]);;
+app.directive('pieChart', ['$http', '$log', '$q',
+    function () {
+        return {
+            restrict: 'E',
+            scope: {
+                value: '=value'
+            },
+            link: function (scope, element, attributes) {
+                var size = 100;
+                scope.radius = size / 2;
+                scope.background = '#cccccc';
+
+                scope.$watch('value', function (value) {
+                    value = parseFloat(value);
+                    scope.invalid = isNaN(value);
+
+                    if (scope.invalid) {
+                        scope.d = '';
+                        return;
+                    }
+
+                    value = Math.min(Math.max(value, 0), 100);
+
+                    console.log('pie value', value);
+                    if (value === 100) {
+                        console.log('short circuit pie');
+                        scope.background = '#237c28';
+                        scope.d = '';
+                        return;
+                    }
+
+
+
+                    //calculate x,y coordinates of the point on the circle to draw the arc to.
+                    var x = Math.cos((2 * Math.PI) / (100 / value));
+                    var y = Math.sin((2 * Math.PI) / (100 / value));
+
+                    //should the arc go the long way round?
+                    var longArc = (value <= 50) ? 0 : 1;
+
+                    //d is a string that describes the path of the slice.
+                    scope.d = "M" + scope.radius + "," + scope.radius + " L" + scope.radius + ", 0, A" + scope.radius + "," + scope.radius + " 0 " + longArc + ",1 " + (scope.radius + y * scope.radius) + "," + (scope.radius - x * scope.radius) + " z";
+
+                });
+
+
+            },
+            templateUrl: '/static/directives/pieChart.html'
+        };
+
+    }
+]);
+;
 app.directive('tableOfContents', ['mapService', 'leafletData', function (mapService, leafletData) {
     return {
         templateUrl: '/static/directives/table-of-contents.html',

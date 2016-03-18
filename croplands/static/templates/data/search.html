@@ -77,34 +77,69 @@
 <div class="container container-static-nav" style="margin-top: 60px;">
     <div class="row">
         <div class="col-sm-7">
+
             <div id="filters" filter class="am-slide-right"
                  data-visible="filters.visible"
                  data-active-filters="filters.activeFilters"></div>
-            <div class="padding-vertical">
-                <div class="table-container">
-                    <table id="records" class="table table-condensed table-hover fill">
-                        <thead>
-                        <tr>
-                            <th ng-repeat="column in tableColumns | filter: {visible:true}"
-                                ng-class="{selected: ordering.order_by == column.id}"
-                                ng-click="$parent.sortColumn(column.id);">{{ column.label }}
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody class="am-fade" ng-hide="busy">
-                        <tr ng-repeat="record in records">
-                            <td ng-repeat="column in tableColumns | filter: {visible:true}"
-                                    ng-click="goToRecord($parent.$index)">{{
-                                record[column.id] | mappings: column.id}}
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <div class="spinner am-fade" ng-show="busy">
-                        <div class="bounce1"></div>
-                        <div class="bounce2"></div>
-                        <div class="bounce3"></div>
+            <div class="well well-sm" style="margin-top:20px;">
+
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div class="padding">
+                            <pie-chart value="percentage"></pie-chart>
+                        </div>
                     </div>
+                    <div class="col-sm-5">
+                        <div class="padding">
+                            <p><strong>Total:</strong> {{ count.total }}</p>
+
+                            <p><strong>Filtered:</strong> {{ count.filtered }}</p>
+
+                            <p><strong>Note:</strong> Independent validation data is not publicly
+                                available.</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <button class="btn btn-block btn-success" blur ng-click="apply()"
+                                ng-class="{'disabled': busy }">Apply
+                        </button>
+                        <button class="btn btn-block btn-default" blur ng-click="reset()"
+                                ng-class="{'disabled': busy }">Reset
+                        </button>
+                        <button class="btn btn-block btn-default" blur ng-click="download()"
+                                ng-class="{'disabled': busy }">Download
+                        </button>
+                        <!--<button class="btn btn-block btn-default" blur ng-click="columns()"-->
+                                <!--ng-class="{'disabled': busy }">Columns-->
+                        <!--</button>-->
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="table-container">
+                <table id="records" class="table table-condensed table-hover fill">
+                    <thead>
+                    <tr>
+                        <th ng-repeat="column in tableColumns | filter: {visible:true}"
+                            ng-class="{selected: ordering.order_by == column.id}"
+                            ng-click="$parent.sortColumn(column.id);">{{ column.label }}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody class="am-fade" ng-hide="busy">
+                    <tr ng-repeat="record in records">
+                        <td ng-repeat="column in tableColumns | filter: {visible:true}"
+                            ng-click="goToRecord($parent.$index)">{{
+                            record[column.id] | mappings: column.id}}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="spinner am-fade" ng-show="busy">
+                    <div class="bounce1"></div>
+                    <div class="bounce2"></div>
+                    <div class="bounce3"></div>
                 </div>
             </div>
         </div>
@@ -172,7 +207,7 @@
                     <h5 class="panel-title">NDVI Temporal Profile</h5>
                 </div>
                 <div class="panel-body padding-top">
-                        <div id="temporalProfile" ng-include="ndvi"></div>
+                    <div id="temporalProfile" ng-include="ndvi"></div>
                 </div>
                 <div class="panel-footer">Data extracted from <a
                         href="https://explorer.earthengine.google.com/#detail/MODIS%2FMOD13Q1"

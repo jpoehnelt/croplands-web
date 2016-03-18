@@ -1,6 +1,7 @@
 app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location', function ($http, $window, $q, log, $rootScope, $location) {
     var _user = {},
-      _baseUrl = 'https://api.croplands.org';
+//      _baseUrl = 'https://api.croplands.org';
+      _baseUrl = 'http://127.0.0.1:8000';
 
     function getUser() {
         return _user;
@@ -24,9 +25,7 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location', 
         _user.token = token;
         $window.localStorage.user = JSON.stringify(_user);
         // save token for future requests
-        $http.defaults.headers.post.authorization = 'bearer ' + _user.token;
-        $http.defaults.headers.put.authorization = 'bearer ' + _user.token;
-        $http.defaults.headers.patch.authorization = 'bearer ' + _user.token;
+        $http.defaults.headers.common.authorization = 'bearer ' + _user.token;
     }
 
     function isLoggedIn() {
@@ -173,6 +172,8 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location', 
         }
 
         _user = {};
+
+        delete $http.defaults.headers.common.authorization;
         delete $http.defaults.headers.post.authorization;
         delete $http.defaults.headers.put.authorization;
         delete $http.defaults.headers.patch.authorization;

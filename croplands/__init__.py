@@ -20,7 +20,7 @@ def cache(seconds=0):
 
 
 app = Flask(__name__)
-app.config['VERSION'] = '3.1.5'
+app.config['VERSION'] = '3.2.0'
 
 @app.route('/')
 @cache(300)

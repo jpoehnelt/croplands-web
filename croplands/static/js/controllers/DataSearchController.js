@@ -110,7 +110,6 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     }
 
     function getData() {
-        console.log(DataService.temporalBounds);
         $scope.busy = true;
         $scope.$evalAsync(DataService.load);
     }
@@ -138,7 +137,8 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     }
 
     function getNDVI(params) {
-        var url = 'https://api.croplands.org/data/image?';
+//        var url = 'https://api.croplands.org/data/image?';
+        var url = 'http://127.0.0.1:8000/data/image?';
         _.each(params, function (val, key) {
             if (key === 'southWestBounds' || key === 'northEastBounds' || key === 'ndvi_limit_upper' || key === 'ndvi_limit_lower') {
                 return;
@@ -248,12 +248,26 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
         getData();
     };
 
+    $scope.download = DataService.download;
     $scope.goToRecord = DataRecord.goTo;
+
+    $scope.reset = function() {
+        DataService.reset();
+        getData();
+    };
+
+    $scope.apply = getData;
 
     $scope.zoomExtent = function () {
         $scope.center.lat = 0;
         $scope.center.lng = 0;
         $scope.center.zoom = 2;
+    };
+
+    $scope.percentage = function (){
+        if ($scope.count.total && $scope.count.filtered) {
+            return $scope.count.filtered / $scope.count.total;
+        }
     };
 
 //    $scope.enableTemporalBounds = function () {
@@ -276,6 +290,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
 
         $scope.ndvi = getNDVI(DataService.getParams());
         $scope.count = DataService.count;
+        $scope.percentage = $scope.count.filtered / $scope.count.total * 100;
     });
 
     $scope.$watch('bounds', _.debounce(function () {

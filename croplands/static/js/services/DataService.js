@@ -1,5 +1,6 @@
-app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout', 'log', 'User', function (mappings, $http, $rootScope, $q, $timeout, log, User) {
-    var _baseUrl = 'https://api.croplands.org',
+app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout', 'log', 'User', '$window', function (mappings, $http, $rootScope, $q, $timeout, log, User, $window) {
+//    var _baseUrl = 'https://api.croplands.org',
+    var _baseUrl = 'http://127.0.0.1:8000',
         data = {
             records: [],
             count: {},
@@ -79,7 +80,6 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
     data.reset = function () {
         log.info("[DataService] Reset");
         data.setDefault();
-        data.load();
     };
 
     // load data from server
@@ -119,6 +119,27 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
             data.busy = false;
         }, function (e) {
             deferred.reject(e);
+        });
+
+        return deferred.promise;
+    };
+
+    data.download = function () {
+        var deferred = $q.defer(),
+            params = data.getParams();
+        params.page_size = 100000;
+        log.info("[DataService] Download");
+        $http({
+            url: _baseUrl + '/data/link',
+            method: "GET",
+            params: params
+        }).then(function (response) {
+            $window.open(_baseUrl + '/data/download' + '?token=' + response.data.token);
+            console.log(response.data);
+            deferred.resolve(response.data);
+        }, function () {
+            deferred.reject();
+            log.info("[DataService] Download Failure at Link");
         });
 
         return deferred.promise;

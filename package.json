@@ -5,7 +5,7 @@
     "name": "Justin Poehnelt",
     "email": "jpoehnelt@usgs.gov"
   },
-  "version": "3.1.5",
+  "version": "3.2.0",
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-aws": "^0.4.0",
