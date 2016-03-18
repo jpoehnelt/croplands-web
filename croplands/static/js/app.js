@@ -4512,8 +4512,7 @@ app.factory('DataRecord', ['mappings', '$http', '$rootScope', '$q', 'DataService
 }]);
 ;
 app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout', 'log', 'User', '$window', function (mappings, $http, $rootScope, $q, $timeout, log, User, $window) {
-//    var _baseUrl = 'https://api.croplands.org',
-    var _baseUrl = 'http://127.0.0.1:8000',
+    var _baseUrl = 'https://api.croplands.org',
         data = {
             records: [],
             count: {},
@@ -4752,8 +4751,7 @@ app.factory('RatingService', ['$http', '$rootScope', 'log', 'User', '$q','locati
 }]);;
 app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location', function ($http, $window, $q, log, $rootScope, $location) {
     var _user = {},
-//      _baseUrl = 'https://api.croplands.org';
-      _baseUrl = 'http://127.0.0.1:8000';
+      _baseUrl = 'https://api.croplands.org';
 
     function getUser() {
         return _user;
@@ -6080,8 +6078,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     }
 
     function getNDVI(params) {
-//        var url = 'https://api.croplands.org/data/image?';
-        var url = 'http://127.0.0.1:8000/data/image?';
+        var url = 'https://api.croplands.org/data/image?';
         _.each(params, function (val, key) {
             if (key === 'southWestBounds' || key === 'northEastBounds' || key === 'ndvi_limit_upper' || key === 'ndvi_limit_lower') {
                 return;

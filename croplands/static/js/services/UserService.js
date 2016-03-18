@@ -1,7 +1,6 @@
 app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location', function ($http, $window, $q, log, $rootScope, $location) {
     var _user = {},
-//      _baseUrl = 'https://api.croplands.org';
-      _baseUrl = 'http://127.0.0.1:8000';
+      _baseUrl = 'https://api.croplands.org';
 
     function getUser() {
         return _user;

@@ -137,8 +137,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     }
 
     function getNDVI(params) {
-//        var url = 'https://api.croplands.org/data/image?';
-        var url = 'http://127.0.0.1:8000/data/image?';
+        var url = 'https://api.croplands.org/data/image?';
         _.each(params, function (val, key) {
             if (key === 'southWestBounds' || key === 'northEastBounds' || key === 'ndvi_limit_upper' || key === 'ndvi_limit_lower') {
                 return;
