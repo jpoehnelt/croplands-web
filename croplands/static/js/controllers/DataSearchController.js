@@ -90,9 +90,9 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             $scope.markers = buildMarkers($scope.records);
             $scope.ndvi = getNDVI(DataService.getParams());
             $scope.busy = false;
-
+            $scope.count = DataService.count;
+            $scope.percentage = $scope.count.filtered / $scope.count.total * 100;
         } else {
-            console.log('not initialized');
             applyParams($location.search());
             DataService.load();
         }
@@ -261,12 +261,6 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
         $scope.center.lat = 0;
         $scope.center.lng = 0;
         $scope.center.zoom = 2;
-    };
-
-    $scope.percentage = function (){
-        if ($scope.count.total && $scope.count.filtered) {
-            return $scope.count.filtered / $scope.count.total;
-        }
     };
 
 //    $scope.enableTemporalBounds = function () {
