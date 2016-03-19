@@ -5946,18 +5946,32 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             {
                 id: 'id',
                 label: 'ID',
-                visible: true
+                visible: false
+            },
+            {
+                id: 'lon',
+                label: 'Longitude',
+                visible: false
+            },
+            {
+                id: 'lat',
+                label: 'Latitude',
+                visible: false
             },
             {
                 id: 'land_use_type',
-                label: 'Land Use Type',
+                label: 'Land Use',
                 visible: true
-
             },
             {
                 id: 'crop_primary',
                 label: 'Primary Crop',
                 visible: true
+            },
+            {
+                id: 'crop_secondary',
+                label: 'Secondary Crop',
+                visible: false
             },
             {
                 id: 'water',
@@ -5975,14 +5989,34 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
                 visible: true
             },
             {
+                id: 'month',
+                label: 'Month',
+                visible: false
+            },
+            {
                 id: 'country',
                 label: 'Country',
                 visible: true
             },
             {
                 id: 'source_type',
-                label: 'Source',
+                label: 'Source Type',
                 visible: true
+            },
+            {
+                id: 'source_class',
+                label: 'Source Class',
+                visible: false
+            },
+            {
+                id: 'source_description',
+                label: 'Source Description',
+                visible: false
+            },
+            {
+                id: 'use_validation',
+                label: 'Validation',
+                visible: false
             }
         ],
         ordering: DataService.ordering,
@@ -6188,10 +6222,14 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
         getData();
     };
 
+    $scope.selectColumns = function () {
+        console.log('select columns');
+    }
+
     $scope.download = DataService.download;
     $scope.goToRecord = DataRecord.goTo;
 
-    $scope.reset = function() {
+    $scope.reset = function () {
         DataService.reset();
         getData();
     };
@@ -6637,7 +6675,7 @@ app.directive('pieChart', ['$http', '$log', '$q',
             scope: {
                 value: '=value'
             },
-            link: function (scope, element, attributes) {
+            link: function (scope) {
                 var size = 100;
                 scope.radius = size / 2;
                 scope.background = '#cccccc';
@@ -6653,26 +6691,19 @@ app.directive('pieChart', ['$http', '$log', '$q',
 
                     value = Math.min(Math.max(value, 0), 100);
 
-                    console.log('pie value', value);
                     if (value === 100) {
-                        console.log('short circuit pie');
                         scope.background = '#237c28';
                         scope.d = '';
                         return;
                     }
 
-
-
-                    //calculate x,y coordinates of the point on the circle to draw the arc to.
                     var x = Math.cos((2 * Math.PI) / (100 / value));
                     var y = Math.sin((2 * Math.PI) / (100 / value));
 
                     //should the arc go the long way round?
                     var longArc = (value <= 50) ? 0 : 1;
 
-                    //d is a string that describes the path of the slice.
                     scope.d = "M" + scope.radius + "," + scope.radius + " L" + scope.radius + ", 0, A" + scope.radius + "," + scope.radius + " 0 " + longArc + ",1 " + (scope.radius + y * scope.radius) + "," + (scope.radius - x * scope.radius) + " z";
-
                 });
 
 

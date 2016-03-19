@@ -5,18 +5,32 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             {
                 id: 'id',
                 label: 'ID',
-                visible: true
+                visible: false
+            },
+            {
+                id: 'lon',
+                label: 'Longitude',
+                visible: false
+            },
+            {
+                id: 'lat',
+                label: 'Latitude',
+                visible: false
             },
             {
                 id: 'land_use_type',
-                label: 'Land Use Type',
+                label: 'Land Use',
                 visible: true
-
             },
             {
                 id: 'crop_primary',
                 label: 'Primary Crop',
                 visible: true
+            },
+            {
+                id: 'crop_secondary',
+                label: 'Secondary Crop',
+                visible: false
             },
             {
                 id: 'water',
@@ -34,14 +48,34 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
                 visible: true
             },
             {
+                id: 'month',
+                label: 'Month',
+                visible: false
+            },
+            {
                 id: 'country',
                 label: 'Country',
                 visible: true
             },
             {
                 id: 'source_type',
-                label: 'Source',
+                label: 'Source Type',
                 visible: true
+            },
+            {
+                id: 'source_class',
+                label: 'Source Class',
+                visible: false
+            },
+            {
+                id: 'source_description',
+                label: 'Source Description',
+                visible: false
+            },
+            {
+                id: 'use_validation',
+                label: 'Validation',
+                visible: false
             }
         ],
         ordering: DataService.ordering,
@@ -247,10 +281,14 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
         getData();
     };
 
+    $scope.selectColumns = function () {
+        console.log('select columns');
+    }
+
     $scope.download = DataService.download;
     $scope.goToRecord = DataRecord.goTo;
 
-    $scope.reset = function() {
+    $scope.reset = function () {
         DataService.reset();
         getData();
     };

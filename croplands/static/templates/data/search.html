@@ -109,13 +109,26 @@
                         <button class="btn btn-block btn-default" blur ng-click="download()"
                                 ng-class="{'disabled': busy }">Download
                         </button>
-                        <!--<button class="btn btn-block btn-default" blur ng-click="columns()"-->
-                                <!--ng-class="{'disabled': busy }">Columns-->
-                        <!--</button>-->
+                        <button class="btn btn-block btn-default" blur
+                                ng-click="columnSelection = !columnSelection"
+                                ng-class="{'active': columnSelection }">Columns
+                        </button>
+                    </div>
+                </div>
+                <div ng-show="columnSelection">
+                    <hr/>
+                    <div class="row">
+                        <div class="col-sm-3" ng-repeat="column in tableColumns">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" ng-model="column.visible"> {{
+                                    column.label }}
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-
 
             <div class="table-container">
                 <table id="records" class="table table-condensed table-hover fill">
