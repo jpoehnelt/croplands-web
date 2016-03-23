@@ -133,8 +133,7 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
         query = $httpParamSerializer(params);
 
         url = _baseUrl + '/data/download' + '?' + query;
-        console.log(url, window.btoa(url));
-        $window.open();
+        $window.open(url);
     };
 
     data.init = function () {
