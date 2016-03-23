@@ -1,4 +1,4 @@
-app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout', 'log', 'User', '$window', function (mappings, $http, $rootScope, $q, $timeout, log, User, $window) {
+app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout', 'log', 'User', '$window', '$httpParamSerializer', function (mappings, $http, $rootScope, $q, $timeout, log, User, $window, $httpParamSerializer) {
     var _baseUrl = 'https://api.croplands.org',
         data = {
             records: [],
@@ -64,6 +64,10 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
             filters.ndvi_limit_lower = data.ndviLimits.lower.join(",");
         }
 
+        if (User.isLoggedIn()) {
+            filters.delay = false;
+        }
+
         return _.assign(filters, data.ordering, data.paging);
     };
 
@@ -124,24 +128,13 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
     };
 
     data.download = function () {
-        var deferred = $q.defer(),
-            params = data.getParams();
+        var params = data.getParams(), query, url;
         params.page_size = 100000;
-        log.info("[DataService] Download");
-        $http({
-            url: _baseUrl + '/data/link',
-            method: "GET",
-            params: params
-        }).then(function (response) {
-            $window.open(_baseUrl + '/data/download' + '?token=' + response.data.token);
-            console.log(response.data);
-            deferred.resolve(response.data);
-        }, function () {
-            deferred.reject();
-            log.info("[DataService] Download Failure at Link");
-        });
+        query = $httpParamSerializer(params);
 
-        return deferred.promise;
+        url = _baseUrl + '/data/download' + '?' + query;
+        console.log(url, window.btoa(url));
+        $window.open();
     };
 
     data.init = function () {
