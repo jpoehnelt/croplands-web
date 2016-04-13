@@ -6699,6 +6699,68 @@ button.close {
 .full-height {
   height: 100%;
 }
+/**
+ * KEYS.css
+ *
+ * A simple stylesheet for rendering beautiful keyboard-style elements.
+ *
+ * Author:  Michael Hüneburg
+ * Website: http://michaelhue.com/keyscss
+ * License: MIT License (see LICENSE.txt)
+ */
+/* Base style, essential for every key. */
+kbd,
+.key {
+  display: inline;
+  display: inline-block;
+  min-width: 1em;
+  padding: .2em .3em;
+  font: normal 0.85em/1 "Lucida Grande", Lucida, Arial, sans-serif;
+  text-align: center;
+  text-decoration: none;
+  -moz-border-radius: .15em;
+  -webkit-border-radius: .15em;
+  border-radius: .15em;
+  border: none;
+  cursor: default;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+kbd[title],
+.key[title] {
+  cursor: help;
+}
+/* Dark style for display on light background. This is the default style. */
+kbd,
+kbd.dark,
+.dark-keys kbd,
+.key,
+.key.dark,
+.dark-keys .key {
+  background: #505050;
+  background: -moz-linear-gradient(top, #3c3c3c, #505050);
+  background: -webkit-gradient(linear, left top, left bottom, from(#3c3c3c), to(#505050));
+  color: #fafafa;
+  text-shadow: -1px -1px 0 #464646;
+  -moz-box-shadow: inset 0 0 1px #969696, inset 0 -0.05em 0.4em #505050, 0 0.1em 0 #1e1e1e, 0 0.1em 0.1em rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: inset 0 0 1px #969696, inset 0 -0.05em 0.4em #505050, 0 0.1em 0 #1e1e1e, 0 0.1em 0.1em rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 0 1px #969696, inset 0 -0.05em 0.4em #505050, 0 0.1em 0 #1e1e1e, 0 0.1em 0.1em rgba(0, 0, 0, 0.3);
+}
+/* Light style for display on dark background. */
+kbd.light,
+.light-keys kbd,
+.key.light,
+.light-keys .key {
+  background: #fafafa;
+  background: -moz-linear-gradient(top, #d2d2d2, #ffffff);
+  background: -webkit-gradient(linear, left top, left bottom, from(#d2d2d2), to(#ffffff));
+  color: #323232;
+  text-shadow: 0 0 2px #ffffff;
+  -moz-box-shadow: inset 0 0 1px #ffffff, inset 0 0 0.4em #c8c8c8, 0 0.1em 0 #828282, 0 0.11em 0 rgba(0, 0, 0, 0.4), 0 0.1em 0.11em rgba(0, 0, 0, 0.9);
+  -webkit-box-shadow: inset 0 0 1px #ffffff, inset 0 0 0.4em #c8c8c8, 0 0.1em 0 #828282, 0 0.11em 0 rgba(0, 0, 0, 0.4), 0 0.1em 0.11em rgba(0, 0, 0, 0.9);
+  box-shadow: inset 0 0 1px #ffffff, inset 0 0 0.4em #c8c8c8, 0 0.1em 0 #828282, 0 0.11em 0 rgba(0, 0, 0, 0.4), 0 0.1em 0.11em rgba(0, 0, 0, 0.9);
+}
 @-ms-viewport {
   width: device-width;
 }
