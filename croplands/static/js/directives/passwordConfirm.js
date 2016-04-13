@@ -1,5 +1,5 @@
 app.directive('passwordConfirm', ['$window', function ($window) {
-    var obvious = ['crops', 'cropland', 'rice', 'usgs', 'nasa', 'corn', 'wheat', 'landsat', 'modis'];
+    var obvious = [];
 
     return {
         scope: {
@@ -9,7 +9,7 @@ app.directive('passwordConfirm', ['$window', function ($window) {
         },
         link: function (scope) {
             if (scope.minEntropy === undefined) {
-                scope.minEntropy = 20;
+                scope.minEntropy = 15;
             }
 
             // init values
