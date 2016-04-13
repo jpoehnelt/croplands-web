@@ -1,0 +1,57 @@
+<style>
+    .leaflet-control-zoom {
+        visibility: visible;
+    }
+</style>
+<div class="container-fluid container-static-nav">
+    <div class="row" style="padding-top: 2%">
+        <div class="col-sm-3 col-xl-2 col-xl-offset-1">
+            <div class="well well-sm">
+                <h3 style="text-align: center;margin: 10px 0;">Instructions</h3>
+
+                <p>Select the class that matches the box within the image. If no clear selection is
+                    possible, please
+                    select unknown.</p>
+
+                <h3 style="text-align: center;margin: 10px 0;">About</h3>
+
+                <p>Your contribution helps to validate important remote sensing products. All of the
+                    data collected will
+                    be made available to the public.</p>
+
+                <a class="btn btn-danger btn-block"
+                   href="http://public.croplands.org/json/classifications.json"
+                   target="_blank">Download JSON</a>
+                <a class="btn btn-danger btn-block"
+                   href="http://public.croplands.org/csv/classifications.csv"
+                   target="_blank">Download CSV</a>
+
+            </div>
+        </div>
+
+        <div class="col-sm-5 col-xl-1">
+                <leaflet id="map"
+                         style="height: 500px; width:100%;"
+                         layers="layers"
+                         center="center"
+                         paths="paths">
+                </leaflet>
+        </div>
+        <div class="col-sm-1 col-xl-3">
+            <div style="width: 100%;" class="thumbnail">
+                <img style="width: 100%;" ng-src="http://images.croplands.org/{{ image.url }}"/>
+            </div>
+        </div>
+        <div class="col-sm-3 col-xl-2">
+            <div class="well well-sm">
+                <h3 style="text-align: center;margin: 10px 0;">Select Class</h3>
+                <button class="btn btn-primary btn-block {{ type.buttonClass }}"
+                        style="padding: 10px 4px;"
+                        ng-click="classify($index)"
+                        ng-repeat="type in buttons" blur>{{ type.label }}
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>

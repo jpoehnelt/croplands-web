@@ -17,6 +17,9 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
         }).when('/app/data/record', {
             templateUrl: '/static/templates/data/record.html',
             controller: 'DataRecordController'
+        }).when('/app/data/classify', {
+            templateUrl: '/static/templates/data/classify.html',
+            controller: 'ClassifyController'
         }).when('/app/a/login', {
             templateUrl: '/static/templates/account/login.html',
             controller: 'LoginController'
