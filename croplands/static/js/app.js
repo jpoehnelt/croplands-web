@@ -5769,7 +5769,9 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
             + '{"name":"source","op":"eq","val":"VHRI"},'
             + '{"name":"classifications_count","op":"lt","val":5}'
             + ']}'
-            + '&page=' + String(page)).then(function (response) {
+            + '&page=' + String(page)
+            + '&page_size=50'
+            + '&random' + Date.now().toString()).then(function (response) {
             $scope.images = $scope.images.concat(response.data.objects);
             max_pages = response.data.total_pages;
         });

@@ -5,8 +5,8 @@
 
     kbd {
         font-size: 120%;
-        margin-right:10px;
-        margin-top:5px;
+        margin-right: 10px;
+        margin-top: 5px;
         min-width: 25px;
     }
 </style>
@@ -16,15 +16,29 @@
             <div class="well well-sm">
                 <h3 style="text-align: center;margin: 10px 0;">Instructions</h3>
 
-                <p>Select the class that matches the box within the image. If no clear selection is
-                    possible, please
-                    select unknown.</p>
+                <p>Select the class that matches the box within the image. Unclassifiable images,
+                    such as those obscured by clouds should be rejected. You may need to pan the map
+                    for additional context.</p>
 
-                <h3 style="text-align: center;margin: 10px 0;">About</h3>
+                <h3 style="text-align: center;margin: 10px 0;">Definitions</h3>
+                <h4>Cropland</h4>
 
-                <p>Your contribution helps to validate important remote sensing products. All of the
-                    data collected will
-                    be made available to the public.</p>
+                <p>
+                    All cultivated plants harvested for food, feed, and fiber, including plantations
+                    (e.g., orchards, vineyards, coffee, tea, rubber).
+                </p>
+                <h4>Pure</h4>
+
+                <p>
+                    Greater than 80% of the pixels in the red box are cropland.
+                </p>
+                <h4>Mixed</h4>
+
+                <p>
+                    Less than 80% and more than 20% of the pixels in the red box are cropland.
+                </p>
+
+                <h3 style="text-align: center;margin: 10px 0;">Downloads</h3>
 
                 <a class="btn btn-danger btn-block"
                    href="http://public.croplands.org/json/classifications.json"
@@ -60,13 +74,13 @@
             </div>
             <div class="well well-sm">
                 <h3 style="text-align: center;margin: 10px 0;">Keyboard Shortcuts</h3>
-                <h4><kbd class="light">c</kbd> Pure Cropland</h4>
-                <h4><kbd class="light">e</kbd> Mixed Cropland</h4>
-                <h4><kbd class="light">d</kbd> Not Cropland</h4>
-                <h4><kbd class="light">r</kbd> Reject</h4>
-                <h4><kbd class="light">s</kbd> Skip</h4>
-                <h4><kbd class="light">f</kbd> Zoom Out</h4>
-                <h4><kbd class="light">g</kbd> Zoom In</h4>
+                <h5><kbd class="light">c</kbd> Pure Cropland</h5>
+                <h5><kbd class="light">e</kbd> Mixed Cropland</h5>
+                <h5><kbd class="light">d</kbd> Not Cropland</h5>
+                <h5><kbd class="light">r</kbd> Reject</h5>
+                <h5><kbd class="light">s</kbd> Skip</h5>
+                <h5><kbd class="light">f</kbd> Zoom Out</h5>
+                <h5><kbd class="light">g</kbd> Zoom In</h5>
             </div>
         </div>
     </div>
