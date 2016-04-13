@@ -64,10 +64,6 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
             filters.ndvi_limit_lower = data.ndviLimits.lower.join(",");
         }
 
-        if (User.isLoggedIn()) {
-            filters.delay = false;
-        }
-
         return _.assign(filters, data.ordering, data.paging);
     };
 
