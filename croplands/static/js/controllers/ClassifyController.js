@@ -200,7 +200,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
 
         $timeout(function () {
             delete $scope.action;
-        },1);
+        },500);
 
     });
 
