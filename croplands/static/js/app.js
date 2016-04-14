@@ -5708,8 +5708,8 @@ app.controller("AccountFormController", ['$location', '$scope', 'log', '$window'
     }
 
 }]);;
-app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http', 'leafletData','$document','log', function ($scope, mapService, mappings, $http, leafletData,$document,log) {
-    var page = 1, max_pages = 1, minimumMapBox, currentImageOverlay;
+app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http', 'leafletData','$document','log','$timeout', function ($scope, mapService, mappings, $http, leafletData,$document,log,$timeout) {
+    var page = 1, minimumMapBox, currentImageOverlay;
 
     // Apply defaults
     angular.extend($scope, {
@@ -5769,11 +5769,11 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
             + '{"name":"source","op":"eq","val":"VHRI"},'
             + '{"name":"classifications_count","op":"lt","val":5}'
             + ']}'
-            + '&page=' + String(page)
-            + '&page_size=50'
+            + '&page=1'// + String(page)
+            + '&results_per_page=100'
             + '&random' + Date.now().toString()).then(function (response) {
             $scope.images = $scope.images.concat(response.data.objects);
-            max_pages = response.data.total_pages;
+//            max_pages = response.data.total_pages;
         });
     }
 
@@ -5836,14 +5836,13 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
     $scope.$watch(function () {
         return $scope.images.length;
     }, function (l, previous) {
-        console.log(l);
         // first page
         if (previous === 0 && l > 0) {
             getImage();
         }
         // get next page
-        if (l < 30 && max_pages >= page) {
-            getMoreImages(page++);
+        if (l === 10) {
+            getMoreImages();
         }
     });
 
@@ -5875,14 +5874,17 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
             case 115:
                 log.info("[ClassifyControler] Skip Image Shortcut");
                 getImage();
+                $scope.action = 's';
                 break;
             case 99:
                 log.info("[ClassifyControler] Pure Cropland Shortcut");
                 $scope.classify(1);
+                $scope.action = 1;
                 break;
             case 101:
                 log.info("[ClassifyControler] Mixed Cropland Shortcut");
                 $scope.classify(2);
+                $scope.action = 2;
                 break;
             case 102:
                 log.info("[ClassifyControler] Zoom Out Shortcut");
@@ -5897,14 +5899,23 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
             case 100:
                 log.info("[ClassifyControler] Not Cropland Shortcut");
                 $scope.classify(0);
+                $scope.action = 0;
                 break;
             case 114:
                 log.info("[ClassifyControler] Reject Shortcut");
                 $scope.classify(-1);
+                $scope.action = -1;
                 break;
         }
-        var char = String.fromCharCode(event.keyCode);
+
+        $timeout(function () {
+            delete $scope.action;
+        },1);
+
     });
+
+
+    getMoreImages(1);
 
 }]);;
 app.controller("DataController", ['$scope', '$http', 'mapService', 'leafletData', function ($scope, $http, mapService, leafletData) {
