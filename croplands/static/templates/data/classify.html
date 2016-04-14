@@ -52,7 +52,7 @@
 
         <div class="col-sm-6">
             <leaflet id="map"
-                     style="height: 500px; width:100%;"
+                     style="height: 600px; width:100%;"
                      layers="layers"
                      center="center"
                      paths="paths">
@@ -64,10 +64,12 @@
                 <button class="btn btn-primary btn-block {{ type.buttonClass }}"
                         style="padding: 10px 4px;"
                         ng-click="classify(type.id)"
+                        ng-class="{'active': type.id===action}"
                         ng-repeat="type in buttons" blur>{{ type.label }}
                 </button>
                 <button class="btn btn-default btn-block"
                         style="padding: 10px 4px;"
+                        ng-class="{'active': 's'===action}"
                         ng-click="skip()"
                         blur>Skip
                 </button>
