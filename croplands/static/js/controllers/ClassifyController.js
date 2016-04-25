@@ -53,7 +53,9 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
 
     function getMoreImages(page) {
         $http.get('https://api.croplands.org/api/images?'
-            + 'q={"order_by":[{"field":"classifications_count","direction":"asc"}'
+            + 'q={"order_by":['
+            + '{"field":"classifications_count","direction":"asc"},'
+            + '{"field":"date_uploaded","direction":"desc"}'
             + '],"filters":['
 //            + '{"name":"classifications_majority_agreement","op":"lt","val":75},'
             + '{"name":"source","op":"eq","val":"VHRI"},'

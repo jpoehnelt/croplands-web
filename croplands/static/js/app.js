@@ -4621,6 +4621,7 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
                 lon: parseFloat,
                 crop_primary: parseInt,
                 crop_secondary: parseInt,
+                crop_tertiary: parseInt,
                 water: parseInt,
                 intensity: parseInt,
                 land_use_type: parseInt
@@ -5263,7 +5264,10 @@ app.factory('mappings', [function () {
             choices: []
         }
     };
+
+    // use same mapping for secondary and tertiary
     data.crop_secondary = angular.copy(data.crop_primary);
+    data.crop_tertiary = angular.copy(data.crop_primary);
 
 
     var currentYear = new Date().getFullYear();
@@ -5763,7 +5767,9 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
 
     function getMoreImages(page) {
         $http.get('https://api.croplands.org/api/images?'
-            + 'q={"order_by":[{"field":"classifications_count","direction":"asc"}'
+            + 'q={"order_by":['
+            + '{"field":"classifications_count","direction":"asc"},'
+            + '{"field":"date_uploaded","direction":"desc"}'
             + '],"filters":['
 //            + '{"name":"classifications_majority_agreement","op":"lt","val":75},'
             + '{"name":"source","op":"eq","val":"VHRI"},'
@@ -6172,6 +6178,11 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             {
                 id: 'crop_secondary',
                 label: 'Secondary Crop',
+                visible: false
+            },
+            {
+                id: 'crop_tertiary',
+                label: 'Tertiary Crop',
                 visible: false
             },
             {
