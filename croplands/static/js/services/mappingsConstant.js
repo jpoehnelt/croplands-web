@@ -89,7 +89,10 @@ app.factory('mappings', [function () {
             choices: []
         }
     };
+
+    // use same mapping for secondary and tertiary
     data.crop_secondary = angular.copy(data.crop_primary);
+    data.crop_tertiary = angular.copy(data.crop_primary);
 
 
     var currentYear = new Date().getFullYear();

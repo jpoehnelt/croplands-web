@@ -105,6 +105,7 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
                 lon: parseFloat,
                 crop_primary: parseInt,
                 crop_secondary: parseInt,
+                crop_tertiary: parseInt,
                 water: parseInt,
                 intensity: parseInt,
                 land_use_type: parseInt

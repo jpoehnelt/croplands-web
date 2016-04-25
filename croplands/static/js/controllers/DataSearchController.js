@@ -33,6 +33,11 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
                 visible: false
             },
             {
+                id: 'crop_tertiary',
+                label: 'Tertiary Crop',
+                visible: false
+            },
+            {
                 id: 'water',
                 label: 'Irrigation',
                 visible: true
