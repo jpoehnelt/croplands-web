@@ -1,6 +1,6 @@
 FROM justinwp/croplands-base
 
-RUN git clone -b docker https://github.com/justinwp/croplands-web
+RUN git clone https://github.com/justinwp/croplands-web
 WORKDIR /croplands-web
 
 RUN pip install -r /croplands-web/requirements.txt
