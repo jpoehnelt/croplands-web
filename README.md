@@ -14,5 +14,5 @@ See the companion api at [github.com/justinwp/croplands](https://github.com/just
 
 ```
 docker pull justinwp/croplands-web:latest
-docker run --net=host -d -p 8000:8000 --restart=always  --name croplands-web justinwp/croplands-web:latest
+docker run --net=host --env-file ./config.env -d -p 8000:8000 --restart=always  --name croplands-web justinwp/croplands-web:latest
 ```
