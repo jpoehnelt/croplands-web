@@ -4404,8 +4404,6 @@ gfsad.decToHex = function (n) {
 };;
 var app = angular.module("app", ["leaflet-directive", "ngRoute", 'mgcrea.ngStrap', 'server']);
 app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$locationProvider', 'server', function ($tooltipProvider, $routeProvider, $sceDelegateProvider, $locationProvider, server) {
-    var cdn = serverConfig.cdn;
-
     $routeProvider
         .when('/app/map', {
             templateUrl: '/static/templates/map.html',
