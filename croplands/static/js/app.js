@@ -4457,7 +4457,8 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
         // Allow loading from our assets domain.  Notice the difference between * and **.
         'http://127.0.0.1:8000/**',
         'https://api.croplands.org/**',
-            server.address + '/**'
+            "http:" +server.address + '/**',
+            "https:" +server.address + '/**'
     ]);
 }]);
 ;
