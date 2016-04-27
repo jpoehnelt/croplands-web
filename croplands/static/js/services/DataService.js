@@ -1,5 +1,5 @@
-app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout', 'log', 'User', '$window', '$httpParamSerializer', function (mappings, $http, $rootScope, $q, $timeout, log, User, $window, $httpParamSerializer) {
-    var _baseUrl = 'https://api.croplands.org',
+app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout', 'log', 'User', '$window', '$httpParamSerializer','server', function (mappings, $http, $rootScope, $q, $timeout, log, User, $window, $httpParamSerializer, server) {
+    var _baseUrl = server.address,
         data = {
             records: [],
             count: {},

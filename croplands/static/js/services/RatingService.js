@@ -1,7 +1,7 @@
-app.factory('RatingService', ['$http', '$rootScope', 'log', 'User', '$q','locationFactory', function ($http, $rootScope, log, User, $q, locationFactory) {
+app.factory('RatingService', ['$http', '$rootScope', 'log', 'User', '$q','locationFactory','server', function ($http, $rootScope, log, User, $q, locationFactory, server) {
     var ratingLookup = {},
 //        _baseUrl = 'http://127.0.0.1:8000';
-        _baseUrl = 'https://api.croplands.org';
+        _baseUrl = server.address;
 
     /**
      * Applies a rating to a record.

@@ -1,4 +1,4 @@
-app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafletData', '$location', 'DataService', 'DataRecord', 'leafletData', function ($scope, $http, mapService, leafletData, $location, DataService, DataRecord, leafletData) {
+app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafletData', '$location', 'DataService', 'DataRecord', 'leafletData', 'server', function ($scope, $http, mapService, leafletData, $location, DataService, DataRecord, leafletData, server) {
 
     angular.extend($scope, {
         tableColumns: [
@@ -176,7 +176,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     }
 
     function getNDVI(params) {
-        var url = 'https://api.croplands.org/data/image?';
+        var url = server.address +'/data/image?';
         _.each(params, function (val, key) {
             if (key === 'southWestBounds' || key === 'northEastBounds' || key === 'ndvi_limit_upper' || key === 'ndvi_limit_lower') {
                 return;

@@ -1,4 +1,4 @@
-app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http', 'leafletData','$document','log','$timeout', function ($scope, mapService, mappings, $http, leafletData,$document,log,$timeout) {
+app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http', 'leafletData', '$document', 'log', '$timeout', 'server', function ($scope, mapService, mappings, $http, leafletData, $document, log, $timeout, server) {
     var page = 1, minimumMapBox, currentImageOverlay;
 
     // Apply defaults
@@ -27,11 +27,11 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
         },
         paths: {},
         buttons: [
-                {'id': 1, 'label': 'Pure Cropland', 'description': 'Cropland is...', buttonClass:'pure-cropland'},
-                {'id': 2, 'label': 'Mixed Cropland', 'description': 'Mixed is ...', buttonClass:'mixed-cropland'},
-                {'id': 0, 'label': 'Not Cropland', 'description': 'Not cropland is...', buttonClass:'not-cropland'},
-                {'id': -1, 'label': 'Reject', 'description': 'Reject is ...', buttonClass:'btn-default'}
-            ]
+            {'id': 1, 'label': 'Pure Cropland', 'description': 'Cropland is...', buttonClass: 'pure-cropland'},
+            {'id': 2, 'label': 'Mixed Cropland', 'description': 'Mixed is ...', buttonClass: 'mixed-cropland'},
+            {'id': 0, 'label': 'Not Cropland', 'description': 'Not cropland is...', buttonClass: 'not-cropland'},
+            {'id': -1, 'label': 'Reject', 'description': 'Reject is ...', buttonClass: 'btn-default'}
+        ]
     });
 
     leafletData.getMap('map').then(function (map) {
@@ -52,7 +52,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
     }
 
     function getMoreImages(page) {
-        $http.get('https://api.croplands.org/api/images?'
+        $http.get(server.address + '/api/images?'
             + 'q={"order_by":['
             + '{"field":"classifications_count","direction":"asc"},'
             + '{"field":"date_uploaded","direction":"desc"}'
@@ -160,7 +160,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
         getImage();
     };
 
-    $document.bind("keypress", function(event) {
+    $document.bind("keypress", function (event) {
         console.debug(event);
         switch (event.keyCode) {
             case 115:
@@ -202,7 +202,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
 
         $timeout(function () {
             delete $scope.action;
-        },500);
+        }, 500);
 
     });
 

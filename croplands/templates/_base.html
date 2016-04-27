@@ -27,7 +27,17 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular-strap/2.0.0/angular-strap.tpl.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.2/angular-animate.min.js"></script>
     <!-- End Libraries on CDN-->
+    <!-- pass data to angular from server -->
+    <script>
+        angular.module('server', [])
+                .constant('server', {
+                    version: '{{ version }}',
+                    address: '{{ g.server_address }}',
+                    csrf: '{{ csrf }}'
+                });
+    </script>
 
+<!-- end pass data to angular from server -->
     {% block scripts_head %}
     {% endblock %}
 </head>

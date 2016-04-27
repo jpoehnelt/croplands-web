@@ -1,5 +1,5 @@
-app.factory('DataRecord', ['mappings', '$http', '$rootScope', '$q', 'DataService', 'log', 'User', '$location', function (mappings, $http, $rootScope, $q, DataService, log, User, $location) {
-    var _baseUrl = 'https://api.croplands.org',
+app.factory('DataRecord', ['mappings', '$http', '$rootScope', '$q', 'DataService', 'log', 'User', '$location','server', function (mappings, $http, $rootScope, $q, DataService, log, User, $location, server) {
+    var _baseUrl = server.address,
         record = {
             paging: {},
             current: {}

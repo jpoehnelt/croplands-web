@@ -4403,7 +4403,7 @@ gfsad.decToHex = function (n) {
     return (n + 0x100).toString(16).substr(-2).toUpperCase();
 };;
 var app = angular.module("app", ["leaflet-directive", "ngRoute", 'mgcrea.ngStrap', 'server']);
-app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$locationProvider', 'server.config', function ($tooltipProvider, $routeProvider, $sceDelegateProvider, $locationProvider, serverConfig) {
+app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$locationProvider', 'server', function ($tooltipProvider, $routeProvider, $sceDelegateProvider, $locationProvider, serverConfig) {
     var cdn = serverConfig.cdn;
 
     $routeProvider
@@ -4460,8 +4460,8 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
     ]);
 }]);
 ;
-app.factory('DataRecord', ['mappings', '$http', '$rootScope', '$q', 'DataService', 'log', 'User', '$location', function (mappings, $http, $rootScope, $q, DataService, log, User, $location) {
-    var _baseUrl = 'https://api.croplands.org',
+app.factory('DataRecord', ['mappings', '$http', '$rootScope', '$q', 'DataService', 'log', 'User', '$location','server', function (mappings, $http, $rootScope, $q, DataService, log, User, $location, server) {
+    var _baseUrl = server.address,
         record = {
             paging: {},
             current: {}
@@ -4514,8 +4514,8 @@ app.factory('DataRecord', ['mappings', '$http', '$rootScope', '$q', 'DataService
     return record;
 }]);
 ;
-app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout', 'log', 'User', '$window', '$httpParamSerializer', function (mappings, $http, $rootScope, $q, $timeout, log, User, $window, $httpParamSerializer) {
-    var _baseUrl = 'https://api.croplands.org',
+app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout', 'log', 'User', '$window', '$httpParamSerializer','server', function (mappings, $http, $rootScope, $q, $timeout, log, User, $window, $httpParamSerializer, server) {
+    var _baseUrl = server.address,
         data = {
             records: [],
             count: {},
@@ -4661,10 +4661,10 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
     return data;
 }]);
 ;
-app.factory('RatingService', ['$http', '$rootScope', 'log', 'User', '$q','locationFactory', function ($http, $rootScope, log, User, $q, locationFactory) {
+app.factory('RatingService', ['$http', '$rootScope', 'log', 'User', '$q','locationFactory','server', function ($http, $rootScope, log, User, $q, locationFactory, server) {
     var ratingLookup = {},
 //        _baseUrl = 'http://127.0.0.1:8000';
-        _baseUrl = 'https://api.croplands.org';
+        _baseUrl = server.address;
 
     /**
      * Applies a rating to a record.
@@ -4741,9 +4741,9 @@ app.factory('RatingService', ['$http', '$rootScope', 'log', 'User', '$q','locati
         getRecordRatings: getRecordRatings
     };
 }]);;
-app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location', function ($http, $window, $q, log, $rootScope, $location) {
+app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location','server', function ($http, $window, $q, log, $rootScope, $location, server) {
     var _user = {},
-      _baseUrl = 'https://api.croplands.org';
+        baseUrl = server.address;
 
     function getUser() {
         return _user;
@@ -5712,7 +5712,7 @@ app.controller("AccountFormController", ['$location', '$scope', 'log', '$window'
     }
 
 }]);;
-app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http', 'leafletData','$document','log','$timeout', function ($scope, mapService, mappings, $http, leafletData,$document,log,$timeout) {
+app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http', 'leafletData', '$document', 'log', '$timeout', 'server', function ($scope, mapService, mappings, $http, leafletData, $document, log, $timeout, server) {
     var page = 1, minimumMapBox, currentImageOverlay;
 
     // Apply defaults
@@ -5741,11 +5741,11 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
         },
         paths: {},
         buttons: [
-                {'id': 1, 'label': 'Pure Cropland', 'description': 'Cropland is...', buttonClass:'pure-cropland'},
-                {'id': 2, 'label': 'Mixed Cropland', 'description': 'Mixed is ...', buttonClass:'mixed-cropland'},
-                {'id': 0, 'label': 'Not Cropland', 'description': 'Not cropland is...', buttonClass:'not-cropland'},
-                {'id': -1, 'label': 'Reject', 'description': 'Reject is ...', buttonClass:'btn-default'}
-            ]
+            {'id': 1, 'label': 'Pure Cropland', 'description': 'Cropland is...', buttonClass: 'pure-cropland'},
+            {'id': 2, 'label': 'Mixed Cropland', 'description': 'Mixed is ...', buttonClass: 'mixed-cropland'},
+            {'id': 0, 'label': 'Not Cropland', 'description': 'Not cropland is...', buttonClass: 'not-cropland'},
+            {'id': -1, 'label': 'Reject', 'description': 'Reject is ...', buttonClass: 'btn-default'}
+        ]
     });
 
     leafletData.getMap('map').then(function (map) {
@@ -5766,7 +5766,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
     }
 
     function getMoreImages(page) {
-        $http.get('https://api.croplands.org/api/images?'
+        $http.get(server.address + '/api/images?'
             + 'q={"order_by":['
             + '{"field":"classifications_count","direction":"asc"},'
             + '{"field":"date_uploaded","direction":"desc"}'
@@ -5874,7 +5874,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
         getImage();
     };
 
-    $document.bind("keypress", function(event) {
+    $document.bind("keypress", function (event) {
         console.debug(event);
         switch (event.keyCode) {
             case 115:
@@ -5916,7 +5916,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
 
         $timeout(function () {
             delete $scope.action;
-        },500);
+        }, 500);
 
     });
 
@@ -6146,7 +6146,7 @@ app.controller("DataRecordController", ['$scope', 'mapService', 'leafletData', '
         console.log(e);
     });
 }]);;
-app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafletData', '$location', 'DataService', 'DataRecord', 'leafletData', function ($scope, $http, mapService, leafletData, $location, DataService, DataRecord, leafletData) {
+app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafletData', '$location', 'DataService', 'DataRecord', 'leafletData', 'server', function ($scope, $http, mapService, leafletData, $location, DataService, DataRecord, leafletData, server) {
 
     angular.extend($scope, {
         tableColumns: [
@@ -6324,7 +6324,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
     }
 
     function getNDVI(params) {
-        var url = 'https://api.croplands.org/data/image?';
+        var url = server.address +'/data/image?';
         _.each(params, function (val, key) {
             if (key === 'southWestBounds' || key === 'northEastBounds' || key === 'ndvi_limit_upper' || key === 'ndvi_limit_lower') {
                 return;

@@ -1,7 +1,7 @@
-from flask import Flask, render_template, make_response, Response
+from flask import Flask, render_template, make_response, Response, g
 from functools import wraps
 import requests
-
+import os
 
 def cache(seconds=0):
     def wrapper(fn):
@@ -21,6 +21,11 @@ def cache(seconds=0):
 
 app = Flask(__name__)
 app.config['VERSION'] = '3.5.0'
+app.config['SERVER_ADDRESS'] = os.environ.get('SERVER_ADDRESS', 'https://api.croplands.org')
+
+@app.before_request
+def set_server_address():
+    g.server_address = app.config['SERVER_ADDRESS']
 
 @app.route('/')
 @cache(300)
