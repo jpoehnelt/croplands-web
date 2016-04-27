@@ -4743,7 +4743,7 @@ app.factory('RatingService', ['$http', '$rootScope', 'log', 'User', '$q','locati
 }]);;
 app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location','server', function ($http, $window, $q, log, $rootScope, $location, server) {
     var _user = {},
-        baseUrl = server.address;
+        _baseUrl = server.address;
 
     function getUser() {
         return _user;
