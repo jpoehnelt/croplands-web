@@ -4403,7 +4403,7 @@ gfsad.decToHex = function (n) {
     return (n + 0x100).toString(16).substr(-2).toUpperCase();
 };;
 var app = angular.module("app", ["leaflet-directive", "ngRoute", 'mgcrea.ngStrap', 'server']);
-app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$locationProvider', 'server', function ($tooltipProvider, $routeProvider, $sceDelegateProvider, $locationProvider, serverConfig) {
+app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$locationProvider', 'server', function ($tooltipProvider, $routeProvider, $sceDelegateProvider, $locationProvider, server) {
     var cdn = serverConfig.cdn;
 
     $routeProvider
@@ -4456,7 +4456,8 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
         'self',
         // Allow loading from our assets domain.  Notice the difference between * and **.
         'http://127.0.0.1:8000/**',
-        'https://api.croplands.org/**'
+        'https://api.croplands.org/**',
+            server.address + '/**'
     ]);
 }]);
 ;
@@ -6495,6 +6496,7 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
         }
     });
 
+    console.log(server);
     ////////// End Events //////////
 
     ////////// Init //////////
