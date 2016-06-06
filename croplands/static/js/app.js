@@ -4437,6 +4437,9 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
         }).when('/app/a/logout', {
             templateUrl: '/static/templates/account/logout.html',
             controller: 'LogoutController'
+        }).when('/app/a/messages', {
+            templateUrl: '/static/templates/account/messages.html',
+            controller: 'MessagesController'
         }).otherwise({
             templateUrl: '/static/templates/404.html'
         });
@@ -4661,6 +4664,35 @@ app.factory('DataService', ['mappings', '$http', '$rootScope', '$q', '$timeout',
     return data;
 }]);
 ;
+app.factory('MessageService', ['$http', '$rootScope', 'log', '$q','server', function ($http, $rootScope, log, $q, server) {
+    var _baseUrl = server.address;
+
+    function loadMessages(params) {
+        var deferred = $q.defer(),
+            headers = { Accept: 'application/json', 'Content-Type': 'application/json'};
+
+//        $http.get(_baseUrl + '/api/notifications', {params:params, headers:headers}).then(function (r) {
+//                console.log(r);
+//                deferred.resolve(r.data);
+//            },
+//            function (r) {
+//                if (r.data) {
+//                    deferred.reject(r.data);
+//                }
+//                else {
+//                    deferred.reject();
+//                }
+//            });
+
+        deferred.reject();
+        return deferred.promise;
+    }
+
+
+    return {
+        loadMessages: loadMessages
+    };
+}]);;
 app.factory('RatingService', ['$http', '$rootScope', 'log', 'User', '$q','locationFactory','server', function ($http, $rootScope, log, User, $q, locationFactory, server) {
     var ratingLookup = {},
 //        _baseUrl = 'http://127.0.0.1:8000';
@@ -4741,8 +4773,9 @@ app.factory('RatingService', ['$http', '$rootScope', 'log', 'User', '$q','locati
         getRecordRatings: getRecordRatings
     };
 }]);;
-app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location','server', function ($http, $window, $q, log, $rootScope, $location, server) {
+app.factory('User', [ '$http', '$window', '$q', 'log', '$rootScope', '$location', 'server', function ($http, $window, $q, log, $rootScope, $location, server) {
     var _user = {},
+        messages,
         _baseUrl = server.address;
 
     function getUser() {
@@ -4819,6 +4852,8 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location','
                 }
                 deferred.resolve(r.data);
                 $rootScope.$emit('User.change');
+                loadMessages();
+
             },
             function (r) {
                 if (r.data) {
@@ -4914,6 +4949,7 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location','
         }
 
         _user = {};
+        messages = [];
 
         delete $http.defaults.headers.common.authorization;
         delete $http.defaults.headers.post.authorization;
@@ -4928,6 +4964,31 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location','
         $rootScope.$emit('User.change');
     }
 
+    function loadMessages() {
+//        var deferred = $q.defer(),
+//            headers = { Accept: 'application/json', 'Content-Type': 'application/json'},
+//            params = {};
+//
+//        $http.get(_baseUrl + '/api/notifications', {params: params, headers: headers}).then(function (r) {
+//                messages = r.data.objects;
+//                console.log(messages);
+//                deferred.resolve(r.data);
+//            },
+//            function (r) {
+//                if (r.data) {
+//                    deferred.reject(r.data);
+//                }
+//                else {
+//                    deferred.reject();
+//                }
+//            });
+//
+//        return deferred.promise;
+    }
+
+    function getMessages() {
+        return messages;
+    }
     // initialization
     function init() {
         // Check if user information is available in local storage
@@ -4945,10 +5006,13 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location','
                 _user = {};
             }
         });
+
+        if (isLoggedIn()) {
+            loadMessages();
+        }
     }
 
     init();
-
 
     return {
         changePassword: changePassword,
@@ -4960,7 +5024,8 @@ app.factory('User', [ '$http', '$window', '$q', 'log','$rootScope','$location','
         forgot: forgot,
         reset: reset,
         get: getUser,
-        goNext:goNext
+        goNext: goNext,
+        getMessages: getMessages
     };
 
 }]);;
@@ -5153,7 +5218,8 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                 egypt30mv201512y2014: wmsLayers.egypt30mv201512y2014,
                 southamerica30v201512: wmsLayers.southamerica30v201512,
                 southAsia250v201601y2010: wmsLayers.southAsia250v201601y2010,
-                australia: wmsLayers.australiaACCA250m
+                australia: wmsLayers.australiaACCA250m,
+                australia30mExtent: wmsLayers.australiaExtent30m
             }
         }
     };
@@ -5409,7 +5475,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
             name: 'Australia GCE 250m Cropland Products 2000 to Present from ACCA ',
             type: 'wms',
             url: 'https://wms.croplands.org/geoserver/Products/wms',
-            visible: true,
+            visible: false,
             layerOptions: {
                 bounds: L.latLngBounds(L.latLng(-9.83464522447101, 110.000125), L.latLng(-45.00754522447101, 158.961625)),
                 layers: 'Products:GCE 1km Crop Dominance year2000',
@@ -5443,6 +5509,26 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
                 {label: '4 Croplands, irrigated, SC, pastures', color: '#00B0F0'},
                 {label: '5 Croplands, irrigated, continuous, orchards ', color: '#00B050'},
                 {label: '6 Croplands,  fallow ', color: '#FBD4B4'}
+            ]
+        }),
+        australiaExtent30m: new WMSCollection({
+            id: 'australia_30m_v2016-6-1_y2014',
+            name: 'Australia GCE 30m Cropland Extent Product 2014',
+            type: 'wms',
+            url: 'https://wms.croplands.org/geoserver/Products/wms',
+            visible: true,
+            layerOptions: {
+                bounds: L.latLngBounds(L.latLng(-9.83464522447101, 110.000125), L.latLng(-45.00754522447101, 158.961625)),
+                layers: 'Products:australia_30m_v2016-6-1_y2014',
+                format: 'image/png',
+                transparent: true,
+                minZoom: 0,
+                maxNativeZoom: 17,
+                opacity: 1
+            },
+            legend: [
+                {label: 'Croplands', color: '#FFFF00'},
+                {label: 'Pasture', color: '#66FFFF'}
             ]
         }),
         gfsad1000v00: {
@@ -6712,6 +6798,19 @@ app.controller("LoginController", ['$scope', 'log', 'User', '$timeout', '$locati
 app.controller("LogoutController", ['$scope', 'User', '$location', function ($scope, User, $location) {
     User.logout();
     User.goNext();
+}]);;
+app.controller("MessagesController", ['$scope', '$window', 'User', function ($scope, $window, User) {
+    $scope.active = 0;
+    $scope.$watch(function () {
+        return User.getMessages();
+    }, function (messages) {
+        $scope.messages = messages;
+    }, true);
+
+    $scope.view = function (m) {
+        m.closed = !m.closed;
+        m.unread = false;
+    };
 }]);;
 app.controller("RegisterController", ['User', 'countries', '$scope', '$location', 'log', function (User, countries, $scope, $location, log) {
 

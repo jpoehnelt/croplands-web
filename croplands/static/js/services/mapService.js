@@ -67,7 +67,8 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                 egypt30mv201512y2014: wmsLayers.egypt30mv201512y2014,
                 southamerica30v201512: wmsLayers.southamerica30v201512,
                 southAsia250v201601y2010: wmsLayers.southAsia250v201601y2010,
-                australia: wmsLayers.australiaACCA250m
+                australia: wmsLayers.australiaACCA250m,
+                australia30mExtent: wmsLayers.australiaExtent30m
             }
         }
     };

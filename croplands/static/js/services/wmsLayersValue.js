@@ -130,7 +130,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
             name: 'Australia GCE 250m Cropland Products 2000 to Present from ACCA ',
             type: 'wms',
             url: 'https://wms.croplands.org/geoserver/Products/wms',
-            visible: true,
+            visible: false,
             layerOptions: {
                 bounds: L.latLngBounds(L.latLng(-9.83464522447101, 110.000125), L.latLng(-45.00754522447101, 158.961625)),
                 layers: 'Products:GCE 1km Crop Dominance year2000',
@@ -164,6 +164,26 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
                 {label: '4 Croplands, irrigated, SC, pastures', color: '#00B0F0'},
                 {label: '5 Croplands, irrigated, continuous, orchards ', color: '#00B050'},
                 {label: '6 Croplands,  fallow ', color: '#FBD4B4'}
+            ]
+        }),
+        australiaExtent30m: new WMSCollection({
+            id: 'australia_30m_v2016-6-1_y2014',
+            name: 'Australia GCE 30m Cropland Extent Product 2014',
+            type: 'wms',
+            url: 'https://wms.croplands.org/geoserver/Products/wms',
+            visible: true,
+            layerOptions: {
+                bounds: L.latLngBounds(L.latLng(-9.83464522447101, 110.000125), L.latLng(-45.00754522447101, 158.961625)),
+                layers: 'Products:australia_30m_v2016-6-1_y2014',
+                format: 'image/png',
+                transparent: true,
+                minZoom: 0,
+                maxNativeZoom: 17,
+                opacity: 1
+            },
+            legend: [
+                {label: 'Croplands', color: '#FFFF00'},
+                {label: 'Pasture', color: '#66FFFF'}
             ]
         }),
         gfsad1000v00: {
