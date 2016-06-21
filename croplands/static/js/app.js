@@ -5870,6 +5870,30 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
         });
     }
 
+    function drawImage() {
+        leafletData.getMap('map').then(function (map) {
+            if (minimumMapBox) {
+                map.removeLayer(minimumMapBox);
+            }
+
+            if (currentImageOverlay) {
+                map.removeLayer(currentImageOverlay);
+            }
+
+            var currentBounds = [
+                [$scope.image.corner_ne_lat, $scope.image.corner_ne_lon],
+                [$scope.image.corner_sw_lat, $scope.image.corner_sw_lon]
+            ];
+
+            currentImageOverlay = L.imageOverlay('https://images.croplands.org/' + $scope.image.url, currentBounds, {opacity: $scope.opacity});
+            currentImageOverlay.addTo(map);
+
+            // create 90m box
+            minimumMapBox = L.imageOverlay('/static/imgs/minimumMapUnit.png', L.circle({lng: $scope.image.location.lon, lat: $scope.image.location.lat}, 45).getBounds());
+            minimumMapBox.addTo(map);
+        });
+    }
+
     function getImage() {
         // Function gets the next image from the array and moves the center of the map
         if ($scope.images.length > 0) {
@@ -5885,10 +5909,6 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
             $scope.center.lng = $scope.image.location.lon;
             $scope.center.zoom = 19;
 
-            var currentBounds = [
-                [$scope.image.corner_ne_lat, $scope.image.corner_ne_lon],
-                [$scope.image.corner_sw_lat, $scope.image.corner_sw_lon]
-            ];
 
             // preload
             if ($scope.counter) {
@@ -5908,22 +5928,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
             $scope.opacity = 1;
 
 
-            leafletData.getMap('map').then(function (map) {
-                if (minimumMapBox) {
-                    map.removeLayer(minimumMapBox);
-                }
-
-                if (currentImageOverlay) {
-                    map.removeLayer(currentImageOverlay);
-                }
-
-                currentImageOverlay = L.imageOverlay('https://images.croplands.org/' + $scope.image.url, currentBounds, $scope.opacity);
-                currentImageOverlay.addTo(map);
-
-                // create 90m box
-                minimumMapBox = L.imageOverlay('/static/imgs/minimumMapUnit.png', L.circle({lng: $scope.image.location.lon, lat: $scope.image.location.lat}, 45).getBounds());
-                minimumMapBox.addTo(map);
-            });
+            drawImage();
         }
     }
 
@@ -6008,6 +6013,8 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
                 } else {
                     $scope.opacity = 1;
                 }
+                            drawImage();
+
                 break;
         }
 
