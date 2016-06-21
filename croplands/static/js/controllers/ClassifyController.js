@@ -6,6 +6,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
         counter: 0,
         center: {lat: 0, lng: 0, zoom: 2},
         images: [],
+        opacity: 1,
         markers: {
             image: {
                 layer: 'markers',
@@ -104,6 +105,8 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
                 }
             }
 
+            $scope.opacity = 1;
+
 
             leafletData.getMap('map').then(function (map) {
                 if (minimumMapBox) {
@@ -114,7 +117,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
                     map.removeLayer(currentImageOverlay);
                 }
 
-                currentImageOverlay = L.imageOverlay('https://images.croplands.org/' + $scope.image.url, currentBounds);
+                currentImageOverlay = L.imageOverlay('https://images.croplands.org/' + $scope.image.url, currentBounds, $scope.opacity);
                 currentImageOverlay.addTo(map);
 
                 // create 90m box
@@ -197,6 +200,14 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
                 log.info("[ClassifyControler] Reject Shortcut");
                 $scope.classify(-1);
                 $scope.action = -1;
+                break;
+            case 118:
+                log.info("[ClassifyControler] Toggle Shortcut");
+                if ($scope.opacity > 0) {
+                    $scope.opacity = 0;
+                } else {
+                    $scope.opacity = 1;
+                }
                 break;
         }
 
