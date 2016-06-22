@@ -155,7 +155,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
         var now = new Date();
 
         // slow em down
-        if (last_classification && (now - lastClassification) < 500) {
+        if (lastClassification && (now - lastClassification) < 500) {
             return;
         } else {
             lastClassification = now;
