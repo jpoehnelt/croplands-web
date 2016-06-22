@@ -20,7 +20,7 @@ def cache(seconds=0):
 
 
 app = Flask(__name__)
-app.config['VERSION'] = '3.5.4'
+app.config['VERSION'] = '3.5.5'
 app.config['SERVER_ADDRESS'] = os.environ.get('SERVER_ADDRESS', 'https://api.croplands.org')
 
 @app.before_request

@@ -1,5 +1,5 @@
 app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http', 'leafletData', '$document', 'log', '$timeout', 'server', function ($scope, mapService, mappings, $http, leafletData, $document, log, $timeout, server) {
-    var page = 1, minimumMapBox, currentImageOverlay;
+    var page = 1, minimumMapBox, currentImageOverlay, lastClassification = new Date();
 
     // Apply defaults
     angular.extend($scope, {
@@ -152,6 +152,15 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
     };
 
     $scope.classify = function (classification_type) {
+        var now = new Date();
+
+        // slow em down
+        if (last_classification && (now - lastClassification) < 500) {
+            return;
+        } else {
+            lastClassification = now;
+        }
+
         // precondition that a classification type is defined
         if (classification_type !== undefined) {
             var data = {
