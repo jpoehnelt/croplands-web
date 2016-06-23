@@ -301,12 +301,12 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
             name: 'Africa GCE 250m Cropland Products 2014 from ACCA',
             type: 'wms',
             url: 'https://wms.croplands.org/geoserver/Products/wms',
-            visible: true,
+            visible: false,
             layerOptions: {
                 bounds: L.latLngBounds(L.latLng(37.3494, -25.3695), L.latLng(-34.83026000000001, 63.50536000000001)),
                 layers: 'Products:Africa ACCA L4 250m v201512 year2014',
                 minZoom: 0,
-                maxZoom: 15,
+                maxZoom: 17,
                 opacity: 1,
                 format: 'image/png',
                 transparent: true            },
@@ -411,6 +411,26 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
                     ]
                 }
             }
+        }),
+         africa_30m_extent_v201605_y2014: new WMSCollection({
+            id: 'africa_30m_extent_v201605_y2014',
+            name: 'Africa GCE 30m Cropland Extent Product 2014',
+            type: 'wms',
+            url: 'https://wms.croplands.org/geoserver/Products/wms',
+            visible: true,
+            layerOptions: {
+                bounds: L.latLngBounds(L.latLng(37.3494, -25.3695), L.latLng(-34.83026000000001, 63.50536000000001)),
+                layers: 'Products:africa_30m_extent_v201605_y2014',
+                format: 'image/png',
+                transparent: true,
+                minZoom: 0,
+                maxNativeZoom: 18,
+                opacity: 1
+            },
+            legend: [
+                {label: 'Croplands', color: '#FFFF00'},
+                {label: 'Pasture', color: '#66FFFF'}
+            ]
         })
     };
 

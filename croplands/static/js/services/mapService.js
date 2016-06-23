@@ -45,18 +45,6 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                     layerType: 'ROADMAP',
                     type: 'google',
                     visible: false
-                },
-                ndvi_landsat_7_2014: {
-                    layerOptions: {
-                        opacity: 1,
-                        minZoom: 0,
-                        maxNativeZoom: 15,
-                        zIndex: 0
-                    },
-                    visible: false,
-                    name: 'NDVI Landsat 7 2014 Composite',
-                    type: 'xyz',
-                    url: 'http://tiles.croplands.org/ndvi_landsat_7_2014/{x}/{y}/{z}'
                 }
             },
             overlays: {
@@ -68,7 +56,8 @@ app.factory('mapService', ['wmsLayers', 'leafletData', '$http', '$q', '$interval
                 southamerica30v201512: wmsLayers.southamerica30v201512,
                 southAsia250v201601y2010: wmsLayers.southAsia250v201601y2010,
                 australia: wmsLayers.australiaACCA250m,
-                australia30mExtent: wmsLayers.australiaExtent30m
+                australia30mExtent: wmsLayers.australiaExtent30m,
+                africa_30m_extent_v201605_y2014: wmsLayers.africa_30m_extent_v201605_y2014
             }
         }
     };
