@@ -5762,8 +5762,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
                 opacity: 1
             },
             legend: [
-                {label: 'Croplands', color: '#FFFF00'},
-                {label: 'Pasture', color: '#66FFFF'}
+                {label: 'Cropland', color: '#00FF00'}
             ]
         })
     };
@@ -5807,7 +5806,7 @@ app.controller("AccountFormController", ['$location', '$scope', 'log', '$window'
     }
 
 }]);;
-app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http', 'leafletData', '$document', 'log', '$timeout', 'server', function ($scope, mapService, mappings, $http, leafletData, $document, log, $timeout, server) {
+app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http', 'leafletData', '$document', 'log', '$timeout', 'server', 'User', function ($scope, mapService, mappings, $http, leafletData, $document, log, $timeout, server, User) {
     var page = 1, minimumMapBox, currentImageOverlay, lastClassification = new Date();
 
     // Apply defaults
@@ -5862,18 +5861,23 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
     }
 
     function getMoreImages(page) {
-        $http.get(server.address + '/api/images?'
-            + 'q={"order_by":['
-            + '{"field":"classifications_count","direction":"asc"},'
-            + '{"field":"date_uploaded","direction":"desc"}'
-            + '],"filters":['
-//            + '{"name":"classifications_majority_agreement","op":"lt","val":75},'
-            + '{"name":"source","op":"eq","val":"VHRI"},'
-            + '{"name":"classifications_count","op":"lt","val":5}'
-            + ']}'
-            + '&page=1'// + String(page)
-            + '&results_per_page=100'
-            + '&random' + Date.now().toString()).then(function (response) {
+        var filters = [
+            {"name": "source", "op": "eq", "val": "VHRI"}
+        ], order_by = [
+            {"field": "classifications_count", "direction": "asc"},
+            {"field": "date_uploaded", "direction": "desc"}
+        ], params = {};
+
+
+
+        params.q = JSON.stringify({"order_by": order_by, "filters": filters});
+        params.page = 1;
+        params.results_per_page = 100;
+        params.random = Date.now().toString();
+        console.log(params);
+
+
+        $http.get(server.address + '/api/images', {params: params}).then(function (response) {
             $scope.images = $scope.images.concat(response.data.objects);
 //            max_pages = response.data.total_pages;
         });
@@ -6031,7 +6035,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
                 } else {
                     $scope.opacity = 1;
                 }
-                            drawImage();
+                drawImage();
 
                 break;
         }

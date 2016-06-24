@@ -428,8 +428,7 @@ app.factory('wmsLayers', ['$interval', 'leafletData', 'log', function ($interval
                 opacity: 1
             },
             legend: [
-                {label: 'Croplands', color: '#FFFF00'},
-                {label: 'Pasture', color: '#66FFFF'}
+                {label: 'Cropland', color: '#00FF00'}
             ]
         })
     };
