@@ -1,4 +1,4 @@
-app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http', 'leafletData', '$document', 'log', '$timeout', 'server', function ($scope, mapService, mappings, $http, leafletData, $document, log, $timeout, server) {
+app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http', 'leafletData', '$document', 'log', '$timeout', 'server', 'User', function ($scope, mapService, mappings, $http, leafletData, $document, log, $timeout, server, User) {
     var page = 1, minimumMapBox, currentImageOverlay, lastClassification = new Date();
 
     // Apply defaults
@@ -31,6 +31,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
             {'id': 1, 'label': 'Pure Cropland', 'description': 'Cropland is...', buttonClass: 'pure-cropland'},
             {'id': 2, 'label': 'Mixed Cropland', 'description': 'Mixed is ...', buttonClass: 'mixed-cropland'},
             {'id': 0, 'label': 'Not Cropland', 'description': 'Not cropland is...', buttonClass: 'not-cropland'},
+            {'id': 3, 'label': 'Maybe Cropland', 'description': 'Not cropland is...', buttonClass: 'Maybe Cropland'},
             {'id': -1, 'label': 'Reject', 'description': 'Reject is ...', buttonClass: 'btn-default'}
         ]
     });
@@ -53,18 +54,23 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
     }
 
     function getMoreImages(page) {
-        $http.get(server.address + '/api/images?'
-            + 'q={"order_by":['
-            + '{"field":"classifications_count","direction":"asc"},'
-            + '{"field":"date_uploaded","direction":"desc"}'
-            + '],"filters":['
-//            + '{"name":"classifications_majority_agreement","op":"lt","val":75},'
-            + '{"name":"source","op":"eq","val":"VHRI"},'
-            + '{"name":"classifications_count","op":"lt","val":5}'
-            + ']}'
-            + '&page=1'// + String(page)
-            + '&results_per_page=100'
-            + '&random' + Date.now().toString()).then(function (response) {
+        var filters = [
+            {"name": "source", "op": "eq", "val": "VHRI"}
+        ], order_by = [
+            {"field": "classifications_count", "direction": "asc"},
+            {"field": "date_uploaded", "direction": "desc"}
+        ], params = {};
+
+
+
+        params.q = JSON.stringify({"order_by": order_by, "filters": filters});
+        params.page = 1;
+        params.results_per_page = 100;
+        params.random = Date.now().toString();
+        console.log(params);
+
+
+        $http.get(server.address + '/api/images', {params: params}).then(function (response) {
             $scope.images = $scope.images.concat(response.data.objects);
 //            max_pages = response.data.total_pages;
         });
@@ -215,6 +221,11 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
                 $scope.classify(-1);
                 $scope.action = -1;
                 break;
+            case 113:
+                log.info("[ClassifyController] Maybe Cropland Shortcut");
+                $scope.classify(3);
+                $scope.action = 3;
+                break;
             case 118:
                 log.info("[ClassifyControler] Toggle Shortcut");
                 if ($scope.opacity > 0) {
@@ -222,7 +233,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
                 } else {
                     $scope.opacity = 1;
                 }
-                            drawImage();
+                drawImage();
 
                 break;
         }

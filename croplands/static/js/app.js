@@ -5839,6 +5839,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
             {'id': 1, 'label': 'Pure Cropland', 'description': 'Cropland is...', buttonClass: 'pure-cropland'},
             {'id': 2, 'label': 'Mixed Cropland', 'description': 'Mixed is ...', buttonClass: 'mixed-cropland'},
             {'id': 0, 'label': 'Not Cropland', 'description': 'Not cropland is...', buttonClass: 'not-cropland'},
+            {'id': 3, 'label': 'Maybe Cropland', 'description': 'Not cropland is...', buttonClass: 'Maybe Cropland'},
             {'id': -1, 'label': 'Reject', 'description': 'Reject is ...', buttonClass: 'btn-default'}
         ]
     });
@@ -6027,6 +6028,11 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
                 log.info("[ClassifyControler] Reject Shortcut");
                 $scope.classify(-1);
                 $scope.action = -1;
+                break;
+            case 113:
+                log.info("[ClassifyController] Maybe Cropland Shortcut");
+                $scope.classify(3);
+                $scope.action = 3;
                 break;
             case 118:
                 log.info("[ClassifyControler] Toggle Shortcut");
