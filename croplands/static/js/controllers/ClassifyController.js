@@ -245,6 +245,14 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
     });
 
 
+    $scope.$watch(User.getRole, function (role) {
+        $scope.role = role;
+    });
+
+    $scope.showValidation = function () {
+        return $scope.role === 'admin' || $scope.role === 'validation';
+    };
+
     getMoreImages(1);
 
 }]);

@@ -42,10 +42,17 @@
 
                 <a class="btn btn-danger btn-block"
                    href="http://public.croplands.org/json/classifications.json"
-                   target="_blank">Download JSON</a>
+                   target="_blank">Download JSON(Training)</a>
                 <a class="btn btn-danger btn-block"
                    href="http://public.croplands.org/csv/classifications.csv"
-                   target="_blank">Download CSV</a>
+                   target="_blank">Download CSV(Training)</a>
+
+                <a class="btn btn-danger btn-block"
+                   href="http://public.croplands.org/json/classifications_all.json"
+                   target="_blank" ng-if="showValidation()">Download JSON(All)</a>
+                <a class="btn btn-danger btn-block"
+                   href="http://public.croplands.org/csv/classifications_all.csv"
+                   target="_blank" ng-if="showValidation()">Download CSV(All)</a>
 
             </div>
         </div>
