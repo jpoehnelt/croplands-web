@@ -1386,7 +1386,7 @@ app.factory('mapService', ['leafletLayers', function (leafletLayers) {
                     ]
                 },
                 SouthAmerica_30m_L1_v20160101: {
-                    name: 'South America GCE 30m Cropland Extent Product 2014',
+                    name: 'South America 30m Cropland Extent Product 2014',
                     visible: true,
                     type: 'xyz',
                     params: {
@@ -1402,7 +1402,7 @@ app.factory('mapService', ['leafletLayers', function (leafletLayers) {
                     ]
                 },
                 SouthEastAsia_30m_L1_v20160725: {
-                    name: 'South East Asia GCE 30m Cropland Extent Product 2014',
+                    name: 'South East Asia 30m Cropland Extent Product 2014',
                     visible: true,
                     type: 'xyz',
                     params: {
@@ -1418,7 +1418,7 @@ app.factory('mapService', ['leafletLayers', function (leafletLayers) {
                     ]
                 },
                 Australia_30m_L1_v20160601: {
-                    name: 'Australia GCE 30m Cropland Extent Product 2014',
+                    name: 'Australia 30m Cropland Extent Product 2014',
                     visible: true,
                     type: 'xyz',
                     params: {
@@ -1435,7 +1435,7 @@ app.factory('mapService', ['leafletLayers', function (leafletLayers) {
                     ]
                 },
                 Australia_250m_L3_v20160701: {
-                    name: 'Australia GCE 250m Cropland Products 2000 to Present from ACCA',
+                    name: 'Australia 250m Cropland Products 2000 to Present from ACCA',
                     visible: false,
                     type: 'xyz',
                     params: {
@@ -1458,29 +1458,24 @@ app.factory('mapService', ['leafletLayers', function (leafletLayers) {
                     ],
                     years: [2000,2001,2002,2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014,2015]
                 },
-                GFSAD_Union_Product: {
-                    name: 'GFSAD Union Product',
-                    visible: false,
+                Europe_30m_L1_v20160725: {
+                    name: 'Europe 30m Cropland Extent Product 2014',
+                    visible: true,
                     type: 'xyz',
                     params: {
                         options: {
-                            band: 'cropland',
-                            year: 2014,
-                            reducer: 'mode',
+                            band: 'class',
                             subdomains: 'abc'
                         },
-                        url: '//{s}.tiles.croplands.org/{z}/{x}/{y}/tile.png?collection=users/JustinPoehnelt/products&reducer={reducer}&band={band}&year={year}'
+                        url: '//{s}.tiles.croplands.org/{z}/{x}/{y}/tile.png?collection=users/JustinPoehnelt/products&id=Europe_30m_L1_v20160725&band={band}'
                     },
                     legend: [
-                        {label: 'Not Cropland', color: '#000000 '},
                         {label: 'Cropland', color: '#00FF00'}
-//                        {label: 'Pasture', color: '#66FFFF'}
-                    ],
-                    years: [2000,2001,2002,2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014,2015]
+                    ]
 
                 },
                 Africa_30m_L1_v20160401: {
-                    name: 'Africa GCE 30m Cropland Extent Product 2014',
+                    name: 'Africa 30m Cropland Extent Product 2014',
                     visible: true,
                     type: 'xyz',
                     params: {
@@ -1760,7 +1755,9 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
     }
 
     function drawImage() {
-        var map = leafletData.getMap('map');
+        var map = leafletData.getMap('map'),
+            currentBounds;
+
         if (minimumMapBox) {
             map.removeLayer(minimumMapBox);
         }
@@ -1773,7 +1770,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
             map.removeLayer(currentImageOverlay);
         }
 
-        var currentBounds = [
+        currentBounds = [
             [$scope.image.corner_ne_lat, $scope.image.corner_ne_lon],
             [$scope.image.corner_sw_lat, $scope.image.corner_sw_lon]
         ];
@@ -1782,10 +1779,9 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
         currentImageOverlay.addTo(map);
 
         // create 90m box
-        var circle = L.circle({lng: $scope.image.location.lon, lat: $scope.image.location.lat}, {
+        minimumMapCircle = L.circle({lng: $scope.image.location.lon, lat: $scope.image.location.lat}, {
             radius: 45,
-            fillOpacity: 0,
-//            opacity: 0
+            fillOpacity: 0
         }).addTo(map);
     }
 
