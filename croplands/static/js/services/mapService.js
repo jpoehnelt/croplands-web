@@ -250,7 +250,7 @@ app.factory('mapService', ['leafletLayers', function (leafletLayers) {
                     ]
                 },
                 Africa_250m_L2_v20160601: {
-                    name: 'Africa GCE 250m Cropland Products 2014 from ACCA',
+                    name: 'Africa GCE 250m Cropland Products 2003 to 2014 from ACCA',
                     visible: false,
                     type: 'xyz',
                     params: {
