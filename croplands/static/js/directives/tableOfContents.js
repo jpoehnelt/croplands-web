@@ -8,14 +8,9 @@ app.directive('tableOfContents', ['mapService', 'leafletData', function (mapServ
         }, link: function (scope) {
             scope.layers = scope.layers === undefined ? mapService.layers : scope.layers;
 
-            scope.changeBaseLayer = function (key) {
-                leafletData.getMap().then(function (map) {
-                    leafletData.getLayers().then(function (layers) {
-                        _.each(layers.baselayers, function (layer) {
-                            map.removeLayer(layer);
-                        });
-                        map.addLayer(layers.baselayers[key]);
-                    });
+            scope.changeBaseLayer = function (id) {
+                _.each(scope.layers.baselayers, function (layer, key) {
+                    layer.visible = id === key;
                 });
             };
         }

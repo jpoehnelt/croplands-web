@@ -1,4 +1,4 @@
-var app = angular.module("app", ["leaflet-directive", "ngRoute", 'mgcrea.ngStrap', 'server']);
+var app = angular.module("app", ["leaflet-ng-core", "leaflet-ng-layers", "leaflet-ng-markers", "ngRoute", 'mgcrea.ngStrap', 'server']);
 app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$locationProvider', 'server', function ($tooltipProvider, $routeProvider, $sceDelegateProvider, $locationProvider, server) {
     $routeProvider
         .when('/app/map', {
@@ -33,6 +33,9 @@ app.config(['$tooltipProvider', '$routeProvider', '$sceDelegateProvider', '$loca
         }).when('/app/a/logout', {
             templateUrl: '/static/templates/account/logout.html',
             controller: 'LogoutController'
+        }).when('/app/a/messages', {
+            templateUrl: '/static/templates/account/messages.html',
+            controller: 'MessagesController'
         }).otherwise({
             templateUrl: '/static/templates/404.html'
         });

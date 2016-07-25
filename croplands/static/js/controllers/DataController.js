@@ -48,7 +48,7 @@ app.controller("DataController", ['$scope', '$http', 'mapService', 'leafletData'
 
         var color, ratio, scale, red, green, blue;
 
-        ratio = properties.ratio*10;
+        ratio = properties.ratio * 10;
         scale = Math.max(Math.min((ratio - 500) / 50000, 1), 0);
 
         red = Math.round(255 * scale);
@@ -75,25 +75,24 @@ app.controller("DataController", ['$scope', '$http', 'mapService', 'leafletData'
 
         $scope.countries = response.data.features;
 
-        leafletData.getMap().then(function (map) {
-            leafletMap = map;
+        var map = leafletData.getMap();
+        leafletMap = map;
 
-            L.geoJson(response.data.features, {
-                style: function (feature) {
-                    return {
-                        weight: 2,
-                        opacity: 0.8,
-                        fillColor: getColor(feature.properties),
-                        color: 'white',
-                        dashArray: '3',
-                        fillOpacity: 0.6
-                    };
-                },
-                onEachFeature: function (feature, layer) {
-                    feature.properties.bounds = layer.getBounds();
-                }
-            }).addTo(map);
-        });
+        L.geoJson(response.data.features, {
+            style: function (feature) {
+                return {
+                    weight: 2,
+                    opacity: 0.8,
+                    fillColor: getColor(feature.properties),
+                    color: 'white',
+                    dashArray: '3',
+                    fillOpacity: 0.6
+                };
+            },
+            onEachFeature: function (feature, layer) {
+                feature.properties.bounds = layer.getBounds();
+            }
+        }).addTo(map);
     }, function (err) {
         console.log(err);
     });
@@ -109,7 +108,6 @@ app.controller("DataController", ['$scope', '$http', 'mapService', 'leafletData'
             country.properties.visible = currentMapBounds.contains(country.properties.bounds);
         });
     });
-
 
 
 }]);

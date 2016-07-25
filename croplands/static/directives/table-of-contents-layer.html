@@ -1,7 +1,7 @@
 <div class="checkbox">
     <div class="checkbox-wrapper">
         <input type="checkbox" ng-model="layer.visible"/>
-        <label ng-click="toggleShowMore()">
+        <label ng-click="showMore=!showMore">
             {{ layer.name}}
             <i class="fa fa-fw"
                ng-show="canShowMore()"
@@ -11,43 +11,35 @@
     </div>
 </div>
 <div ng-show="showMore" class="padding-left">
-    <div class="center" ng-if="layer.hasLayers()">
-        <div class="btn-group">
-            <button class="btn btn-success btn-xs"
-                    ng-click="layer.previous()" blur><i
-                    class="fa fa-backward fa-fw"></i>
-            </button>
-            <button type="button" class="btn btn-success btn-xs" blur>
-                {{ layer.layerOptions.layerLabel }}
-            </button>
 
-            <button class="btn btn-success btn-xs"
-                    ng-click="layer.play(true)"
-                    blur>
-                <i class="fa fa-fw"
-                   ng-class="{'fa-pause': isPlaying(), 'fa-play': !isPlaying()}"></i>
-            </button>
-            <button class="btn btn-success btn-xs"
-                    ng-click="layer.next()" blur><i
-                    class="fa fa-forward fa-fw"></i>
-            </button>
-        </div>
-    </div>
-    <div class="center" ng-if="layer.hasStyles()">
-        <select ng-model="$parent.style" ng-options="v.name for (k, v) in layer.styles"
-                ng-change="changeStyle(k);">
-            <option value="">Select Product</option>
-        </select>
-    </div>
     <legend items="layer.legend" ng-if="layer.legend.length"></legend>
-    <form class="form-horizontal" style="margin-top: 5px;" ng-if="layer.type !== 'markercluster'">
-        <input type="range"
-               ng-model="layer.layerOptions.opacity"
-               max="1"
-               min="0"
-               step=".01"/>
-    </form>
 
+    <div class="padding">
+        <button class="btn btn-sm btn-default"
+                ng-class="{'btn-success': layer.params.options.year===year}"
+                ng-repeat="year in layer.years" ng-click="layer.params.options.year=year" blur>
+            {{year}}
+        </button>
+    </div>
+
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label class="col-sm-2 control-label">
+                Opacity
+            </label>
+
+            <div class="col-sm-8">
+                <input type="range"
+                       ng-model="layer.params.options.opacity"
+                       max="1"
+                       min="0"
+                       step=".01"/>
+            </div>
+            <label class="col-sm-2 control-label">
+                {{ layer.params.options.opacity}}
+            </label>
+        </div>
+    </form>
 
     <div class="small" ng-bind-html="layer.attribution | unsafe"></div>
 

@@ -1,5 +1,5 @@
 app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http', 'leafletData', '$document', 'log', '$timeout', 'server', 'User', function ($scope, mapService, mappings, $http, leafletData, $document, log, $timeout, server, User) {
-    var page = 1, minimumMapBox, currentImageOverlay, lastClassification = new Date();
+    var page = 1, minimumMapCircle, minimumMapBox, currentImageOverlay, lastClassification = new Date();
 
     // Apply defaults
     angular.extend($scope, {
@@ -36,11 +36,11 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
         ]
     });
 
-    leafletData.getMap('map').then(function (map) {
-        $scope.map = map;
-        L.circle([$scope.center.lng, $scope.center.lat], 10000).addTo(map);
-
-    });
+//    leafletData.getMap('map').then(function (map) {
+//        $scope.map = map;
+//        L.circle([$scope.center.lng, $scope.center.lat], 10000).addTo(map);
+//
+//    });
 
     function setMinimumMapBounds(lon, lat) {
         var bounds = L.circle({lng: lon, lat: lat}, 45).getBounds();
@@ -62,7 +62,6 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
         ], params = {};
 
 
-
         params.q = JSON.stringify({"order_by": order_by, "filters": filters});
         params.page = 1;
         params.results_per_page = 100;
@@ -77,27 +76,33 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
     }
 
     function drawImage() {
-        leafletData.getMap('map').then(function (map) {
-            if (minimumMapBox) {
-                map.removeLayer(minimumMapBox);
-            }
+        var map = leafletData.getMap('map');
+        if (minimumMapBox) {
+            map.removeLayer(minimumMapBox);
+        }
 
-            if (currentImageOverlay) {
-                map.removeLayer(currentImageOverlay);
-            }
+        if (minimumMapCircle) {
+            map.removeLayer(minimumMapCircle);
+        }
 
-            var currentBounds = [
-                [$scope.image.corner_ne_lat, $scope.image.corner_ne_lon],
-                [$scope.image.corner_sw_lat, $scope.image.corner_sw_lon]
-            ];
+        if (currentImageOverlay) {
+            map.removeLayer(currentImageOverlay);
+        }
 
-            currentImageOverlay = L.imageOverlay('https://images.croplands.org/' + $scope.image.url, currentBounds, {opacity: $scope.opacity});
-            currentImageOverlay.addTo(map);
+        var currentBounds = [
+            [$scope.image.corner_ne_lat, $scope.image.corner_ne_lon],
+            [$scope.image.corner_sw_lat, $scope.image.corner_sw_lon]
+        ];
 
-            // create 90m box
-            minimumMapBox = L.imageOverlay('/static/imgs/minimumMapUnit.png', L.circle({lng: $scope.image.location.lon, lat: $scope.image.location.lat}, 45).getBounds());
-            minimumMapBox.addTo(map);
-        });
+        currentImageOverlay = L.imageOverlay('https://images.croplands.org/' + $scope.image.url, currentBounds, {opacity: $scope.opacity});
+        currentImageOverlay.addTo(map);
+
+        // create 90m box
+        var circle = L.circle({lng: $scope.image.location.lon, lat: $scope.image.location.lat}, {
+            radius: 45,
+            fillOpacity: 0,
+//            opacity: 0
+        }).addTo(map);
     }
 
     function getImage() {
@@ -113,7 +118,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
             // Get coordinates of location and adjust maps
             $scope.center.lat = $scope.image.location.lat;
             $scope.center.lng = $scope.image.location.lon;
-            $scope.center.zoom = 19;
+            $scope.center.zoom = 17;
 
 
             // preload
