@@ -44,9 +44,9 @@ app.controller("MapController", ['$scope', 'mapService', 'DataService', 'leaflet
         $scope.center = center;
     }, true);
 
-    $scope.$watch('center', function (center) {
-        $location.moveCenter(center.lat, center.lng, center.zoom);
-    });
+//    $scope.$watch('center', function (center) {
+//        $location.moveCenter(center.lat, center.lng, center.zoom);
+//    });
 
     $scope.$watch('busy', function () {
         if ($scope.busy) {
@@ -93,16 +93,10 @@ app.controller("MapController", ['$scope', 'mapService', 'DataService', 'leaflet
             table: {
                 visible: false
             },
-            events: {
-                map: {
-                    enable: ['mousedown', 'mousemove', 'click'],
-                    logic: 'emit'
-                }
-            },
             center: mapService.center,
             layers: mapService.layers
-        };
 
+        };
 
         // Load Url Parameters if Found
         var center = $location.getCenter();
@@ -114,13 +108,15 @@ app.controller("MapController", ['$scope', 'mapService', 'DataService', 'leaflet
         }
         if (center && center.zoom) {
             mapService.center.zoom = center.zoom;
-        }
+    }
 
 
         // Apply defaults
         angular.extend($scope, defaults);
+        console.log($scope);
     }
 
     init();
 
-}]);
+}])
+;

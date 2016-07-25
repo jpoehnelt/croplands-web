@@ -5,11 +5,10 @@ app.directive('tableOfContentsLayer', [function () {
             layer: '=',
             showMore: '@'
         }, link: function (scope) {
-            scope.showMore = scope.showMore === undefined ? false : scope.showMore;
+            var layer = scope.layer,
+                params = scope.layer.params;
 
-            scope.isPlaying = function () {
-                return scope.layer.loop !== undefined;
-            };
+            scope.isMultiYear = scope.layer.years && scope.layer.years.length;
 
             scope.toggleShowMore = function () {
                 if (scope.canShowMore()) {
@@ -17,12 +16,18 @@ app.directive('tableOfContentsLayer', [function () {
                 }
             };
             scope.canShowMore = function () {
-                return (typeof scope.layer === 'WMSCollection' && (scope.layer.hasLayers() || scope.layer.hasStyles())) || scope.layer.legend;
+                return true; //scope.layer.legend;
             };
 
-            scope.changeStyle = function () {
-                scope.layer.changeStyle(scope.style.id);
-            };
+            function init() {
+                if (!scope.isMultiYear) {
+                    return;
+                }
+                params.options.year = layer.years[layer.years.length - 1];
+            }
+
+            init();
+
         }
     };
 }

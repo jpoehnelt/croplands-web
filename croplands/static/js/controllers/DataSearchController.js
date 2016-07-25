@@ -116,11 +116,6 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
         layer.visible = false;
     });
 
-    $scope.layers.overlays.markers = {
-        name: 'markers',
-        visible: true,
-        type: 'group'
-    };
 
     ////////// Helpers //////////
     function init() {
@@ -136,16 +131,18 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             DataService.load();
         }
 
-        if (DataService.bounds) {
-            $scope.bounds = DataService.bounds;
-            leafletData.getMap('searchMap').then(function (map) {
-                map.fitBounds([
-                    [$scope.bounds.southWest.lat, $scope.bounds.southWest.lng],
-                    [$scope.bounds.northEast.lat, $scope.bounds.northEast.lng]
-                ]);
-                $scope.searchInMap = true;
-            });
-        }
+//        if (DataService.bounds) {
+//            $scope.bounds = DataService.bounds;
+//            $timeout(function(){
+//                var map = leafletData.getMap('searchMap');
+//            map.fitBounds([
+//                [$scope.bounds.southWest.lat, $scope.bounds.southWest.lng],
+//                [$scope.bounds.northEast.lat, $scope.bounds.northEast.lng]
+//            ]);
+//            $scope.searchInMap = true;
+//            },1000)
+//
+//        }
     }
 
     function getData() {
@@ -167,16 +164,13 @@ app.controller("DataSearchController", ['$scope', '$http', 'mapService', 'leafle
             records["m_" + row.id.toString()] = {
                 lat: parseFloat(row.lat),
                 lng: parseFloat(row.lon),
-                layer: 'markers',
-//                properties: row
-
             };
         });
         return records;
     }
 
     function getNDVI(params) {
-        var url = server.address +'/data/image?';
+        var url = server.address + '/data/image?';
         _.each(params, function (val, key) {
             if (key === 'southWestBounds' || key === 'northEastBounds' || key === 'ndvi_limit_upper' || key === 'ndvi_limit_lower') {
                 return;

@@ -19,36 +19,40 @@
                 <div class="radio" ng-repeat="(key, layer) in layers.baselayers">
                     <label>
                         <input type="radio" name="backgroundRadios"
-                               ng-model="layer.visible"
-                               ng-value="true"
-                               id="backgroundRadios-{{ $index }}"
+                               ng-checked="layer.visible"
                                ng-click="changeBaseLayer(key)">
                         {{ layer.name }}
                     </label>
                 </div>
             </div>
             <h5 ng-click="expandProductLayers=!expandProductLayers">
-                Our Products and Data
+                Our Products
                 <i class="fa fa-fw"
                    ng-class="{'fa-caret-down': expandProductLayers, 'fa-caret-right': !expandProductLayers  }">
                 </i>
             </h5>
 
             <div ng-if="expandProductLayers" class="padding-left">
-                <div table-of-contents-layer layer="layers.overlays.gfsad1000v00"></div>
-                <div table-of-contents-layer layer="layers.overlays.gfsad1000v10"></div>
-                <div table-of-contents-layer layer="layers.overlays.us250v201512y2008"></div>
-                <div table-of-contents-layer layer="layers.overlays.africaL4250v201512y2014"></div>
-                <div table-of-contents-layer layer="layers.overlays.africa_30m_extent_v201605_y2014"></div>
-                <!--<div table-of-contents-layer layer="layers.overlays.egypt30mv201512y2014"></div>-->
-                <div table-of-contents-layer layer="layers.overlays.southamerica30v201512"></div>
-                <div table-of-contents-layer layer="layers.overlays.southAsia250v201601y2010"></div>
-                <div table-of-contents-layer layer="layers.overlays.australia"></div>
-                <div table-of-contents-layer layer="layers.overlays.australia30mExtent"></div>
-                <p>Products also available via <a
-                        href="http://wms.croplands.org/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities">WMS</a>.
-                </p>
+                <div table-of-contents-layer
+                     layer="layers.overlays.Global_1000m_L4_v20120101"></div>
+                <div table-of-contents-layer
+                     layer="layers.overlays.Global_1000m_L3_v20150101"></div>
+                <div table-of-contents-layer
+                     layer="layers.overlays.SouthAsia_250m_L4_v20151201"></div>
+                <div table-of-contents-layer
+                     layer="layers.overlays.UnitedStates_250m_L5_v20160101"></div>
+                <div table-of-contents-layer
+                     layer="layers.overlays.SouthAmerica_30m_L1_v20160101"></div>
+                <div table-of-contents-layer
+                     layer="layers.overlays.Australia_30m_L1_v20160601"></div>
+                <div table-of-contents-layer
+                     layer="layers.overlays.Australia_250m_L3_v20160701"></div>
+                <div table-of-contents-layer
+                     layer="layers.overlays.Africa_30m_L1_v20160401"></div>
+                <div table-of-contents-layer
+                     layer="layers.overlays.Africa_250m_L2_v20160601"></div>
             </div>
         </div>
     </div>
+</div>
 </div>
