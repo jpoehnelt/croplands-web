@@ -145,7 +145,7 @@ app.factory('mapService', ['leafletLayers', function (leafletLayers) {
                     ]
                 },
                 SouthAmerica_30m_L1_v20160101: {
-                    name: 'South America GCE 30m Cropland Mask Product 2014',
+                    name: 'South America GCE 30m Cropland Extent Product 2014',
                     visible: true,
                     type: 'xyz',
                     params: {
@@ -155,6 +155,22 @@ app.factory('mapService', ['leafletLayers', function (leafletLayers) {
                             bounds: L.latLngBounds(L.latLng(12.835778465638036, -81.95811941094321), L.latLng(-56.073447989999984, -31.449983235209473))
                         },
                         url: '//{s}.tiles.croplands.org/{z}/{x}/{y}/tile.png?collection=users/JustinPoehnelt/products&id=SouthAmerica_30m_L1_v20160101&band={band}'
+                    },
+                    legend: [
+                        {label: 'Cropland', color: '#00FF00'}
+                    ]
+                },
+                SouthEastAsia_30m_L1_v20160725: {
+                    name: 'South East Asia GCE 30m Cropland Extent Product 2014',
+                    visible: true,
+                    type: 'xyz',
+                    params: {
+                        options: {
+                            band: 'class',
+                            subdomains: 'abc',
+//                            bounds: L.latLngBounds(L.latLng(12.835778465638036, -81.95811941094321), L.latLng(-56.073447989999984, -31.449983235209473))
+                        },
+                        url: '//{s}.tiles.croplands.org/{z}/{x}/{y}/tile.png?collection=users/JustinPoehnelt/products&id=SouthEastAsia_30m_L1_v20160725&band={band}'
                     },
                     legend: [
                         {label: 'Cropland', color: '#00FF00'}
@@ -208,15 +224,19 @@ app.factory('mapService', ['leafletLayers', function (leafletLayers) {
                     params: {
                         options: {
                             band: 'cropland',
+                            year: 2014,
                             reducer: 'mode',
                             subdomains: 'abc'
                         },
-                        url: '//{s}.tiles.croplands.org/{z}/{x}/{y}/tile.png?collection=users/JustinPoehnelt/products&reducer={reducer}&band={band}'
+                        url: '//{s}.tiles.croplands.org/{z}/{x}/{y}/tile.png?collection=users/JustinPoehnelt/products&reducer={reducer}&band={band}&year={year}'
                     },
                     legend: [
-                        {label: 'Croplands', color: '#FFFF00'},
-                        {label: 'Pasture', color: '#66FFFF'}
-                    ]
+                        {label: 'Not Cropland', color: '#000000 '},
+                        {label: 'Cropland', color: '#00FF00'}
+//                        {label: 'Pasture', color: '#66FFFF'}
+                    ],
+                    years: [2000,2001,2002,2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014,2015]
+
                 },
                 Africa_30m_L1_v20160401: {
                     name: 'Africa GCE 30m Cropland Extent Product 2014',
