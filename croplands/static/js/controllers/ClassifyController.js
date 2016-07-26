@@ -101,6 +101,7 @@ app.controller("ClassifyController", ['$scope', 'mapService', 'mappings', '$http
 
         // create 90m box
         minimumMapCircle = L.circle({lng: $scope.image.location.lon, lat: $scope.image.location.lat}, {
+            color: '#00ff00',
             radius: 45,
             fillOpacity: 0
         }).addTo(map);
