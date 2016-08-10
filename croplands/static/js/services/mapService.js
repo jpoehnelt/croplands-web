@@ -160,7 +160,7 @@ app.factory('mapService', ['leafletLayers', function (leafletLayers) {
                         {label: 'Cropland', color: '#00FF00'}
                     ]
                 },
-                SouthEastAsia_30m_L1_v20160725: {
+                SouthEastAsia_30m_L1_v20160808: {
                     name: 'South East Asia 30m Cropland Extent Product 2014',
                     visible: true,
                     type: 'xyz',
@@ -170,7 +170,7 @@ app.factory('mapService', ['leafletLayers', function (leafletLayers) {
                             subdomains: 'abc',
 //                            bounds: L.latLngBounds(L.latLng(12.835778465638036, -81.95811941094321), L.latLng(-56.073447989999984, -31.449983235209473))
                         },
-                        url: '//{s}.tiles.croplands.org/{z}/{x}/{y}/tile.png?collection=users/JustinPoehnelt/products&id=SouthEastAsia_30m_L1_v20160725&band={band}'
+                        url: '//{s}.tiles.croplands.org/{z}/{x}/{y}/tile.png?collection=users/JustinPoehnelt/products&id=SouthEastAsia_30m_L1_v20160808&band={band}'
                     },
                     legend: [
                         {label: 'Cropland', color: '#00FF00'}

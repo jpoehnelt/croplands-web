@@ -1,7 +1,7 @@
-/* leaflet-ng - 2016-08-09
+/* leaflet-ng - 2016-08-10
 * https://github.com/justinwp/leaflet-ng#readme
 * Copyright (c) 2016 ;
-* Last Modified: Tue Aug 09 2016 11:43:38
+* Last Modified: Wed Aug 10 2016 15:36:49
 */
 angular.module("leaflet-ng-core", []);
 angular.module("leaflet-ng-core").directive('lfBounds', ['leafletHelpers', function (leafletHelpers) {
@@ -101,7 +101,7 @@ angular.module("leaflet-ng-core").directive('leaflet', ['$q', 'leafletData', fun
             map.whenReady(function () {
                 console.log('map ready');
 
-                if (angular.isDefined(scope.lfDefaults.zoomControlPosition)) {
+                if (angular.isDefined(scope.lfDefaults) && angular.isDefined(scope.lfDefaults.zoomControlPosition)) {
                     map.zoomControl.setPosition(scope.lfDefaults.zoomControlPosition);
                 }
 
@@ -1423,7 +1423,7 @@ app.factory('mapService', ['leafletLayers', function (leafletLayers) {
                         {label: 'Cropland', color: '#00FF00'}
                     ]
                 },
-                SouthEastAsia_30m_L1_v20160725: {
+                SouthEastAsia_30m_L1_v20160808: {
                     name: 'South East Asia 30m Cropland Extent Product 2014',
                     visible: true,
                     type: 'xyz',
@@ -1433,7 +1433,7 @@ app.factory('mapService', ['leafletLayers', function (leafletLayers) {
                             subdomains: 'abc',
 //                            bounds: L.latLngBounds(L.latLng(12.835778465638036, -81.95811941094321), L.latLng(-56.073447989999984, -31.449983235209473))
                         },
-                        url: '//{s}.tiles.croplands.org/{z}/{x}/{y}/tile.png?collection=users/JustinPoehnelt/products&id=SouthEastAsia_30m_L1_v20160725&band={band}'
+                        url: '//{s}.tiles.croplands.org/{z}/{x}/{y}/tile.png?collection=users/JustinPoehnelt/products&id=SouthEastAsia_30m_L1_v20160808&band={band}'
                     },
                     legend: [
                         {label: 'Cropland', color: '#00FF00'}

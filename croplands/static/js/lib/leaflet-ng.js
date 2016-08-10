@@ -1,7 +1,7 @@
-/* leaflet-ng - 2016-08-09
+/* leaflet-ng - 2016-08-10
 * https://github.com/justinwp/leaflet-ng#readme
 * Copyright (c) 2016 ;
-* Last Modified: Tue Aug 09 2016 11:43:38
+* Last Modified: Wed Aug 10 2016 15:36:49
 */
 angular.module("leaflet-ng-core", []);
 angular.module("leaflet-ng-core").directive('lfBounds', ['leafletHelpers', function (leafletHelpers) {
@@ -101,7 +101,7 @@ angular.module("leaflet-ng-core").directive('leaflet', ['$q', 'leafletData', fun
             map.whenReady(function () {
                 console.log('map ready');
 
-                if (angular.isDefined(scope.lfDefaults.zoomControlPosition)) {
+                if (angular.isDefined(scope.lfDefaults) && angular.isDefined(scope.lfDefaults.zoomControlPosition)) {
                     map.zoomControl.setPosition(scope.lfDefaults.zoomControlPosition);
                 }
 
