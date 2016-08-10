@@ -1,0 +1,94 @@
+<style type="text/css">
+
+    html, body {
+        height: 100%;
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .divider {
+        border-left: 2px solid #444444;
+    }
+
+    .no-padding {
+        padding: 0;
+    }
+
+    .leaflet-control, .leaflet-control-layers, .leaflet-control-layers.leaflet-control, .leaflet-control-zoom {
+        display: block !important;
+        visibility: visible;
+    }
+
+    .leaflet-control-attribution {
+        display: none !important;
+        visibility: hidden;
+
+    }
+
+</style>
+
+
+<div class="container-fluid full-height">
+    <div class="row full-height no-padding">
+        <div class="col-sm-8 full-height no-padding">
+            <div id="pano" class="full-height"></div>
+
+        </div>
+        <div class="col-sm-4 full-height no-padding divider">
+            <leaflet id="map"
+                     lf-center="center"
+                     lf-layers="layers"
+                     lf-events="events"
+                     lf-defaults="defaults"
+                     class="full-height">
+            </leaflet>
+        </div>
+    </div>
+</div>
+
+<div class="padding-vertical col-xs-5 col-sm-2"
+     style="position: absolute; top:40px; z-index: 9999;">
+    <div class="well well-sm">
+        <h5>Date: {{ location.date |date: 'MMMM yyyy'}}</h5>
+        <h5>Lat: {{ location.lat | number: 6}} </h5>
+        <h5>Lng: {{ location.lng | number: 6}} </h5>
+        <h5>Heading: {{ location.pov.heading | number: 2}}</h5>
+        <h5>Pitch: {{ location.pov.pitch | number: 2 }}</h5>
+
+        <div class="padding-vertical">
+            <button class="btn btn-block btn-success" ng-click="showCaptureForm=!showCaptureForm" blur>Capture</button>
+        </div>
+    </div>
+    <div class="well well-sm" ng-show="showCaptureForm">
+
+        <form class="clearfix">
+            <div class="form-group">
+                <label for="landUseType" class="control-label">Land Use
+                    Type</label>
+
+                <select class="form-control" id="landUseType"
+                        ng-model="record.land_use_type"
+                        ng-options="type.id as type.label for type in choices.land_use_type">
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="water" class="control-label">Water Source</label>
+
+                <select class="form-control" id="water" ng-model="record.water"
+                        ng-options="type.id as type.label for type in choices.water">
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="crop" class="control-label">Crop Type</label>
+
+                <select class="form-control" id="crop" ng-model="record.crop_primary"
+                        ng-options="type.id as type.label for type in choices.crop_primary"></select>
+            </div>
+            <div class="pull-right">
+                <button class="btn btn-default" ng-click="showCaptureForm=!showCaptureForm">Cancel</button>
+                <button class="btn btn-success" disabled>Submit</button>
+            </div>
+        </form>
+    </div>
+</div>
+

@@ -9,9 +9,13 @@ app.factory('geoHelperService', [ function () {
     function destination(latlon, bearing, distance) {
         var R = 6378.1, lat, lon, latDest, lonDest;
 
+        if (typeof latlon !== 'array'){
+            latlon = [latlon.lat, latlon.lng];
+        }
+
         // check values
-        if (distance <= 10 || bearing === -1) {
-            return [latlon.lat, latlon.lng];
+        if (distance <= 0.010 || bearing === -1) {
+            return [latlon[0], latlon[1]];
         }
 
         // convert to radians
