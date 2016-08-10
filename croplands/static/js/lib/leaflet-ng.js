@@ -1,7 +1,7 @@
-/* leaflet-ng - 2016-07-21
+/* leaflet-ng - 2016-08-09
 * https://github.com/justinwp/leaflet-ng#readme
 * Copyright (c) 2016 ;
-* Last Modified: Thu Jul 21 2016 10:43:00
+* Last Modified: Tue Aug 09 2016 11:43:38
 */
 angular.module("leaflet-ng-core", []);
 angular.module("leaflet-ng-core").directive('lfBounds', ['leafletHelpers', function (leafletHelpers) {
@@ -73,7 +73,8 @@ angular.module("leaflet-ng-core").directive('leaflet', ['$q', 'leafletData', fun
             lfLayers: '=',
             lfCenter: '=',
             lfMarkers: '=',
-            lfBounds: '='
+            lfBounds: '=',
+            lfEvents: '='
         },
         transclude: true,
         template: '<div class="angular-leaflet-map"><div ng-transclude></div></div>',
@@ -91,13 +92,27 @@ angular.module("leaflet-ng-core").directive('leaflet', ['$q', 'leafletData', fun
 
             // Create the Leaflet Map Object with the options
             var map = new L.Map(element[0], scope.lfDefaults);
+
+
             leafletData.set('map', map, attrs.id);
             ctrl._leafletMap.resolve(map);
 
             // Resolve the map object to the promises
             map.whenReady(function () {
                 console.log('map ready');
+
+                if (angular.isDefined(scope.lfDefaults.zoomControlPosition)) {
+                    map.zoomControl.setPosition(scope.lfDefaults.zoomControlPosition);
+                }
+
                 leafletData.set('map', map, attrs.id);
+
+                // add events
+                angular.forEach(scope.lfEvents, function (f, event) {
+                    console.log(event);
+                    map.on(event, f);
+                })
+
             });
 
             scope.$on('$destroy', function () {
@@ -329,7 +344,7 @@ angular.module('leaflet-ng-markers').directive('lfMarkers', ['leafletData', '$q'
                         } else {
                             m = leafletMarkers[key];
                             m.setLatLng(latLng);
-                            m.options = params.options;
+                            angular.extend(m.options, params.options);
                             m.update();
                         }
                     });
