@@ -20,7 +20,7 @@ def cache(seconds=0):
 
 
 app = Flask(__name__)
-app.config['VERSION'] = '3.6.4'
+app.config['VERSION'] = '3.7.0'
 app.config['SERVER_ADDRESS'] = os.environ.get('SERVER_ADDRESS', 'https://api.croplands.org')
 
 @app.before_request
@@ -68,4 +68,4 @@ def not_found(e):
     return render_template('404.html', version=app.config['VERSION']), 404
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=8085)
+    app.run(debug=True, host='localhost', port=8085)

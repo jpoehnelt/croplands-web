@@ -56,7 +56,9 @@
         <h5>Pitch: {{ location.pov.pitch | number: 2 }}</h5>
 
         <div class="padding-vertical">
-            <button class="btn btn-block btn-success" ng-click="showCaptureForm=!showCaptureForm" blur>Capture</button>
+            <button class="btn btn-block btn-success" ng-click="showCaptureForm=!showCaptureForm"
+                    blur>Capture
+            </button>
         </div>
     </div>
     <div class="well well-sm" ng-show="showCaptureForm">
@@ -84,11 +86,20 @@
                 <select class="form-control" id="crop" ng-model="record.crop_primary"
                         ng-options="type.id as type.label for type in choices.crop_primary"></select>
             </div>
-            <div class="pull-right">
-                <button class="btn btn-default" ng-click="showCaptureForm=!showCaptureForm">Cancel</button>
-                <button class="btn btn-success" disabled>Submit</button>
+
+            <!--<label>Photos:</label>-->
+            <!--<div class="padding-half">-->
+                <!--<img style="width: 20%" src="{{staticImg(90)}}"/>-->
+                <!--<img style="width: 20%" src="{{staticImg(60)}}"/>-->
+            <!--</div>-->
+
+            <div class="padding-vertical pull-right">
+                <button class="btn btn-default" ng-click="showCaptureForm=!showCaptureForm">Cancel
+                </button>
+                <button class="btn btn-success" ng-click="submit()">Submit</button>
             </div>
+            <h6 ng-if="submitMessage" class="full">{{submitMessage}}</h6>
         </form>
+
     </div>
 </div>
-

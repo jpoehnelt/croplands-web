@@ -2677,7 +2677,7 @@ app.controller("NavbarController", ['$scope', 'User', '$location', function ($sc
         $location.path('/app/a/logout').search({n: n});
     };
 }]);;
-app.controller("StreetController", ['$scope', 'mapService', 'mappings', '$http', 'leafletData', '$document', 'log', 'geoHelperService', 'server', 'User', function ($scope, mapService, mappings, $http, leafletData, $document, log, geoHelperService, server, User) {
+app.controller("StreetController", ['$scope', 'mapService', 'mappings', '$http', 'leafletData', '$document', 'log', 'geoHelperService', 'server', '$timeout', function ($scope, mapService, mappings, $http, leafletData, $document, log, geoHelperService, server, $timeout) {
     var sv = new google.maps.StreetViewService(),
         panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'), {
             addressControl: false,
@@ -2731,12 +2731,70 @@ app.controller("StreetController", ['$scope', 'mapService', 'mappings', '$http',
         }
     });
 
-    $scope.$watch('record.land_use_type', function(type) {
-        if (type!==1) {
+    $scope.$watch('record.land_use_type', function (type) {
+        if (type !== 1) {
             $scope.record.crop_primary = 0;
             $scope.record.water = 0;
         }
     });
+
+    $scope.submit = function () {
+        var record = angular.copy($scope.record),
+            location = {
+                lat: $scope.location.lat,
+                lon: $scope.location.lng,
+                bearing: $scope.location.pov.heading,
+                distance: 75 + ($scope.location.pov.pitch / 700 * 1000),
+                records: [],
+                images: []
+            };
+
+        _.each([90], function (fov) {
+            location.images.push({
+                "bearing": $scope.location.pov.heading,
+                "copyright": "Google",
+                "date_acquired": $scope.location.date.toISOString(),
+                "date_acquired_earliest": $scope.location.date.toISOString(),
+                "date_acquired_latest": $scope.location.date.toISOString(),
+                "image_type": "ground",
+                "lat": $scope.location.lat,
+                "lon": $scope.location.lng,
+                "source": "streetview",
+                "source_description": "fov: " + fov,
+                "url": $scope.staticImg(fov)
+            });
+        });
+
+        record.year = $scope.location.date.getFullYear();
+        record.month = $scope.location.date.getMonth();
+        record.source_type = 'streetview';
+        location.records.push(record);
+
+        $scope.submitMessage = "Saving data.";
+        $http({
+            method: 'POST',
+            url: server.address + '/api/locations',
+            data: location
+        }).then(function (response) {
+            console.log(response);
+            $scope.submitMessage = "Success!";
+            $timeout(function () {
+                delete $scope.submitMessage;
+                $scope.showCaptureForm = false;
+            }, 1000);
+        }, function (e) {
+            $scope.submitMessage = "Something went wrong!";
+            $timeout(function () {
+                delete $scope.submitMessage;
+                $scope.showCaptureForm = false;
+            }, 1000);
+        });
+
+    };
+
+    $scope.staticImg = function (fov) {
+        return "https://maps.googleapis.com/maps/api/streetview?size=600x600&location=" + $scope.location.lat + "," + $scope.location.lng + "&heading=" + $scope.location.pov.heading + "&pitch=" + $scope.location.pov.pitch + "&fov=" + fov;
+    };
 
     function initMap() {
 
